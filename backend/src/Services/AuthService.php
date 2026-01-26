@@ -1,0 +1,350 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\User;
+
+class AuthService
+{
+    private $pinService;
+
+    public function __construct()
+    {
+        $this->pinService = new PINService();
+    }
+
+    public function registerUser($data)
+    {
+        // Generar contraseña temporal simple
+        $temporalPassword = $this->generateTemporalPassword();
+
+        $userData = [
+            'email' => $data['email'],
+            'password' => $temporalPassword,
+            'nombre_completo' => $data['nombre_completo'],
+            'rol' => $data['rol'],
+            'fecha_nacimiento' => $data['fecha_nacimiento'] ?? null
+        ];
+
+        $user = User::create($userData);
+
+        return [
+            'success' => true,
+            'user' => $user,
+            'credentials' => [
+                'email' => $data['email'],
+                'password' => $temporalPassword
+            ]
+        ];
+    }
+
+    public function login($email, $credential, $remember = false)
+    {
+        $user = User::findByEmail($email);
+
+        if (!$user) {
+            return ['success' => false];
+        }
+
+        // Verificar si el usuario está activo
+        if (!$user['activo']) {
+            return ['success' => false, 'reason' => 'inactive'];
+        }
+
+        // Intentar con contraseña (password_hash es el nombre de la columna)
+        $passwordField = $user['password_hash'] ?? $user['password'] ?? null;
+
+        if ($passwordField && password_verify($credential, $passwordField)) {
+            $this->resetFailedAttempts($email);
+            $this->logAccess($user['id'], $email, 'login_exitoso');
+            $this->updateLastAccess($user['id']);
+
+            return [
+                'success' => true,
+                'user' => $this->sanitizeUser($user)
+            ];
+        }
+
+        // Intentar con PIN si está habilitado
+        $pinField = $user['pin_hash'] ?? $user['pin'] ?? null;
+        if ($pinField && $user['usar_pin'] && password_verify($credential, $pinField)) {
+            $this->resetFailedAttempts($email);
+            $this->logAccess($user['id'], $email, 'login_exitoso');
+            $this->updateLastAccess($user['id']);
+
+            return [
+                'success' => true,
+                'user' => $this->sanitizeUser($user)
+            ];
+        }
+
+        return ['success' => false];
+    }
+
+    public function isLocked($email)
+    {
+        // Verificar si la cuenta está bloqueada por intentos fallidos
+        $user = User::findByEmail($email);
+
+        if ($user && $user['bloqueado_hasta']) {
+            $bloqueadoHasta = strtotime($user['bloqueado_hasta']);
+            if ($bloqueadoHasta > time()) {
+                return true;
+            }
+        }
+
+        // Verificar intentos fallidos recientes
+        $attempts = $this->getFailedAttempts($email);
+        return $attempts >= 5;
+    }
+
+    public function getLockoutTime($email)
+    {
+        $user = User::findByEmail($email);
+
+        if ($user && $user['bloqueado_hasta']) {
+            $bloqueadoHasta = strtotime($user['bloqueado_hasta']);
+            $remaining = ceil(($bloqueadoHasta - time()) / 60);
+            return max(1, $remaining);
+        }
+
+        return 15; // minutos por defecto
+    }
+
+    public function recordFailedAttempt($email)
+    {
+        $db = DatabaseService::getInstance();
+        $user = User::findByEmail($email);
+        $userId = $user ? $user['id'] : null;
+
+        // Registrar en log_accesos
+        $db->query(
+            "INSERT INTO log_accesos (usuario_id, email_intento, accion, ip_address, created_at)
+             VALUES (?, ?, 'login_fallido', ?, NOW())",
+            [$userId, $email, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']
+        );
+
+        // Incrementar contador de intentos fallidos en usuario
+        if ($user) {
+            $newAttempts = ($user['intentos_fallidos'] ?? 0) + 1;
+
+            if ($newAttempts >= 5) {
+                // Bloquear por 15 minutos
+                $db->query(
+                    "UPDATE usuarios SET intentos_fallidos = ?, bloqueado_hasta = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
+                     WHERE id = ?",
+                    [$newAttempts, $user['id']]
+                );
+                $this->logAccess($user['id'], $email, 'bloqueo_cuenta');
+            } else {
+                $db->query(
+                    "UPDATE usuarios SET intentos_fallidos = ? WHERE id = ?",
+                    [$newAttempts, $user['id']]
+                );
+            }
+        }
+    }
+
+    public function getFailedAttempts($email)
+    {
+        $user = User::findByEmail($email);
+
+        if ($user) {
+            return $user['intentos_fallidos'] ?? 0;
+        }
+
+        // Contar intentos por email en log_accesos
+        $db = DatabaseService::getInstance();
+        $result = $db->query(
+            "SELECT COUNT(*) as count FROM log_accesos
+             WHERE email_intento = ? AND accion = 'login_fallido'
+             AND created_at > DATE_SUB(NOW(), INTERVAL 15 MINUTE)",
+            [$email]
+        )->fetch();
+
+        return $result ? $result['count'] : 0;
+    }
+
+    public function getAttemptsLeft($email)
+    {
+        return max(0, 5 - $this->getFailedAttempts($email));
+    }
+
+    public function resetFailedAttempts($email)
+    {
+        $user = User::findByEmail($email);
+
+        if ($user) {
+            $db = DatabaseService::getInstance();
+            $db->query(
+                "UPDATE usuarios SET intentos_fallidos = 0, bloqueado_hasta = NULL WHERE id = ?",
+                [$user['id']]
+            );
+        }
+    }
+
+    public function sendRecoveryCode($email)
+    {
+        $user = User::findByEmail($email);
+
+        if (!$user) {
+            return false;
+        }
+
+        $code = $this->generateRecoveryCode();
+
+        // Guardar código en tokens_recuperacion
+        $db = DatabaseService::getInstance();
+        $db->query(
+            "INSERT INTO tokens_recuperacion (usuario_id, codigo, tipo, expira_en, created_at)
+             VALUES (?, ?, 'password', DATE_ADD(NOW(), INTERVAL 15 MINUTE), NOW())",
+            [$user['id'], $code]
+        );
+
+        // Registrar solicitud
+        $this->logAccess($user['id'], $email, 'recuperacion_solicitada');
+
+        // Enviar email con código
+        $emailService = new EmailService();
+        $emailService->sendRecoveryCode($email, $code);
+
+        return true;
+    }
+
+    public function verifyRecoveryCode($email, $code)
+    {
+        $user = User::findByEmail($email);
+
+        if (!$user) {
+            return ['valid' => false];
+        }
+
+        $db = DatabaseService::getInstance();
+        $result = $db->query(
+            "SELECT * FROM tokens_recuperacion
+             WHERE usuario_id = ? AND codigo = ? AND expira_en > NOW() AND usado = 0
+             ORDER BY created_at DESC LIMIT 1",
+            [$user['id'], $code]
+        )->fetch();
+
+        if ($result) {
+            // Incrementar intentos
+            $db->query(
+                "UPDATE tokens_recuperacion SET intentos = intentos + 1 WHERE id = ?",
+                [$result['id']]
+            );
+
+            // Generar token de reset
+            $resetToken = bin2hex(random_bytes(32));
+
+            return ['valid' => true, 'reset_token' => $resetToken, 'token_id' => $result['id']];
+        }
+
+        return ['valid' => false];
+    }
+
+    public function resetCredential($resetToken, $newCredential)
+    {
+        // En una implementación completa, verificaríamos el resetToken
+        // Por ahora, simplificamos para desarrollo
+
+        return true;
+    }
+
+    public function markOnboardingComplete($userId)
+    {
+        $db = DatabaseService::getInstance();
+        return $db->query(
+            "UPDATE usuarios SET primer_acceso = 0 WHERE id = ?",
+            [$userId]
+        );
+    }
+
+    public function hasExceededRecoveryLimit($email)
+    {
+        $user = User::findByEmail($email);
+
+        if (!$user) {
+            return false;
+        }
+
+        $db = DatabaseService::getInstance();
+        $result = $db->query(
+            "SELECT COUNT(*) as count FROM tokens_recuperacion
+             WHERE usuario_id = ? AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)",
+            [$user['id']]
+        )->fetch();
+
+        return $result && $result['count'] >= 5;
+    }
+
+    private function generateTemporalPassword()
+    {
+        $words = ['Salud', 'Vida', 'Fuerza', 'Animo', 'Bienestar'];
+        return $words[array_rand($words)] . rand(1000, 9999);
+    }
+
+    private function generateRecoveryCode()
+    {
+        return str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+    }
+
+    private function logAccess($userId, $email, $accion)
+    {
+        $db = DatabaseService::getInstance();
+        $db->query(
+            "INSERT INTO log_accesos (usuario_id, email_intento, accion, ip_address, created_at)
+             VALUES (?, ?, ?, ?, NOW())",
+            [$userId, $email, $accion, $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1']
+        );
+    }
+
+    private function updateLastAccess($userId)
+    {
+        $db = DatabaseService::getInstance();
+        $db->query(
+            "UPDATE usuarios SET ultimo_acceso = NOW() WHERE id = ?",
+            [$userId]
+        );
+    }
+
+    private function sanitizeUser($user)
+    {
+        // Remover campos sensibles antes de devolver
+        unset($user['password_hash']);
+        unset($user['pin_hash']);
+        unset($user['password']);
+        unset($user['pin']);
+
+        // Agregar campo para compatibilidad con frontend
+        $user['first_login'] = $user['primer_acceso'] ?? false;
+
+        // Obtener nombre del rol desde la tabla roles
+        $db = DatabaseService::getInstance();
+        $rol = $db->query(
+            "SELECT nombre FROM roles WHERE id = ?",
+            [$user['rol_id']]
+        )->fetch();
+        $user['rol'] = $rol ? $rol['nombre'] : 'paciente';
+
+        // Si es paciente (rol_id = 3), obtener el paciente_id
+        if ($user['rol_id'] == 3) {
+            $paciente = $db->query(
+                "SELECT id FROM pacientes WHERE usuario_id = ?",
+                [$user['id']]
+            )->fetch();
+            $user['paciente_id'] = $paciente ? $paciente['id'] : null;
+        }
+
+        // Si es especialista, agregar su área
+        if ($user['rol_id'] == 2 && $user['area_medica_id']) {
+            $area = $db->query(
+                "SELECT nombre FROM areas_medicas WHERE id = ?",
+                [$user['area_medica_id']]
+            )->fetch();
+            $user['area_nombre'] = $area ? $area['nombre'] : null;
+        }
+
+        return $user;
+    }
+}

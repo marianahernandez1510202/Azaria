@@ -1,0 +1,727 @@
+/* =============================================
+   VITALIA 2.0 - SISTEMA DE ACCESIBILIDAD
+   Para usuarios de 10 a 80 años
+   WCAG 2.1 AA/AAA Compliance
+   ============================================= */
+
+/* ===== ESCALAS DE TAMAÑO DE FUENTE ===== */
+
+/* Extra Pequeño (Niños 10-15 con buena vista) */
+[data-font-scale="xs"] {
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 28px;
+  --font-size-4xl: 32px;
+  --spacing-base: 12px;
+}
+
+/* Pequeño */
+[data-font-scale="sm"] {
+  --font-size-xs: 13px;
+  --font-size-sm: 15px;
+  --font-size-base: 17px;
+  --font-size-lg: 19px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 26px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --spacing-base: 14px;
+}
+
+/* Normal (Default) */
+[data-font-scale="md"] {
+  --font-size-xs: 14px;
+  --font-size-sm: 16px;
+  --font-size-base: 18px;
+  --font-size-lg: 20px;
+  --font-size-xl: 24px;
+  --font-size-2xl: 28px;
+  --font-size-3xl: 32px;
+  --font-size-4xl: 40px;
+  --spacing-base: 16px;
+}
+
+/* Grande (Adultos mayores, problemas de vista leves) */
+[data-font-scale="lg"] {
+  --font-size-xs: 16px;
+  --font-size-sm: 18px;
+  --font-size-base: 20px;
+  --font-size-lg: 24px;
+  --font-size-xl: 28px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 40px;
+  --font-size-4xl: 48px;
+  --spacing-base: 20px;
+  --touch-target-min: 52px;
+  --touch-target-comfortable: 60px;
+}
+
+/* Extra Grande (Problemas de vista moderados) */
+[data-font-scale="xl"] {
+  --font-size-xs: 18px;
+  --font-size-sm: 20px;
+  --font-size-base: 24px;
+  --font-size-lg: 28px;
+  --font-size-xl: 32px;
+  --font-size-2xl: 40px;
+  --font-size-3xl: 48px;
+  --font-size-4xl: 56px;
+  --spacing-base: 24px;
+  --touch-target-min: 56px;
+  --touch-target-comfortable: 64px;
+  --line-height: 1.8;
+}
+
+/* Máximo (Problemas de vista severos) */
+[data-font-scale="xxl"] {
+  --font-size-xs: 22px;
+  --font-size-sm: 24px;
+  --font-size-base: 28px;
+  --font-size-lg: 32px;
+  --font-size-xl: 40px;
+  --font-size-2xl: 48px;
+  --font-size-3xl: 56px;
+  --font-size-4xl: 64px;
+  --spacing-base: 28px;
+  --touch-target-min: 64px;
+  --touch-target-comfortable: 72px;
+  --line-height: 2;
+}
+
+/* ===== MODOS DE ALTO CONTRASTE ===== */
+
+/* Alto Contraste Oscuro (WCAG AAA - 7:1 ratio) */
+[data-contrast="high-dark"] {
+  --bg-dark: #000000;
+  --bg-card: #0A0A0A;
+  --bg-elevated: #141414;
+  --bg-hover: #1F1F1F;
+  --background-primary: #000000;
+  --surface-primary: #0A0A0A;
+  --surface-secondary: #141414;
+  --surface-tertiary: #1F1F1F;
+
+  --text-primary: #FFFFFF;
+  --text-secondary: #F0F0F0;
+  --text-muted: #CCCCCC;
+
+  --border-color: #FFFFFF;
+  --focus-ring: #FFFF00;
+
+  /* Colores con máximo contraste */
+  --color-primary: #00FFD1;
+  --color-success: #00FF00;
+  --color-warning: #FFFF00;
+  --color-error: #FF4444;
+  --color-info: #00BFFF;
+
+  /* Módulos con colores saturados */
+  --color-dashboard: #4DA6FF;
+  --color-nutricion: #4DFF4D;
+  --color-fisioterapia: #FFB84D;
+  --color-medicina: #FF6666;
+  --color-neuropsicologia: #CC80FF;
+  --color-ortesis: #4DFFFF;
+  --color-comunidad: #FF80BF;
+  --color-citas: #4DFFB8;
+  --color-recordatorios: #FFFF4D;
+  --color-blog: #8080FF;
+}
+
+/* Alto Contraste Claro (WCAG AAA) */
+[data-contrast="high-light"] {
+  --bg-dark: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F5F5F5;
+  --bg-hover: #EBEBEB;
+  --background-primary: #FFFFFF;
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F5F5F5;
+  --surface-tertiary: #EBEBEB;
+
+  --text-primary: #000000;
+  --text-secondary: #1A1A1A;
+  --text-muted: #333333;
+
+  --border-color: #000000;
+  --focus-ring: #0000FF;
+
+  /* Colores oscuros para contraste */
+  --color-primary: #006B5A;
+  --color-success: #006600;
+  --color-warning: #996600;
+  --color-error: #CC0000;
+  --color-info: #004D99;
+
+  /* Módulos con colores oscuros */
+  --color-dashboard: #0052CC;
+  --color-nutricion: #006600;
+  --color-fisioterapia: #CC6600;
+  --color-medicina: #CC0000;
+  --color-neuropsicologia: #660099;
+  --color-ortesis: #006666;
+  --color-comunidad: #CC0066;
+  --color-citas: #006644;
+  --color-recordatorios: #997700;
+  --color-blog: #333399;
+}
+
+/* Contraste Normal */
+[data-contrast="normal"] {
+  /* Hereda los valores por defecto del tema */
+}
+
+/* ===== MODO REDUCCIÓN DE MOVIMIENTO ===== */
+
+[data-reduced-motion="true"],
+[data-reduced-motion="true"] * {
+  animation: none !important;
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition: none !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Mantener algunas transiciones esenciales */
+[data-reduced-motion="true"] .essential-transition {
+  transition: opacity 0.15s ease !important;
+}
+
+/* ===== MODO DE LECTURA DE PANTALLA ===== */
+
+[data-screen-reader="true"] {
+  /* Mejorar el orden de lectura */
+}
+
+[data-screen-reader="true"] .decorative {
+  display: none !important;
+}
+
+[data-screen-reader="true"] .sr-only-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* ===== MODO DISLEXIA ===== */
+
+[data-dyslexia="true"] {
+  --font-family: 'OpenDyslexic', 'Comic Sans MS', 'Verdana', sans-serif;
+  --letter-spacing: 0.12em;
+  --word-spacing: 0.16em;
+  --line-height: 2;
+}
+
+[data-dyslexia="true"] * {
+  font-family: var(--font-family) !important;
+  letter-spacing: var(--letter-spacing);
+  word-spacing: var(--word-spacing);
+}
+
+[data-dyslexia="true"] p,
+[data-dyslexia="true"] li,
+[data-dyslexia="true"] span {
+  line-height: var(--line-height);
+}
+
+/* ===== CLASES DE UTILIDAD PARA ACCESIBILIDAD ===== */
+
+/* Skip Links */
+.skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: var(--color-primary);
+  color: #000000;
+  padding: var(--spacing-md) var(--spacing-lg);
+  z-index: 10000;
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: 0 0 var(--border-radius-md) 0;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Screen Reader Only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Visible solo para lectores de pantalla pero accesible con teclado */
+.sr-only-focusable:focus,
+.sr-only-focusable:focus-within {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: var(--spacing-md);
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* Focus Visible Mejorado */
+.focus-visible-enhanced:focus-visible {
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 8px rgba(var(--focus-ring-rgb, 88, 166, 255), 0.3);
+}
+
+/* ===== COMPONENTES ACCESIBLES ===== */
+
+/* Botones con estados claros */
+.btn-accessible {
+  min-height: var(--touch-target-comfortable);
+  min-width: var(--touch-target-comfortable);
+  padding: var(--spacing-md) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  border: 3px solid transparent;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  position: relative;
+}
+
+.btn-accessible:hover {
+  filter: brightness(1.1);
+}
+
+.btn-accessible:focus-visible {
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.btn-accessible:active {
+  transform: scale(0.98);
+}
+
+.btn-accessible:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(50%);
+}
+
+/* Links accesibles */
+.link-accessible {
+  color: var(--link-color);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+}
+
+.link-accessible:hover {
+  text-decoration-thickness: 3px;
+}
+
+.link-accessible:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Inputs accesibles */
+.input-accessible {
+  min-height: var(--touch-target-comfortable);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-size: var(--font-size-base);
+  border: 3px solid var(--border-color);
+  border-radius: var(--border-radius-md);
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  width: 100%;
+}
+
+.input-accessible:focus {
+  border-color: var(--color-primary);
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.input-accessible::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+/* Labels accesibles */
+.label-accessible {
+  display: block;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.label-accessible .required {
+  color: var(--color-error);
+  margin-left: var(--spacing-xs);
+}
+
+/* ===== INDICADORES DE ESTADO ===== */
+
+/* Estado de error */
+.has-error .input-accessible {
+  border-color: var(--color-error);
+  background-color: rgba(244, 67, 54, 0.1);
+}
+
+.error-message {
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.error-message::before {
+  content: "!";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: var(--color-error);
+  color: white;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Estado de éxito */
+.has-success .input-accessible {
+  border-color: var(--color-success);
+}
+
+.success-message {
+  color: var(--color-success);
+  font-size: var(--font-size-sm);
+  margin-top: var(--spacing-xs);
+}
+
+/* ===== MODO PARA USUARIOS CIEGOS ===== */
+
+[data-voice-navigation="true"] {
+  /* Indicadores visuales de navegación por voz */
+}
+
+[data-voice-navigation="true"] *:focus {
+  outline: 4px solid var(--focus-ring) !important;
+  outline-offset: 4px !important;
+  box-shadow: 0 0 20px rgba(255, 255, 0, 0.5) !important;
+}
+
+[data-voice-navigation="true"] .voice-current {
+  outline: 6px solid #00FF00 !important;
+  outline-offset: 6px !important;
+  animation: voice-focus-pulse 1s infinite;
+}
+
+@keyframes voice-focus-pulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.5); }
+  50% { box-shadow: 0 0 40px rgba(0, 255, 0, 0.8); }
+}
+
+/* ===== PANEL DE ACCESIBILIDAD ===== */
+
+.accessibility-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 400px;
+  height: 100vh;
+  background: var(--surface-primary);
+  border-left: 3px solid var(--border-color);
+  z-index: 10000;
+  overflow-y: auto;
+  padding: var(--spacing-xl);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+}
+
+.accessibility-panel.open {
+  transform: translateX(0);
+}
+
+.accessibility-panel-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.accessibility-panel-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.accessibility-section {
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-xl);
+  border-bottom: 2px solid var(--border-color);
+}
+
+.accessibility-section:last-child {
+  border-bottom: none;
+}
+
+.accessibility-section h3 {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+/* Slider de tamaño de fuente */
+.font-size-slider {
+  width: 100%;
+  height: 8px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--surface-tertiary);
+  border-radius: 4px;
+  outline: none;
+}
+
+.font-size-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 32px;
+  height: 32px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  cursor: pointer;
+  border: 3px solid var(--surface-primary);
+  box-shadow: var(--shadow-md);
+}
+
+.font-size-slider:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--focus-ring);
+}
+
+.font-size-preview {
+  text-align: center;
+  padding: var(--spacing-lg);
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-md);
+  margin-top: var(--spacing-md);
+}
+
+/* Toggle switches accesibles */
+.toggle-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  width: 64px;
+  height: 32px;
+  background: var(--surface-tertiary);
+  border-radius: 32px;
+  position: relative;
+  transition: background 0.3s ease;
+  border: 2px solid var(--border-color);
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 24px;
+  height: 24px;
+  background: var(--text-primary);
+  border-radius: 50%;
+  transition: transform 0.3s ease;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.toggle-switch input:checked + .toggle-slider::after {
+  transform: translateX(32px);
+  background: white;
+}
+
+.toggle-switch input:focus-visible + .toggle-slider {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+.toggle-label {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* Botón flotante de accesibilidad */
+.accessibility-fab {
+  position: fixed;
+  bottom: 100px;
+  left: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.accessibility-fab:hover {
+  transform: scale(1.1);
+  background: var(--color-primary-dark);
+}
+
+.accessibility-fab:focus-visible {
+  outline: 4px solid var(--focus-ring);
+  outline-offset: 4px;
+}
+
+/* ===== RESPONSIVE PARA ACCESIBILIDAD ===== */
+
+@media (max-width: 480px) {
+  .accessibility-panel {
+    max-width: 100%;
+    border-left: none;
+    border-top: 3px solid var(--border-color);
+  }
+
+  .accessibility-fab {
+    bottom: 80px;
+    left: 10px;
+    width: 48px;
+    height: 48px;
+    font-size: 20px;
+  }
+}
+
+/* ===== PREFERENCIAS DEL SISTEMA ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --border-color: currentColor;
+    --text-primary: #000000;
+    --bg-dark: #FFFFFF;
+  }
+
+  [data-theme="dark"] {
+    --text-primary: #FFFFFF;
+    --bg-dark: #000000;
+    --border-color: #FFFFFF;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    --bg-dark: #0D1117;
+    --text-primary: #E6EDF3;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    --bg-dark: #F8F9FA;
+    --text-primary: #1C1E21;
+  }
+}
+
+/* ===== MODO PARA EDADES ESPECÍFICAS ===== */
+
+/* Niños (10-15 años) - Colores más vibrantes, elementos más grandes */
+[data-age-mode="child"] {
+  --color-primary: #00E676;
+  --color-dashboard: #448AFF;
+  --color-nutricion: #76FF03;
+  --color-fisioterapia: #FFAB40;
+  --color-medicina: #FF5252;
+  --border-radius-md: 20px;
+  --border-radius-lg: 28px;
+}
+
+/* Adultos jóvenes (16-40 años) - Default moderno */
+[data-age-mode="young-adult"] {
+  /* Valores por defecto */
+}
+
+/* Adultos (41-60 años) - Ligeramente más grande */
+[data-age-mode="adult"] {
+  --font-size-base: 19px;
+  --touch-target-min: 50px;
+}
+
+/* Adultos mayores (61-80 años) - Máxima legibilidad */
+[data-age-mode="senior"] {
+  --font-size-xs: 16px;
+  --font-size-sm: 18px;
+  --font-size-base: 22px;
+  --font-size-lg: 26px;
+  --touch-target-min: 56px;
+  --touch-target-comfortable: 64px;
+  --line-height: 1.8;
+  --spacing-md: 20px;
+  --spacing-lg: 28px;
+}

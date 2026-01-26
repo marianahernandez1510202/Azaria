@@ -1,0 +1,714 @@
+/* Citas Page Styles - Dark Theme */
+
+.citas-page {
+  min-height: 100vh;
+  background: var(--background-primary, #0d1117);
+  padding-bottom: 100px;
+  color: var(--text-primary, #e6edf3);
+}
+
+/* Header con botón de regreso */
+.citas-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px;
+  background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+  border-bottom: 1px solid #374151;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.citas-page .btn-back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  color: #f3f4f6;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.citas-page .btn-back:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.citas-page .btn-back span {
+  font-size: 18px;
+}
+
+.citas-header .header-content {
+  flex: 1;
+}
+
+.citas-header .header-content h1 {
+  color: #f3f4f6;
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.citas-header .header-content .subtitle {
+  color: #9ca3af;
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Light mode header */
+[data-theme="light"] .citas-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-bottom: none;
+}
+
+[data-theme="light"] .citas-page .btn-back {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: white;
+}
+
+[data-theme="light"] .citas-page .btn-back:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="light"] .citas-header .header-content h1 {
+  color: white;
+}
+
+[data-theme="light"] .citas-header .header-content .subtitle {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Deprecated - keeping for compatibility */
+.citas-page .page-header {
+  padding: 20px;
+  background: var(--surface-primary, #161b22);
+  border-bottom: 1px solid var(--border-primary, #30363d);
+}
+
+.citas-page .page-header h1 {
+  color: var(--text-primary, #e6edf3);
+  margin: 0 0 4px;
+  font-size: 1.5rem;
+}
+
+.citas-page .page-header p {
+  color: var(--text-secondary, #8b949e);
+  margin: 0;
+  font-size: 14px;
+}
+
+/* Tabs */
+.citas-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 16px 20px;
+}
+
+.citas-tab {
+  flex: 1;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.citas-tab.active {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  color: white;
+}
+
+.citas-tab:not(.active) {
+  background: var(--surface-primary, #161b22);
+  color: var(--text-secondary, #8b949e);
+  border: 1px solid var(--border-primary, #30363d);
+}
+
+.citas-tab:not(.active):hover {
+  background: var(--surface-secondary, #21262d);
+}
+
+/* Content */
+.citas-content {
+  padding: 0 20px;
+}
+
+.citas-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Cita Card */
+.cita-card {
+  background: var(--surface-primary, #161b22);
+  border-radius: 16px;
+  padding: 20px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-left: 4px solid var(--border-primary, #30363d);
+  border: 1px solid var(--border-primary, #30363d);
+}
+
+.cita-card:hover {
+  transform: translateY(-2px);
+  background: var(--surface-secondary, #21262d);
+}
+
+.cita-card.estado-azul { border-left-color: #2196F3; }
+.cita-card.estado-verde { border-left-color: #4CAF50; }
+.cita-card.estado-rojo { border-left-color: #f44336; }
+.cita-card.estado-naranja { border-left-color: #FF9800; }
+.cita-card.estado-gris { border-left-color: #9E9E9E; }
+
+.cita-fecha {
+  margin-bottom: 12px;
+}
+
+.cita-dia {
+  display: block;
+  font-weight: 500;
+  text-transform: capitalize;
+  color: var(--text-secondary, #8b949e);
+  font-size: 13px;
+}
+
+.cita-hora {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--primary, #00bfa5);
+}
+
+.cita-info h3 {
+  margin-bottom: 4px;
+  color: var(--text-primary, #e6edf3);
+  font-size: 1rem;
+}
+
+.cita-area {
+  color: var(--text-secondary, #8b949e);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.cita-motivo {
+  color: var(--text-secondary, #8b949e);
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.cita-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cita-tipo {
+  font-size: 13px;
+  color: var(--text-muted, #6e7681);
+}
+
+.cita-estado {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.cita-estado.programada {
+  background: rgba(33, 150, 243, 0.15);
+  color: #64B5F6;
+}
+.cita-estado.confirmada {
+  background: rgba(76, 175, 80, 0.15);
+  color: #81C784;
+}
+.cita-estado.cancelada {
+  background: rgba(244, 67, 54, 0.15);
+  color: #E57373;
+}
+.cita-estado.completada {
+  background: rgba(158, 158, 158, 0.15);
+  color: #BDBDBD;
+}
+.cita-estado.reprogramada {
+  background: rgba(255, 152, 0, 0.15);
+  color: #FFB74D;
+}
+
+.cita-acciones {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-primary, #30363d);
+  display: flex;
+  gap: 8px;
+}
+
+.cita-acciones .btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cita-acciones .btn-primary {
+  background: var(--primary, #00bfa5);
+  border: none;
+  color: #0d1117;
+}
+
+.cita-acciones .btn-secondary {
+  background: var(--surface-secondary, #21262d);
+  border: 1px solid var(--border-primary, #30363d);
+  color: var(--text-primary, #e6edf3);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary, #8b949e);
+}
+
+.empty-state .empty-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 16px;
+  opacity: 0.5;
+}
+
+.empty-state p {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.empty-state .help-text {
+  font-size: 14px;
+  color: var(--text-muted, #6e7681);
+}
+
+/* Modal Agendar Cita */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: var(--surface-primary, #161b22);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  border: 1px solid var(--border-primary, #30363d);
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--text-secondary, #8b949e);
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.modal-content h2 {
+  color: var(--text-primary, #e6edf3);
+  margin: 0 0 20px;
+}
+
+.tipo-cita-options {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.tipo-option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background: var(--surface-secondary, #21262d);
+  border: 2px solid var(--border-primary, #30363d);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tipo-option input {
+  display: none;
+}
+
+.tipo-option.selected {
+  border-color: var(--primary, #00bfa5);
+  background: rgba(0, 191, 165, 0.1);
+}
+
+.tipo-icon {
+  font-size: 1.75rem;
+  margin-bottom: 8px;
+}
+
+.tipo-nombre {
+  font-size: 14px;
+  color: var(--text-primary, #e6edf3);
+}
+
+/* Form groups in modal */
+.modal-content .form-group {
+  margin-bottom: 16px;
+}
+
+.modal-content .form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--text-secondary, #8b949e);
+  font-size: 13px;
+}
+
+.modal-content .form-group input,
+.modal-content .form-group select,
+.modal-content .form-group textarea {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--surface-secondary, #21262d);
+  border: 1px solid var(--border-primary, #30363d);
+  border-radius: 12px;
+  color: var(--text-primary, #e6edf3);
+  font-size: 15px;
+}
+
+.modal-content .form-group input:focus,
+.modal-content .form-group select:focus,
+.modal-content .form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary, #00bfa5);
+}
+
+/* Detalle Cita */
+.cita-detalle {
+  margin-top: 20px;
+}
+
+.detalle-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-primary, #30363d);
+}
+
+.detalle-row.full-width {
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detalle-label {
+  color: var(--text-secondary, #8b949e);
+  font-size: 13px;
+}
+
+.detalle-value {
+  font-weight: 500;
+  color: var(--text-primary, #e6edf3);
+}
+
+.estado-badge {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.videollamada-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-primary, #30363d);
+}
+
+.videollamada-section .btn {
+  width: 100%;
+  padding: 14px;
+  background: #2196F3;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* FAB Button */
+.fab-agendar {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  border: none;
+  border-radius: 50%;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+  z-index: 100;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.fab-agendar:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(33, 150, 243, 0.5);
+}
+
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: var(--text-secondary, #8b949e);
+}
+
+.loading-container .spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-primary, #30363d);
+  border-top-color: var(--primary, #00bfa5);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Form Row */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* Modal Actions */
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.modal-actions .btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-actions .btn-secondary {
+  background: var(--surface-secondary, #21262d);
+  border: 1px solid var(--border-primary, #30363d);
+  color: var(--text-primary, #e6edf3);
+}
+
+.modal-actions .btn-secondary:hover {
+  background: var(--surface-elevated, #2d333b);
+}
+
+.modal-actions .btn-primary {
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  border: none;
+  color: white;
+}
+
+.modal-actions .btn-primary:hover {
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+/* Modal Large */
+.modal-large {
+  max-width: 600px;
+}
+
+/* Button outline variant */
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-primary, #30363d);
+  color: var(--text-secondary, #8b949e);
+}
+
+.btn-outline:hover {
+  background: var(--surface-secondary, #21262d);
+  color: var(--text-primary, #e6edf3);
+}
+
+.btn-sm {
+  padding: 8px 16px;
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .citas-header {
+    flex-wrap: wrap;
+    padding: 16px;
+  }
+
+  .citas-page .btn-back {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .citas-header .header-content h1 {
+    font-size: 1.25rem;
+  }
+
+  .citas-tabs {
+    padding: 12px 16px;
+  }
+
+  .citas-content {
+    padding: 0 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tipo-cita-options {
+    flex-direction: column;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .cita-card {
+    padding: 16px;
+  }
+
+  .cita-fecha {
+    min-width: auto;
+  }
+}
+
+/* Light Mode Global Styles */
+[data-theme="light"] .citas-page {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+[data-theme="light"] .citas-tab:not(.active) {
+  background: white;
+  color: #6b7280;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .citas-tab:not(.active):hover {
+  background: #f9fafb;
+}
+
+[data-theme="light"] .cita-card {
+  background: white;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .cita-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .cita-fecha .cita-dia {
+  color: #374151;
+}
+
+[data-theme="light"] .cita-info h3 {
+  color: #1f2937;
+}
+
+[data-theme="light"] .cita-area,
+[data-theme="light"] .cita-motivo {
+  color: #6b7280;
+}
+
+[data-theme="light"] .cita-meta {
+  color: #9ca3af;
+}
+
+[data-theme="light"] .modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] .modal-content {
+  background: white;
+  color: #1f2937;
+}
+
+[data-theme="light"] .modal-content h2 {
+  color: #1f2937;
+}
+
+[data-theme="light"] .modal-content .form-group label {
+  color: #374151;
+}
+
+[data-theme="light"] .modal-content .form-group input,
+[data-theme="light"] .modal-content .form-group select,
+[data-theme="light"] .modal-content .form-group textarea {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+  color: #1f2937;
+}
+
+[data-theme="light"] .tipo-option {
+  background: #f9fafb;
+  border-color: #e5e7eb;
+}
+
+[data-theme="light"] .tipo-nombre {
+  color: #374151;
+}
+
+[data-theme="light"] .empty-state {
+  color: #6b7280;
+}
+
+[data-theme="light"] .loading-container {
+  color: #6b7280;
+}
+
+[data-theme="light"] .loading-container .spinner {
+  border-color: #e5e7eb;
+  border-top-color: #667eea;
+}

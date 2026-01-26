@@ -1,0 +1,57 @@
+{
+  "short_name": "Azaria",
+  "name": "Azaria - Tu Compañero de Salud",
+  "description": "Sistema de adherencia terapéutica para rehabilitación. Lleva control de tu salud, ejercicios, medicamentos y más.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "logo.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    },
+    {
+      "src": "logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0D1117",
+  "background_color": "#0D1117",
+  "scope": "/",
+  "lang": "es-MX",
+  "categories": ["health", "medical", "lifestyle"],
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Mis Recordatorios",
+      "short_name": "Recordatorios",
+      "description": "Ver recordatorios pendientes",
+      "url": "/recordatorios",
+      "icons": [{ "src": "logo.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Registrar Comida",
+      "short_name": "Nutrición",
+      "description": "Registrar lo que comí",
+      "url": "/nutricion",
+      "icons": [{ "src": "logo.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Mis Ejercicios",
+      "short_name": "Ejercicios",
+      "description": "Ver ejercicios de hoy",
+      "url": "/fisioterapia",
+      "icons": [{ "src": "logo.svg", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+/* Blog Page Styles */
+
+.blog-page {
+  min-height: 100vh;
+  background: var(--gray-100);
+  padding-bottom: 100px;
+}
+
+/* Artículos Grid */
+.articulos-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-md);
+  padding: 0 var(--spacing-lg);
+}
+
+.articulo-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.articulo-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.articulo-imagen {
+  height: 180px;
+  overflow: hidden;
+}
+
+.articulo-imagen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.articulo-content {
+  padding: var(--spacing-lg);
+}
+
+.articulo-area {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  color: var(--primary);
+  margin-bottom: var(--spacing-sm);
+}
+
+.articulo-content h2 {
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-lg);
+}
+
+.articulo-extracto {
+  color: var(--gray-600);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.articulo-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-xs);
+  color: var(--gray-400);
+  margin-bottom: var(--spacing-md);
+}
+
+.articulo-stats {
+  display: flex;
+  gap: var(--spacing-md);
+  font-size: var(--font-size-sm);
+  color: var(--gray-500);
+}
+
+/* Modal Artículo */
+.modal-articulo {
+  max-width: 700px;
+}
+
+.articulo-completo {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.articulo-header {
+  margin-bottom: var(--spacing-lg);
+}
+
+.articulo-header h1 {
+  margin: var(--spacing-sm) 0;
+  font-size: var(--font-size-2xl);
+}
+
+.articulo-imagen-principal {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.articulo-body {
+  margin-bottom: var(--spacing-lg);
+}
+
+.articulo-body p {
+  margin-bottom: var(--spacing-md);
+  line-height: 1.7;
+}
+
+.articulo-acciones {
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.btn-like {
+  background: #ffebee;
+  color: #c62828;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-like:hover {
+  background: #ffcdd2;
+}
+
+/* Comentarios */
+.comentarios-section h3 {
+  margin-bottom: var(--spacing-md);
+}
+
+.comentario-form {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.comentario-form textarea {
+  flex: 1;
+  padding: var(--spacing-md);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  resize: none;
+}
+
+.comentarios-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.comentario {
+  background: var(--gray-100);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+}
+
+.comentario-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs);
+}
+
+.comentario-usuario {
+  font-weight: 500;
+}
+
+.comentario-fecha {
+  font-size: var(--font-size-xs);
+  color: var(--gray-400);
+}
+
+.comentario-texto {
+  margin: 0;
+  color: var(--gray-700);
+}
+
+@media (min-width: 768px) {
+  .articulos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

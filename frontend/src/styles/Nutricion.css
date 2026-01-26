@@ -1,0 +1,1139 @@
+/* Nutrición Page - Dark Theme Styles */
+
+.nutricion-page.dark-theme {
+  min-height: 100vh;
+  background: #0d1117;
+  color: #e6edf3;
+  padding-bottom: 100px;
+}
+
+/* Header */
+.nutricion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #0d1117;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.date-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.date-arrow {
+  background: none;
+  border: none;
+  color: #e6edf3;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+.date-arrow:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.date-display {
+  cursor: pointer;
+}
+
+.date-text {
+  font-size: 20px;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.date-full {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.header-stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.stat-badge {
+  font-size: 14px;
+}
+
+.calendar-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Week Indicator */
+.week-indicator {
+  padding: 0 20px 8px;
+  font-size: 14px;
+  color: #8b949e;
+}
+
+/* Tabs */
+.nutricion-tabs {
+  display: flex;
+  padding: 0 20px;
+  border-bottom: 1px solid #21262d;
+  margin-bottom: 16px;
+}
+
+.nutricion-tab {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+}
+
+.nutricion-tab.active {
+  color: #00d4aa;
+}
+
+.nutricion-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #00d4aa;
+  border-radius: 3px 3px 0 0;
+}
+
+/* Content */
+.nutricion-content {
+  padding: 0 16px;
+}
+
+/* Section Card */
+.section-card {
+  background: #161b22;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border: 1px solid #21262d;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #00d4aa;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Macros Display */
+.macros-display {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  margin-bottom: 24px;
+}
+
+.macro-stat {
+  text-align: center;
+}
+
+.macro-number {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.macro-name {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+/* Macro Circle */
+.macro-circle-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.macro-circle {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.macro-circle-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.macro-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #e6edf3;
+}
+
+.macro-label {
+  font-size: 11px;
+  color: #8b949e;
+}
+
+/* Macro Bars */
+.macros-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.macro-bar-item {
+  display: grid;
+  grid-template-columns: 10px 100px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.macro-bar-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.macro-bar-dot.carbos { background: #00d4aa; }
+.macro-bar-dot.proteinas { background: #00bcd4; }
+.macro-bar-dot.grasas { background: #7c3aed; }
+
+.macro-bar-label {
+  font-size: 13px;
+  color: #8b949e;
+}
+
+.macro-bar-track {
+  height: 6px;
+  background: #21262d;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.macro-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.macro-bar-fill.carbos { background: linear-gradient(90deg, #00d4aa, #00e5bb); }
+.macro-bar-fill.proteinas { background: linear-gradient(90deg, #00bcd4, #00d4e5); }
+.macro-bar-fill.grasas { background: linear-gradient(90deg, #7c3aed, #8b5cf6); }
+
+.macro-bar-value {
+  font-size: 12px;
+  color: #8b949e;
+  min-width: 70px;
+  text-align: right;
+}
+
+/* Ayuno Status */
+.ayuno-status {
+  text-align: center;
+  padding: 12px;
+  background: #21262d;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #8b949e;
+}
+
+/* Meals List */
+.meals-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.meal-item {
+  display: flex;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #21262d;
+  gap: 12px;
+}
+
+.meal-item:last-child {
+  border-bottom: none;
+}
+
+.meal-icon {
+  width: 48px;
+  height: 48px;
+  background: #21262d;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.meal-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.meal-name {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.meal-calories {
+  font-size: 13px;
+  color: #8b949e;
+}
+
+.meal-items-preview {
+  font-size: 12px;
+  color: #00d4aa;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.meal-add-btn {
+  width: 40px;
+  height: 40px;
+  background: #21262d;
+  border: none;
+  border-radius: 50%;
+  color: #e6edf3;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.meal-add-btn:hover {
+  background: #30363d;
+}
+
+/* Agua Section */
+.agua-section h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.agua-display {
+  text-align: center;
+  padding: 20px;
+  background: #21262d;
+  border-radius: 12px;
+}
+
+.agua-display h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.agua-objetivo {
+  font-size: 13px;
+  color: #8b949e;
+  margin: 0 0 12px;
+}
+
+.agua-consumida {
+  font-size: 42px;
+  font-weight: 700;
+  color: #00bcd4;
+  margin: 0 0 20px;
+}
+
+.agua-vasos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.vaso-btn {
+  width: 44px;
+  height: 56px;
+  background: #30363d;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.vaso-btn.filled {
+  background: rgba(0, 188, 212, 0.2);
+}
+
+.vaso-btn.add {
+  border: 2px dashed #8b949e;
+  background: transparent;
+}
+
+.vaso-icon {
+  font-size: 24px;
+}
+
+.vaso-btn .plus {
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  font-size: 14px;
+  color: #8b949e;
+}
+
+.agua-alimentos {
+  font-size: 12px;
+  color: #8b949e;
+  margin: 0;
+}
+
+/* Body Section */
+.body-stat-card {
+  text-align: center;
+  padding: 20px;
+  background: #21262d;
+  border-radius: 12px;
+}
+
+.body-stat-card h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+}
+
+.body-objetivo {
+  font-size: 13px;
+  color: #8b949e;
+  margin: 0 0 16px;
+}
+
+.peso-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.peso-btn {
+  width: 40px;
+  height: 40px;
+  background: #30363d;
+  border: none;
+  border-radius: 50%;
+  color: #e6edf3;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.peso-value {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+/* Notas Section */
+.notas-section h2 {
+  margin-bottom: 16px;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.nota-card {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #21262d;
+  border-radius: 12px;
+  gap: 12px;
+}
+
+.nota-icon {
+  font-size: 32px;
+}
+
+.nota-content {
+  flex: 1;
+}
+
+.nota-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.nota-subtitle {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.nota-btn {
+  padding: 10px 16px;
+  background: #f0f6fc;
+  color: #0d1117;
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nota-icon-right {
+  font-size: 32px;
+}
+
+/* Recetas Tab */
+.recetas-subtabs {
+  display: flex;
+  margin-bottom: 16px;
+}
+
+.subtab {
+  flex: 1;
+  padding: 12px;
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+}
+
+.subtab.active {
+  color: #00d4aa;
+  border-bottom: 2px solid #00d4aa;
+}
+
+/* Categorias */
+.recetas-categorias {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 24px;
+  scrollbar-width: none;
+}
+
+.recetas-categorias::-webkit-scrollbar {
+  display: none;
+}
+
+.categoria-card {
+  flex-shrink: 0;
+  width: 140px;
+  height: 100px;
+  background: linear-gradient(135deg, #21262d 0%, #30363d 100%);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.categoria-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(135deg, transparent 40%, rgba(139, 148, 158, 0.1) 100%);
+  border-radius: 0 16px 16px 0;
+}
+
+.categoria-card.active {
+  border: 2px solid #00d4aa;
+}
+
+.categoria-icon {
+  font-size: 36px;
+  z-index: 1;
+}
+
+.categoria-nombre {
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 1;
+}
+
+/* Dietas */
+.dietas-section {
+  margin-bottom: 24px;
+}
+
+.dietas-section h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.dietas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.dieta-card {
+  background: #21262d;
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.dieta-card.active {
+  border-color: #00d4aa;
+  background: rgba(0, 212, 170, 0.1);
+}
+
+.dieta-icon {
+  display: block;
+  font-size: 32px;
+  margin-bottom: 8px;
+}
+
+.dieta-nombre {
+  font-size: 11px;
+  color: #8b949e;
+}
+
+/* Recetas Grid */
+.recetas-list-section h3 {
+  margin: 0 0 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.recetas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.receta-card-new {
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.receta-card-new:hover {
+  transform: scale(1.02);
+}
+
+.receta-image {
+  height: 120px;
+  background: #21262d;
+}
+
+.receta-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.receta-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  background: linear-gradient(135deg, #21262d 0%, #30363d 100%);
+}
+
+.receta-info-new {
+  padding: 12px;
+  background: #161b22;
+}
+
+.receta-info-new h4 {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.receta-meta-new {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+  color: #8b949e;
+}
+
+/* Calendar Modal */
+.calendar-modal {
+  background: #0d1117;
+  max-width: 400px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-bottom: 1px solid #21262d;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.calendar-icon-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.calendar-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+}
+
+.calendar-nav button {
+  background: none;
+  border: none;
+  color: #00d4aa;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.calendar-nav span {
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.calendar-grid {
+  padding: 0 16px;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.calendar-weekdays span {
+  font-size: 12px;
+  color: #8b949e;
+  padding: 8px;
+}
+
+.calendar-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  font-size: 14px;
+}
+
+.calendar-day.empty {
+  cursor: default;
+}
+
+.calendar-day.future {
+  color: #484f58;
+  cursor: not-allowed;
+}
+
+.calendar-day.today {
+  background: #00d4aa;
+  color: #0d1117;
+  font-weight: 600;
+}
+
+.calendar-day.selected:not(.today) {
+  background: #21262d;
+}
+
+.calendar-day.has-data::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 6px;
+  height: 6px;
+  background: #00d4aa;
+  border-radius: 50%;
+}
+
+.day-indicator {
+  position: absolute;
+  bottom: 2px;
+  width: 4px;
+  height: 4px;
+  background: #00d4aa;
+  border-radius: 50%;
+}
+
+.calendar-stats {
+  display: flex;
+  justify-content: space-around;
+  padding: 24px 16px;
+  border-top: 1px solid #21262d;
+  margin-top: 16px;
+}
+
+.stat-item {
+  text-align: center;
+}
+
+.stat-icon {
+  display: block;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  display: block;
+  font-size: 11px;
+  color: #8b949e;
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.share-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: calc(100% - 32px);
+  margin: 0 16px 16px;
+  padding: 14px;
+  background: #21262d;
+  border: none;
+  border-radius: 12px;
+  color: #00d4aa;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Add Food Modal */
+.add-food-modal {
+  background: #0d1117;
+  max-width: 400px;
+  width: 100%;
+}
+
+.add-food-modal h2 {
+  margin: 0 0 20px;
+  text-transform: capitalize;
+}
+
+.search-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: #21262d;
+  border: 1px solid #30363d;
+  border-radius: 12px;
+  color: #e6edf3;
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+
+.search-input::placeholder {
+  color: #8b949e;
+}
+
+.food-suggestions h4 {
+  margin: 0 0 12px;
+  font-size: 14px;
+  color: #8b949e;
+}
+
+.food-suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: #21262d;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.add-food-btn {
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  background: #00d4aa;
+  border: none;
+  border-radius: 50%;
+  color: #0d1117;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+}
+
+.add-food-btn:hover {
+  background: #00e5b8;
+  transform: scale(1.05);
+}
+
+.add-food-btn:disabled {
+  background: #30363d;
+  cursor: not-allowed;
+}
+
+.food-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.food-suggestion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  background: #21262d;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  gap: 12px;
+}
+
+.food-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.food-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #e6edf3;
+}
+
+.food-macros {
+  font-size: 12px;
+  color: #8b949e;
+}
+
+.food-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.food-actions .btn {
+  flex: 1;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.food-actions .btn-secondary {
+  background: #21262d;
+  border: none;
+  color: #e6edf3;
+}
+
+.food-actions .btn-primary {
+  background: #00d4aa;
+  border: none;
+  color: #0d1117;
+}
+
+/* Receta Detail Modal */
+.receta-detail-modal {
+  background: #0d1117;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.receta-detail-header {
+  height: 200px;
+  background: #21262d;
+}
+
+.receta-detail-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.receta-detail-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 60px;
+}
+
+.receta-detail-content {
+  padding: 20px;
+}
+
+.receta-detail-content h2 {
+  margin: 0 0 12px;
+}
+
+.receta-detail-meta {
+  display: flex;
+  gap: 16px;
+  color: #8b949e;
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.receta-detail-section {
+  margin-bottom: 24px;
+}
+
+.receta-detail-section h3 {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.receta-detail-section ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.receta-detail-section li {
+  margin-bottom: 8px;
+  color: #8b949e;
+}
+
+.receta-detail-section p {
+  color: #8b949e;
+  line-height: 1.6;
+}
+
+.btn-block {
+  width: 100%;
+  padding: 16px;
+  background: #00d4aa;
+  border: none;
+  border-radius: 12px;
+  color: #0d1117;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Modal base styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background: #161b22;
+  border-radius: 16px;
+  padding: 24px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #8b949e;
+  font-size: 24px;
+  cursor: pointer;
+  z-index: 10;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+  .nutricion-content {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .recetas-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .dietas-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

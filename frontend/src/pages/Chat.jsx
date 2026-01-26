@@ -1,0 +1,438 @@
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { useAccessibility } from '../context/AccessibilityContext';
+import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
+import api from '../services/api';
+import '../styles/Chat.css';
+
+const Chat = () => {
+  const { conversacionId } = useParams();
+  const { user } = useAuth();
+  const { settings } = useAccessibility();
+  const [conversaciones, setConversaciones] = useState([]);
+  const [conversacionActiva, setConversacionActiva] = useState(null);
+  const [mensajes, setMensajes] = useState([]);
+  const [nuevoMensaje, setNuevoMensaje] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [enviando, setEnviando] = useState(false);
+  const [otroUsuario, setOtroUsuario] = useState(null);
+  const [especialistas, setEspecialistas] = useState([]);
+  const [showNuevaConversacion, setShowNuevaConversacion] = useState(false);
+  const mensajesRef = useRef(null);
+
+  useEffect(() => {
+    cargarConversaciones();
+    if (user?.rol_id === 3 || user?.rol === 'paciente') {
+      cargarEspecialistas();
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (conversacionActiva) {
+      cargarMensajes(conversacionActiva.id);
+      // Polling para mensajes nuevos
+      const interval = setInterval(() => {
+        cargarMensajes(conversacionActiva.id, true);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [conversacionActiva]);
+
+  useEffect(() => {
+    // Scroll al último mensaje
+    if (mensajesRef.current) {
+      mensajesRef.current.scrollTop = mensajesRef.current.scrollHeight;
+    }
+  }, [mensajes]);
+
+  const cargarConversaciones = async () => {
+    try {
+      const userId = user?.id;
+      const response = await api.get(`/mensajes/conversaciones/${userId}`);
+      const convs = response.data?.conversaciones || [];
+      setConversaciones(convs);
+
+      // Si hay un ID de conversación en la URL, seleccionar esa
+      if (conversacionId && convs.length > 0) {
+        const convFromUrl = convs.find(c => c.id === parseInt(conversacionId));
+        if (convFromUrl) {
+          setConversacionActiva(convFromUrl);
+          return;
+        }
+      }
+
+      // Si hay conversaciones, seleccionar la primera
+      if (convs.length > 0 && !conversacionActiva) {
+        setConversacionActiva(convs[0]);
+      }
+    } catch (err) {
+      console.error('Error al cargar conversaciones:', err);
+      setConversaciones([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cargarEspecialistas = async () => {
+    try {
+      // Cargar especialistas asignados al paciente
+      const pacienteId = user?.paciente_id || user?.id;
+      const response = await api.get(`/pacientes/${pacienteId}/especialistas`);
+      const especialistasData = response.data || [];
+      setEspecialistas(especialistasData);
+    } catch (err) {
+      console.error('Error al cargar especialistas:', err);
+      setEspecialistas([]);
+    }
+  };
+
+  const cargarMensajes = async (conversacionId, silencioso = false) => {
+    try {
+      const userId = user?.id;
+      const response = await api.get(`/mensajes/conversacion/${conversacionId}/${userId}`);
+      setMensajes(response.data?.mensajes || []);
+      setOtroUsuario(response.data?.otro_usuario || null);
+    } catch (err) {
+      if (!silencioso) {
+        console.error('Error al cargar mensajes:', err);
+      }
+    }
+  };
+
+  const enviarMensaje = async (e) => {
+    e.preventDefault();
+    if (!nuevoMensaje.trim() || !conversacionActiva) return;
+
+    setEnviando(true);
+    try {
+      await api.post('/mensajes/enviar', {
+        emisor_id: user.id,
+        receptor_id: conversacionActiva.otro_usuario_id,
+        mensaje: nuevoMensaje.trim()
+      });
+
+      // Agregar mensaje localmente para respuesta inmediata
+      setMensajes(prev => [...prev, {
+        id: Date.now(),
+        emisor_id: user.id,
+        mensaje: nuevoMensaje.trim(),
+        created_at: new Date().toISOString(),
+        emisor_nombre: user?.nombre_completo || user?.nombre || 'Yo'
+      }]);
+
+      setNuevoMensaje('');
+    } catch (err) {
+      console.error('Error al enviar mensaje:', err);
+      // Agregar localmente de todas formas
+      setMensajes(prev => [...prev, {
+        id: Date.now(),
+        emisor_id: user.id,
+        mensaje: nuevoMensaje.trim(),
+        created_at: new Date().toISOString(),
+        emisor_nombre: user?.nombre_completo || user?.nombre || 'Yo'
+      }]);
+      setNuevoMensaje('');
+    } finally {
+      setEnviando(false);
+    }
+  };
+
+  const iniciarConversacion = async (especialistaId) => {
+    try {
+      const response = await api.post(`/mensajes/iniciar/${user.id}/${especialistaId}`);
+      const { conversacion_id, otro_usuario } = response.data;
+
+      // Crear objeto de conversación
+      const nuevaConv = {
+        id: conversacion_id,
+        otro_usuario_id: especialistaId,
+        otro_usuario_nombre: otro_usuario?.nombre_completo,
+        otro_usuario_rol: otro_usuario?.rol_id
+      };
+
+      // Agregar a la lista si no existe
+      setConversaciones(prev => {
+        const existe = prev.find(c => c.id === conversacion_id);
+        if (!existe) {
+          return [nuevaConv, ...prev];
+        }
+        return prev;
+      });
+
+      setConversacionActiva(nuevaConv);
+      setShowNuevaConversacion(false);
+      cargarMensajes(conversacion_id);
+    } catch (err) {
+      console.error('Error al iniciar conversación:', err);
+    }
+  };
+
+  const calcularTiempoRestante = (fechaCreacion) => {
+    const creacion = new Date(fechaCreacion);
+    const expiracion = new Date(creacion.getTime() + 24 * 60 * 60 * 1000);
+    const ahora = new Date();
+    const diferencia = expiracion - ahora;
+
+    if (diferencia <= 0) return 'Expirado';
+
+    const horas = Math.floor(diferencia / (1000 * 60 * 60));
+    const minutos = Math.floor((diferencia % (1000 * 60 * 60)) / (1000 * 60));
+
+    if (horas > 0) {
+      return `${horas}h ${minutos}m restantes`;
+    }
+    return `${minutos} minutos restantes`;
+  };
+
+  const formatearHora = (fecha) => {
+    return new Date(fecha).toLocaleTimeString('es-MX', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatearFecha = (fecha) => {
+    const hoy = new Date();
+    const fechaMensaje = new Date(fecha);
+
+    if (fechaMensaje.toDateString() === hoy.toDateString()) {
+      return 'Hoy';
+    }
+
+    const ayer = new Date(hoy);
+    ayer.setDate(ayer.getDate() - 1);
+    if (fechaMensaje.toDateString() === ayer.toDateString()) {
+      return 'Ayer';
+    }
+
+    return fechaMensaje.toLocaleDateString('es-MX', {
+      day: 'numeric',
+      month: 'short'
+    });
+  };
+
+  const agruparMensajesPorFecha = (mensajes) => {
+    const grupos = {};
+    mensajes.forEach(mensaje => {
+      const fecha = formatearFecha(mensaje.created_at);
+      if (!grupos[fecha]) {
+        grupos[fecha] = [];
+      }
+      grupos[fecha].push(mensaje);
+    });
+    return grupos;
+  };
+
+  const getRolNombre = (rolId) => {
+    const roles = {
+      1: 'Administrador',
+      2: 'Especialista',
+      3: 'Paciente'
+    };
+    return roles[rolId] || 'Usuario';
+  };
+
+  return (
+    <div className="chat-page">
+      <div className="chat-container">
+        {/* Lista de conversaciones */}
+        <div className={`conversaciones-sidebar ${!conversacionActiva ? 'active' : ''}`}>
+          <div className="sidebar-header">
+            <h2>Mensajes</h2>
+            {(user?.rol_id === 3 || user?.rol === 'paciente') && (
+              <button
+                className="btn-nueva-conv"
+                onClick={() => setShowNuevaConversacion(!showNuevaConversacion)}
+              >
+                +
+              </button>
+            )}
+          </div>
+
+          <div className="aviso-expiracion">
+            <span className="aviso-icon">&#9200;</span>
+            <span>Los mensajes expiran en 24 horas</span>
+          </div>
+
+          {showNuevaConversacion && (
+            <div className="nueva-conversacion-panel">
+              <h4>Contactar especialista</h4>
+              {especialistas.length > 0 ? (
+                <div className="especialistas-lista">
+                  {especialistas.map(esp => (
+                    <button
+                      key={esp.id}
+                      className="especialista-item"
+                      onClick={() => iniciarConversacion(esp.id)}
+                    >
+                      <span className="esp-avatar">{(esp.nombre_completo || esp.nombre)?.charAt(0) || '?'}</span>
+                      <span className="esp-nombre">{esp.nombre_completo || esp.nombre}</span>
+                      <span className="esp-area">{esp.area_medica}</span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="no-especialistas">No hay especialistas asignados</p>
+              )}
+            </div>
+          )}
+
+          {loading ? (
+            <div className="loading-small">
+              <div className="spinner-small"></div>
+            </div>
+          ) : conversaciones.length > 0 ? (
+            <div className="conversaciones-list">
+              {conversaciones.map(conv => (
+                <div
+                  key={conv.id}
+                  className={`conversacion-item ${conversacionActiva?.id === conv.id ? 'active' : ''}`}
+                  onClick={() => setConversacionActiva(conv)}
+                >
+                  <div className="conv-avatar">
+                    <span>{conv.otro_usuario_nombre?.charAt(0) || '?'}</span>
+                    {conv.no_leidos > 0 && (
+                      <span className="badge-no-leidos">{conv.no_leidos}</span>
+                    )}
+                  </div>
+                  <div className="conv-info">
+                    <h4>{conv.otro_usuario_nombre || 'Usuario'}</h4>
+                    <p className="conv-area">{getRolNombre(conv.otro_usuario_rol)}</p>
+                    {conv.ultimo_mensaje && (
+                      <p className="conv-ultimo">
+                        {conv.ultimo_mensaje.length > 30
+                          ? conv.ultimo_mensaje.substring(0, 30) + '...'
+                          : conv.ultimo_mensaje}
+                      </p>
+                    )}
+                  </div>
+                  {conv.ultimo_mensaje_fecha && (
+                    <span className="conv-tiempo">
+                      {formatearHora(conv.ultimo_mensaje_fecha)}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="empty-conversaciones">
+              <p>No tienes conversaciones activas</p>
+              <p className="help-text">
+                {(user?.rol_id === 3 || user?.rol === 'paciente')
+                  ? 'Usa el botón + para contactar a tu especialista'
+                  : 'Tus pacientes pueden contactarte aquí'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Área de chat */}
+        <div className={`chat-area ${conversacionActiva ? 'active' : ''}`}>
+          {conversacionActiva ? (
+            <>
+              <div className="chat-header">
+                <button
+                  className="btn-back-mobile"
+                  onClick={() => setConversacionActiva(null)}
+                  aria-label="Volver a conversaciones"
+                >
+                  &#8592;
+                </button>
+                <div className="chat-header-info">
+                  <div className="header-avatar">
+                    <span>
+                      {(otroUsuario?.nombre_completo || conversacionActiva.otro_usuario_nombre)?.charAt(0) || '?'}
+                    </span>
+                  </div>
+                  <div>
+                    <h3>{otroUsuario?.nombre_completo || conversacionActiva.otro_usuario_nombre}</h3>
+                    <p className="header-area">
+                      {getRolNombre(otroUsuario?.rol_id || conversacionActiva.otro_usuario_rol)}
+                    </p>
+                  </div>
+                </div>
+                <div className="header-actions">
+                  {/* Acciones adicionales si se necesitan */}
+                </div>
+              </div>
+
+              <div className="mensajes-container" ref={mensajesRef}>
+                {Object.entries(agruparMensajesPorFecha(mensajes)).map(([fecha, msgs]) => (
+                  <div key={fecha} className="mensajes-grupo">
+                    <div className="fecha-separator">
+                      <span>{fecha}</span>
+                    </div>
+                    {msgs.map(mensaje => (
+                      <div
+                        key={mensaje.id}
+                        className={`mensaje ${mensaje.emisor_id === user.id ? 'enviado' : 'recibido'}`}
+                      >
+                        <div className="mensaje-contenido">
+                          <p>{mensaje.mensaje || mensaje.contenido}</p>
+                          <div className="mensaje-meta">
+                            <span className="mensaje-hora">{formatearHora(mensaje.created_at)}</span>
+                            {mensaje.emisor_id === user.id && (
+                              <span className={`mensaje-status ${mensaje.leido ? 'leido' : ''}`}>
+                                {mensaje.leido ? '\u2713\u2713' : '\u2713'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <span className="mensaje-expiracion">
+                          {calcularTiempoRestante(mensaje.created_at)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ))}
+
+                {mensajes.length === 0 && (
+                  <div className="empty-mensajes">
+                    <p>No hay mensajes en esta conversación</p>
+                    <p className="help-text">Envía el primer mensaje</p>
+                  </div>
+                )}
+              </div>
+
+              <form className="mensaje-form" onSubmit={enviarMensaje}>
+                <div className="input-container">
+                  <input
+                    type="text"
+                    value={nuevoMensaje}
+                    onChange={e => setNuevoMensaje(e.target.value)}
+                    placeholder="Escribe un mensaje..."
+                    disabled={enviando}
+                    maxLength={500}
+                  />
+                  <span className="char-count">{nuevoMensaje.length}/500</span>
+                </div>
+                <button
+                  type="submit"
+                  className="btn-enviar"
+                  disabled={!nuevoMensaje.trim() || enviando}
+                >
+                  {enviando ? '...' : '\u27A4'}
+                </button>
+              </form>
+            </>
+          ) : (
+            <div className="no-chat-selected">
+              <div className="no-chat-icon">&#128172;</div>
+              <h3>Selecciona una conversación</h3>
+              <p>Elige una conversación de la lista para ver los mensajes</p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Panel de Accesibilidad */}
+      <AccessibilityPanel />
+
+      {/* FAB de Accesibilidad */}
+      <AccessibilityFAB />
+    </div>
+  );
+};
+
+export default Chat;

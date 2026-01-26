@@ -1,0 +1,290 @@
+/* Órtesis Page Styles */
+
+.ortesis-page {
+  min-height: 100vh;
+  background: var(--gray-100);
+  padding-bottom: 100px;
+}
+
+/* Dispositivo Section */
+.dispositivo-section {
+  padding-bottom: var(--spacing-lg);
+}
+
+.dispositivo-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.dispositivo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+}
+
+.dispositivo-header h2 {
+  margin: 0;
+}
+
+.estado-badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.estado-badge.activo { background: #e8f5e9; color: #2e7d32; }
+.estado-badge.mantenimiento { background: #fff3e0; color: #e65100; }
+.estado-badge.inactivo { background: #ffebee; color: #c62828; }
+
+.dispositivo-info {
+  margin-bottom: var(--spacing-lg);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.info-label {
+  color: var(--gray-500);
+}
+
+.info-value {
+  font-weight: 500;
+}
+
+.info-value.proximo {
+  color: var(--warning);
+}
+
+.dispositivo-notas {
+  background: var(--gray-100);
+  padding: var(--spacing-md);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--spacing-lg);
+}
+
+.dispositivo-notas h4 {
+  margin-bottom: var(--spacing-sm);
+  color: var(--gray-700);
+}
+
+.dispositivo-notas p {
+  margin: 0;
+  color: var(--gray-600);
+}
+
+.dispositivo-acciones {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* Checklist Section */
+.checklist-section {
+  padding-bottom: var(--spacing-lg);
+}
+
+.progreso-checklist {
+  background: white;
+  padding: var(--spacing-md);
+  border-radius: var(--radius-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.categoria-checklist {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.categoria-checklist h3 {
+  font-size: var(--font-size-base);
+  color: var(--primary);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  border-bottom: 2px solid var(--primary);
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-bottom: 1px solid var(--gray-100);
+  cursor: pointer;
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.checklist-item input {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+}
+
+.checklist-item span.completed {
+  text-decoration: line-through;
+  color: var(--gray-400);
+}
+
+/* Problemas Section */
+.problemas-section {
+  padding-bottom: var(--spacing-lg);
+}
+
+.problemas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-lg);
+}
+
+.problema-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  border-left: 4px solid var(--gray-300);
+}
+
+.problema-card.urgencia-baja { border-left-color: var(--success); }
+.problema-card.urgencia-media { border-left-color: var(--warning); }
+.problema-card.urgencia-alta { border-left-color: var(--danger); }
+
+.problema-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+}
+
+.problema-tipo {
+  font-weight: 500;
+}
+
+.urgencia-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: var(--font-size-xs);
+  text-transform: capitalize;
+}
+
+.urgencia-badge.baja { background: #e8f5e9; color: #2e7d32; }
+.urgencia-badge.media { background: #fff3e0; color: #e65100; }
+.urgencia-badge.alta { background: #ffebee; color: #c62828; }
+
+.problema-descripcion {
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-md);
+}
+
+.problema-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--font-size-sm);
+}
+
+.problema-fecha {
+  color: var(--gray-400);
+}
+
+.problema-estado {
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: var(--font-size-xs);
+}
+
+.problema-estado.pendiente { background: #fff3e0; color: #e65100; }
+.problema-estado.en_revision { background: #e3f2fd; color: #1565c0; }
+.problema-estado.resuelto { background: #e8f5e9; color: #2e7d32; }
+
+/* Tipo Problema Grid */
+.tipo-problema-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.tipo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-md);
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tipo-btn:hover {
+  border-color: var(--primary);
+}
+
+.tipo-btn.selected {
+  border-color: var(--primary);
+  background: rgba(102, 126, 234, 0.1);
+}
+
+.tipo-icon {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-xs);
+}
+
+.tipo-nombre {
+  font-size: var(--font-size-xs);
+  text-align: center;
+}
+
+/* Guías Section */
+.guias-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.guia-card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+
+.guia-card h3 {
+  margin-bottom: var(--spacing-sm);
+  color: var(--primary);
+}
+
+.guia-intro {
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-md);
+}
+
+.guia-pasos {
+  padding-left: var(--spacing-lg);
+  margin: 0;
+}
+
+.guia-pasos li {
+  margin-bottom: var(--spacing-sm);
+  color: var(--gray-700);
+}
+
+@media (max-width: 480px) {
+  .tipo-problema-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -1,0 +1,272 @@
+/* =============================================
+   PIN KEYBOARD - ESTILOS ACCESIBLES
+   Para usuarios de 10 a 80 años
+   ============================================= */
+
+.pin-keyboard {
+  background: var(--surface-secondary, #21262d);
+  border-radius: var(--border-radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  margin: var(--spacing-lg, 20px) 0;
+  border: 2px solid var(--border-color, #30363d);
+}
+
+/* PIN Display - Los círculos que muestran el PIN */
+.pin-display {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md, 16px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.pin-dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--color-primary, #00BFA5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: var(--color-primary, #00BFA5);
+  background: var(--surface-primary, #161b22);
+  transition: all 0.2s ease;
+}
+
+.pin-dot.filled {
+  background: var(--color-primary, #00BFA5);
+  color: white;
+}
+
+/* Keyboard Grid */
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md, 12px);
+}
+
+/* Number Buttons */
+.keyboard-button {
+  padding: var(--spacing-lg, 20px);
+  font-size: var(--font-size-xl, 24px);
+  font-weight: 700;
+  background: var(--surface-primary, #161b22);
+  color: var(--text-primary, #e6edf3);
+  border: 2px solid var(--border-color, #30363d);
+  border-radius: var(--border-radius-md, 12px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.keyboard-button:hover {
+  background: var(--color-primary, #00BFA5);
+  color: #000;
+  border-color: var(--color-primary, #00BFA5);
+  transform: scale(1.02);
+}
+
+.keyboard-button:focus-visible {
+  outline: 3px solid var(--focus-ring, #58A6FF);
+  outline-offset: 2px;
+}
+
+.keyboard-button:active {
+  transform: scale(0.98);
+}
+
+/* Action Buttons (Borrar) */
+.keyboard-button-action {
+  grid-column: span 1;
+  background: var(--surface-tertiary, #30363d);
+  color: var(--text-primary, #e6edf3);
+  border-color: var(--border-color, #484f58);
+  font-size: var(--font-size-base, 16px);
+  font-weight: 600;
+}
+
+.keyboard-button-action:hover {
+  background: var(--surface-elevated, #484f58);
+  color: white;
+  border-color: var(--surface-elevated, #484f58);
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] .pin-keyboard {
+  background: var(--surface-secondary, #f5f5f5);
+  border-color: var(--border-color, #ddd);
+}
+
+[data-theme="light"] .pin-dot {
+  background: white;
+  border-color: var(--color-primary, #00BFA5);
+  color: var(--color-primary, #00BFA5);
+}
+
+[data-theme="light"] .keyboard-button {
+  background: white;
+  color: var(--text-primary, #333);
+  border-color: var(--border-color, #ddd);
+}
+
+[data-theme="light"] .keyboard-button:hover {
+  background: var(--color-primary, #00BFA5);
+  color: white;
+  border-color: var(--color-primary, #00BFA5);
+}
+
+[data-theme="light"] .keyboard-button-action {
+  background: var(--surface-tertiary, #e0e0e0);
+  color: var(--text-primary, #333);
+  border-color: var(--border-color, #ccc);
+}
+
+[data-theme="light"] .keyboard-button-action:hover {
+  background: var(--surface-elevated, #bdbdbd);
+  color: #000;
+}
+
+/* ===== HIGH CONTRAST DARK ===== */
+[data-contrast="high-dark"] .pin-keyboard {
+  background: #000;
+  border: 3px solid #fff;
+}
+
+[data-contrast="high-dark"] .pin-dot {
+  background: #000;
+  border: 3px solid #FFFF00;
+  color: #FFFF00;
+}
+
+[data-contrast="high-dark"] .keyboard-button {
+  background: #000;
+  color: #fff;
+  border: 3px solid #fff;
+}
+
+[data-contrast="high-dark"] .keyboard-button:hover,
+[data-contrast="high-dark"] .keyboard-button:focus {
+  background: #FFFF00;
+  color: #000;
+  border-color: #FFFF00;
+}
+
+[data-contrast="high-dark"] .keyboard-button-action {
+  background: #333;
+  border-color: #fff;
+}
+
+/* ===== HIGH CONTRAST LIGHT ===== */
+[data-contrast="high-light"] .pin-keyboard {
+  background: #fff;
+  border: 3px solid #000;
+}
+
+[data-contrast="high-light"] .pin-dot {
+  background: #fff;
+  border: 3px solid #000;
+  color: #000;
+}
+
+[data-contrast="high-light"] .keyboard-button {
+  background: #fff;
+  color: #000;
+  border: 3px solid #000;
+}
+
+[data-contrast="high-light"] .keyboard-button:hover,
+[data-contrast="high-light"] .keyboard-button:focus {
+  background: #000;
+  color: #fff;
+}
+
+[data-contrast="high-light"] .keyboard-button-action {
+  background: #ccc;
+  color: #000;
+  border-color: #000;
+}
+
+/* ===== AGE MODES ===== */
+[data-age-mode="senior"] .pin-dot {
+  width: 52px;
+  height: 52px;
+  font-size: 32px;
+  border-width: 4px;
+}
+
+[data-age-mode="senior"] .keyboard-button {
+  padding: var(--spacing-xl, 24px);
+  font-size: var(--font-size-2xl, 28px);
+  min-height: 72px;
+  border-width: 3px;
+}
+
+[data-age-mode="senior"] .keyboard-button-action {
+  font-size: var(--font-size-lg, 18px);
+}
+
+[data-age-mode="child"] .keyboard-button {
+  font-size: var(--font-size-2xl, 28px);
+  border-radius: var(--border-radius-lg, 16px);
+}
+
+/* ===== REDUCED MOTION ===== */
+[data-reduced-motion="true"] .keyboard-button:hover {
+  transform: none;
+}
+
+[data-reduced-motion="true"] .keyboard-button:active {
+  transform: none;
+}
+
+[data-reduced-motion="true"] .pin-dot {
+  transition: none;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 576px) {
+  .pin-keyboard {
+    padding: var(--spacing-md, 16px);
+  }
+
+  .pin-dot {
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+  }
+
+  .keyboard-button {
+    padding: var(--spacing-md, 16px);
+    font-size: var(--font-size-lg, 20px);
+    min-height: 56px;
+  }
+
+  .keyboard-button-action {
+    font-size: var(--font-size-sm, 14px);
+  }
+}
+
+@media (max-width: 360px) {
+  .pin-display {
+    gap: var(--spacing-sm, 8px);
+  }
+
+  .pin-dot {
+    width: 32px;
+    height: 32px;
+    font-size: 20px;
+  }
+
+  .keyboard-grid {
+    gap: var(--spacing-sm, 8px);
+  }
+
+  .keyboard-button {
+    padding: var(--spacing-sm, 12px);
+    font-size: var(--font-size-base, 18px);
+    min-height: 48px;
+  }
+}

@@ -1,0 +1,131 @@
+name: Deploy Azaria to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  NODE_VERSION: '18'
+
+jobs:
+  build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Build production
+        working-directory: ./frontend
+        run: npm run build
+        env:
+          CI: false
+          REACT_APP_API_URL: ${{ secrets.API_URL }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build/
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Server
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/build/
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          password: ${{ secrets.SERVER_PASSWORD }}
+          port: 22
+          script: |
+            echo "=== Starting deployment ==="
+
+            # Variables
+            APP_DIR="/var/www/azaria"
+            REPO_URL="https://github.com/marianahernandez1510202/Azaria.git"
+
+            # Crear estructura de directorios
+            sudo mkdir -p $APP_DIR/frontend
+            sudo mkdir -p $APP_DIR/backend
+            sudo mkdir -p $APP_DIR/backend/storage/logs
+            sudo mkdir -p $APP_DIR/backend/public/uploads
+
+            # Dar permisos temporales
+            sudo chown -R $USER:$USER $APP_DIR
+
+            # Clonar o actualizar repositorio
+            cd $APP_DIR
+            if [ -d ".git" ]; then
+              echo "Pulling latest changes..."
+              git pull origin main
+            else
+              echo "Cloning repository..."
+              git clone $REPO_URL .
+            fi
+
+            # Instalar dependencias del frontend y construir
+            echo "Building frontend..."
+            cd $APP_DIR/frontend
+            npm ci --production=false
+            npm run build
+
+            # Copiar archivos de backend
+            echo "Setting up backend..."
+            cd $APP_DIR/backend
+
+            # Crear archivo .env si no existe
+            if [ ! -f ".env" ]; then
+              cat > .env << 'EOF'
+            DB_HOST=localhost
+            DB_NAME=azaria
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            APP_ENV=production
+            APP_DEBUG=false
+            EOF
+            fi
+
+            # Configurar permisos finales
+            sudo chown -R www-data:www-data $APP_DIR
+            sudo chmod -R 755 $APP_DIR
+            sudo chmod -R 777 $APP_DIR/backend/storage
+            sudo chmod -R 777 $APP_DIR/backend/public/uploads
+
+            # Reiniciar servidor web
+            sudo systemctl reload apache2 2>/dev/null || sudo systemctl reload nginx 2>/dev/null || true
+
+            echo "=== Deployment completed successfully! ==="
+
+      - name: Deployment notification
+        if: always()
+        run: |
+          echo "Deployment finished with status: ${{ job.status }}"
