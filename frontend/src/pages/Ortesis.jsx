@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
@@ -8,12 +9,19 @@ import '../styles/Ortesis.css';
 const Ortesis = () => {
   const { user } = useAuth();
   const { settings } = useAccessibility();
-  const [activeTab, setActiveTab] = useState('dispositivo');
+  const navigate = useNavigate();
+
+  const [activeTab, setActiveTab] = useState('inicio');
+  const [activeSubTab, setActiveSubTab] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Estados para datos
+  const [contenidoEducativo, setContenidoEducativo] = useState(null);
   const [dispositivo, setDispositivo] = useState(null);
   const [checklist, setChecklist] = useState([]);
   const [problemas, setProblemas] = useState([]);
-  const [guias, setGuias] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [selectedItem, setSelectedItem] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
 
@@ -21,8 +29,7 @@ const Ortesis = () => {
   const [problemaForm, setProblemaForm] = useState({
     tipo: '',
     descripcion: '',
-    urgencia: 'media',
-    foto: null
+    urgencia: 'media'
   });
 
   const tiposProblema = [
@@ -34,355 +41,753 @@ const Ortesis = () => {
     { id: 'otro', nombre: 'Otro problema', icon: '❓' }
   ];
 
+  const categoriasGuias = {
+    'cuidado_munon': { nombre: 'Cuidado del Muñón', icon: '🦵', color: '#10b981' },
+    'limpieza_protesis': { nombre: 'Limpieza', icon: '🧼', color: '#3b82f6' },
+    'colocacion': { nombre: 'Colocación', icon: '👟', color: '#8b5cf6' },
+    'mantenimiento': { nombre: 'Mantenimiento', icon: '🔧', color: '#f59e0b' },
+    'emergencias': { nombre: 'Alertas', icon: '⚠️', color: '#ef4444' },
+    'ejercicios': { nombre: 'Ejercicios', icon: '💪', color: '#06b6d4' }
+  };
+
+  const categoriasProtesis = {
+    'transtibial': { nombre: 'Transtibial', desc: 'Debajo de rodilla', icon: '🦿' },
+    'transfemoral': { nombre: 'Transfemoral', desc: 'Arriba de rodilla', icon: '🦵' },
+    'desarticulacion_rodilla': { nombre: 'Desart. Rodilla', desc: 'A nivel de rodilla', icon: '🔄' },
+    'parcial_pie': { nombre: 'Pie Parcial', desc: 'Amputación parcial', icon: '🦶' }
+  };
+
   useEffect(() => {
     cargarDatos();
-  }, [activeTab]);
+  }, []);
 
   const cargarDatos = async () => {
     setLoading(true);
+    setError(null);
     try {
-      if (activeTab === 'dispositivo') {
-        const response = await api.get(`/ortesis/dispositivo/${user.paciente_id}`);
-        setDispositivo(response.data);
-      } else if (activeTab === 'checklist') {
-        const today = new Date().toISOString().split('T')[0];
-        const response = await api.get(`/ortesis/checklist/${user.paciente_id}/${today}`);
-        setChecklist(response.data || getDefaultChecklist());
-      } else if (activeTab === 'problemas') {
-        const response = await api.get(`/ortesis/problemas/${user.paciente_id}`);
-        setProblemas(response.data || []);
-      } else if (activeTab === 'guias') {
-        const response = await api.get('/ortesis/guias');
-        setGuias(response.data || getDefaultGuias());
+      // Cargar contenido educativo
+      const response = await api.get('/protesis/educativo');
+      if (response.success) {
+        setContenidoEducativo(response.data);
+      }
+
+      // Cargar dispositivo del paciente
+      if (user?.paciente_id) {
+        const dispResponse = await api.get(`/ortesis/dispositivo/${user.paciente_id}`);
+        if (dispResponse.success) {
+          setDispositivo(dispResponse.data);
+        }
+
+        // Cargar problemas
+        const probResponse = await api.get(`/ortesis/problemas/${user.paciente_id}`);
+        if (probResponse.success) {
+          setProblemas(probResponse.data || []);
+        }
       }
     } catch (err) {
       console.error('Error al cargar datos:', err);
-      if (activeTab === 'checklist') setChecklist(getDefaultChecklist());
-      if (activeTab === 'guias') setGuias(getDefaultGuias());
+      setError('Error al cargar la información. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
   };
 
-  const getDefaultChecklist = () => [
-    { id: 1, categoria: 'Antes de colocar', items: [
-      { id: 'c1', nombre: 'Revisar el muñón (sin heridas, irritación)', completado: false },
-      { id: 'c2', nombre: 'Limpiar y secar bien la piel', completado: false },
-      { id: 'c3', nombre: 'Aplicar crema hidratante (si aplica)', completado: false },
-      { id: 'c4', nombre: 'Verificar estado del liner/calcetín', completado: false }
-    ]},
-    { id: 2, categoria: 'Colocación', items: [
-      { id: 'c5', nombre: 'Colocar liner correctamente sin arrugas', completado: false },
-      { id: 'c6', nombre: 'Insertar en el socket con cuidado', completado: false },
-      { id: 'c7', nombre: 'Verificar que el pin esté bien conectado', completado: false },
-      { id: 'c8', nombre: 'Ajustar correas/sistema de suspensión', completado: false }
-    ]},
-    { id: 3, categoria: 'Verificación', items: [
-      { id: 'c9', nombre: 'Dar unos pasos para verificar ajuste', completado: false },
-      { id: 'c10', nombre: 'Confirmar que no hay dolor ni presión excesiva', completado: false },
-      { id: 'c11', nombre: 'Revisar alineación visual', completado: false }
-    ]}
-  ];
-
-  const getDefaultGuias = () => [
-    {
-      id: 1,
-      titulo: 'Cuidado diario del muñón',
-      contenido: 'El cuidado adecuado del muñón es fundamental para prevenir problemas...',
-      pasos: [
-        'Lavar diariamente con jabón neutro y agua tibia',
-        'Secar completamente, especialmente entre pliegues',
-        'Inspeccionar en busca de enrojecimiento o heridas',
-        'Aplicar crema hidratante por la noche (nunca antes de colocar la prótesis)',
-        'Masajear suavemente para mejorar la circulación'
-      ]
-    },
-    {
-      id: 2,
-      titulo: 'Limpieza de la prótesis',
-      contenido: 'Mantener tu prótesis limpia prolonga su vida útil...',
-      pasos: [
-        'Limpiar el socket diariamente con paño húmedo',
-        'Usar jabón antibacterial una vez por semana',
-        'Secar completamente antes de guardar',
-        'Revisar y limpiar el sistema de suspensión',
-        'No sumergir en agua componentes electrónicos'
-      ]
-    },
-    {
-      id: 3,
-      titulo: 'Señales de alerta',
-      contenido: 'Contacta a tu especialista si presentas:',
-      pasos: [
-        'Dolor persistente que no mejora al ajustar',
-        'Heridas o ampollas que no sanan',
-        'Cambios en el volumen del muñón',
-        'Ruidos o movimiento anormal de la prótesis',
-        'Enrojecimiento o inflamación excesiva'
-      ]
-    }
-  ];
-
-  const handleChecklistChange = async (categoriaId, itemId) => {
-    const updatedChecklist = checklist.map(cat => {
-      if (cat.id === categoriaId) {
-        return {
-          ...cat,
-          items: cat.items.map(item =>
-            item.id === itemId ? { ...item, completado: !item.completado } : item
-          )
-        };
-      }
-      return cat;
-    });
-    setChecklist(updatedChecklist);
-
-    try {
-      await api.post('/ortesis/checklist', {
-        paciente_id: user.paciente_id,
-        fecha: new Date().toISOString().split('T')[0],
-        checklist: updatedChecklist
-      });
-    } catch (err) {
-      console.error('Error al guardar checklist:', err);
-    }
-  };
-
-  const calcularProgresoChecklist = () => {
-    const totalItems = checklist.reduce((acc, cat) => acc + cat.items.length, 0);
-    const completados = checklist.reduce((acc, cat) =>
-      acc + cat.items.filter(item => item.completado).length, 0);
-    return totalItems > 0 ? Math.round((completados / totalItems) * 100) : 0;
-  };
-
   const handleReportarProblema = async (e) => {
     e.preventDefault();
     try {
-      const formData = new FormData();
-      formData.append('paciente_id', user.paciente_id);
-      formData.append('tipo', problemaForm.tipo);
-      formData.append('descripcion', problemaForm.descripcion);
-      formData.append('urgencia', problemaForm.urgencia);
-      if (problemaForm.foto) {
-        formData.append('foto', problemaForm.foto);
-      }
-
-      await api.post('/ortesis/problemas', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
+      await api.post('/ortesis/problemas', {
+        paciente_id: user.paciente_id,
+        tipo: problemaForm.tipo,
+        descripcion: problemaForm.descripcion,
+        urgencia: problemaForm.urgencia
       });
 
       setShowModal(false);
-      setProblemaForm({ tipo: '', descripcion: '', urgencia: 'media', foto: null });
+      setProblemaForm({ tipo: '', descripcion: '', urgencia: 'media' });
       cargarDatos();
     } catch (err) {
       console.error('Error al reportar problema:', err);
     }
   };
 
+  const getBackRoute = () => {
+    const rol = user?.rol || user?.role;
+    switch (rol) {
+      case 'especialista': return '/especialista';
+      case 'administrador': return '/admin';
+      default: return '/paciente';
+    }
+  };
+
+  // Renderizar contenido según tab activo
+  const renderContent = () => {
+    if (loading) {
+      return (
+        <div className="loading-container">
+          <div className="spinner"></div>
+          <p>Cargando información...</p>
+        </div>
+      );
+    }
+
+    if (error) {
+      return (
+        <div className="error-container">
+          <p>{error}</p>
+          <button onClick={cargarDatos} className="btn btn-primary">Reintentar</button>
+        </div>
+      );
+    }
+
+    switch (activeTab) {
+      case 'inicio':
+        return renderInicio();
+      case 'niveles-k':
+        return renderNivelesK();
+      case 'tipos':
+        return renderTiposProtesis();
+      case 'cuidados':
+        return renderGuiasCuidado();
+      case 'mi-protesis':
+        return renderMiProtesis();
+      case 'problemas':
+        return renderProblemas();
+      case 'faqs':
+        return renderFAQs();
+      default:
+        return renderInicio();
+    }
+  };
+
+  // =====================================================
+  // RENDERIZAR INICIO
+  // =====================================================
+  const renderInicio = () => (
+    <div className="inicio-section">
+      <div className="welcome-banner">
+        <div className="welcome-content">
+          <h2>Centro de Información de Prótesis</h2>
+          <p>Todo lo que necesitas saber sobre tu prótesis, cuidados y rehabilitación</p>
+        </div>
+      </div>
+
+      <div className="quick-actions">
+        <div className="action-card" onClick={() => setActiveTab('niveles-k')}>
+          <span className="action-icon">📊</span>
+          <h3>Niveles K</h3>
+          <p>Conoce tu clasificación funcional</p>
+        </div>
+        <div className="action-card" onClick={() => setActiveTab('tipos')}>
+          <span className="action-icon">🦿</span>
+          <h3>Tipos de Prótesis</h3>
+          <p>Explora las opciones disponibles</p>
+        </div>
+        <div className="action-card" onClick={() => setActiveTab('cuidados')}>
+          <span className="action-icon">📚</span>
+          <h3>Guías de Cuidado</h3>
+          <p>Aprende a cuidar tu prótesis</p>
+        </div>
+        <div className="action-card" onClick={() => setActiveTab('mi-protesis')}>
+          <span className="action-icon">⚙️</span>
+          <h3>Mi Prótesis</h3>
+          <p>Información de tu dispositivo</p>
+        </div>
+      </div>
+
+      {/* Nivel K del usuario si existe */}
+      {dispositivo?.nivel_k && (
+        <div className="user-nivel-k-card">
+          <div className="nivel-badge">
+            <span className="nivel-letra">{dispositivo.nivel_k}</span>
+          </div>
+          <div className="nivel-info">
+            <h3>Tu Nivel Funcional</h3>
+            <p className="nivel-nombre">{dispositivo.nivel_k_nombre}</p>
+            <p className="nivel-desc">{dispositivo.nivel_k_descripcion}</p>
+          </div>
+          <button
+            className="btn btn-outline"
+            onClick={() => setActiveTab('niveles-k')}
+          >
+            Más información
+          </button>
+        </div>
+      )}
+
+      {/* Resumen de contenido */}
+      <div className="content-summary">
+        <h3>Contenido Disponible</h3>
+        <div className="summary-grid">
+          <div className="summary-item">
+            <span className="summary-number">{contenidoEducativo?.niveles_k?.length || 5}</span>
+            <span className="summary-label">Niveles K</span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-number">
+              {Object.values(contenidoEducativo?.tipos_protesis || {}).flat().length || 0}
+            </span>
+            <span className="summary-label">Tipos de Prótesis</span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-number">
+              {Object.values(contenidoEducativo?.guias_cuidado || {}).flat().length || 0}
+            </span>
+            <span className="summary-label">Guías de Cuidado</span>
+          </div>
+          <div className="summary-item">
+            <span className="summary-number">{contenidoEducativo?.faqs?.length || 0}</span>
+            <span className="summary-label">Preguntas Frecuentes</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  // =====================================================
+  // RENDERIZAR NIVELES K
+  // =====================================================
+  const renderNivelesK = () => (
+    <div className="niveles-k-section">
+      <div className="section-header">
+        <h2>Niveles K de Movilidad</h2>
+        <p>La clasificación K determina tu potencial funcional y el tipo de prótesis recomendada</p>
+      </div>
+
+      {selectedItem ? (
+        <div className="nivel-detail">
+          <button className="btn-back" onClick={() => setSelectedItem(null)}>
+            ← Volver a todos los niveles
+          </button>
+
+          <div className="nivel-detail-card">
+            <div className="nivel-header">
+              <div className="nivel-badge large">
+                <span>{selectedItem.nivel}</span>
+              </div>
+              <div>
+                <h2>{selectedItem.nombre}</h2>
+                <p className="nivel-desc">{selectedItem.descripcion}</p>
+              </div>
+            </div>
+
+            <div className="nivel-sections">
+              <div className="nivel-section">
+                <h3>Características</h3>
+                <ul>
+                  {selectedItem.caracteristicas?.map((car, idx) => (
+                    <li key={idx}>{car}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="nivel-section">
+                <h3>Actividades Permitidas</h3>
+                <ul className="actividades-list">
+                  {selectedItem.actividades_permitidas?.map((act, idx) => (
+                    <li key={idx}>
+                      <span className="check-icon">✓</span>
+                      {act}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="nivel-section">
+                <h3>Prótesis Recomendadas</h3>
+                <ul className="protesis-recomendadas">
+                  {selectedItem.tipo_protesis_recomendada?.map((tipo, idx) => (
+                    <li key={idx}>{tipo}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="niveles-grid">
+          {contenidoEducativo?.niveles_k?.map((nivel) => (
+            <div
+              key={nivel.nivel}
+              className={`nivel-card ${dispositivo?.nivel_k === nivel.nivel ? 'current' : ''}`}
+              onClick={() => setSelectedItem(nivel)}
+            >
+              {dispositivo?.nivel_k === nivel.nivel && (
+                <span className="current-badge">Tu nivel</span>
+              )}
+              <div className="nivel-badge">
+                <span>{nivel.nivel}</span>
+              </div>
+              <h3>{nivel.nombre}</h3>
+              <p>{nivel.descripcion.substring(0, 120)}...</p>
+              <div className="nivel-preview">
+                <span>{nivel.caracteristicas?.length || 0} características</span>
+                <span>{nivel.actividades_permitidas?.length || 0} actividades</span>
+              </div>
+              <button className="btn btn-outline btn-sm">Ver más</button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  // =====================================================
+  // RENDERIZAR TIPOS DE PRÓTESIS
+  // =====================================================
+  const renderTiposProtesis = () => (
+    <div className="tipos-section">
+      <div className="section-header">
+        <h2>Tipos de Prótesis</h2>
+        <p>Conoce las diferentes opciones según el nivel de amputación</p>
+      </div>
+
+      {!activeSubTab ? (
+        <div className="categorias-grid">
+          {Object.entries(categoriasProtesis).map(([key, cat]) => (
+            <div
+              key={key}
+              className="categoria-card"
+              onClick={() => setActiveSubTab(key)}
+            >
+              <span className="categoria-icon">{cat.icon}</span>
+              <h3>{cat.nombre}</h3>
+              <p>{cat.desc}</p>
+              <span className="tipos-count">
+                {contenidoEducativo?.tipos_protesis?.[key]?.length || 0} tipos
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : selectedItem ? (
+        <div className="tipo-detail">
+          <button className="btn-back" onClick={() => setSelectedItem(null)}>
+            ← Volver a {categoriasProtesis[activeSubTab]?.nombre}
+          </button>
+
+          <div className="tipo-detail-card">
+            <h2>{selectedItem.nombre}</h2>
+            <span className="tipo-categoria">
+              {categoriasProtesis[selectedItem.categoria]?.nombre}
+            </span>
+
+            <p className="tipo-descripcion">{selectedItem.descripcion}</p>
+
+            {selectedItem.nivel_k_minimo && (
+              <div className="nivel-minimo">
+                <span>Nivel K mínimo requerido:</span>
+                <span className="nivel-badge small">{selectedItem.nivel_k_minimo}</span>
+              </div>
+            )}
+
+            <div className="tipo-sections">
+              {selectedItem.componentes && (
+                <div className="tipo-section">
+                  <h3>Componentes</h3>
+                  <ul>
+                    {selectedItem.componentes.map((comp, idx) => (
+                      <li key={idx}>{comp}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedItem.ventajas && (
+                <div className="tipo-section ventajas">
+                  <h3>✓ Ventajas</h3>
+                  <ul>
+                    {selectedItem.ventajas.map((v, idx) => (
+                      <li key={idx}>{v}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedItem.desventajas && (
+                <div className="tipo-section desventajas">
+                  <h3>✗ Consideraciones</h3>
+                  <ul>
+                    {selectedItem.desventajas.map((d, idx) => (
+                      <li key={idx}>{d}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {selectedItem.cuidados_especificos && (
+                <div className="tipo-section cuidados">
+                  <h3>Cuidados Específicos</h3>
+                  <ul>
+                    {selectedItem.cuidados_especificos.map((c, idx) => (
+                      <li key={idx}>{c}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="tipos-list">
+          <button className="btn-back" onClick={() => setActiveSubTab(null)}>
+            ← Volver a categorías
+          </button>
+
+          <h3>{categoriasProtesis[activeSubTab]?.icon} {categoriasProtesis[activeSubTab]?.nombre}</h3>
+
+          <div className="tipos-grid">
+            {contenidoEducativo?.tipos_protesis?.[activeSubTab]?.map((tipo) => (
+              <div
+                key={tipo.id}
+                className="tipo-card"
+                onClick={() => setSelectedItem(tipo)}
+              >
+                <h4>{tipo.nombre}</h4>
+                <p>{tipo.descripcion.substring(0, 100)}...</p>
+                {tipo.nivel_k_minimo && (
+                  <span className="nivel-badge mini">{tipo.nivel_k_minimo}+</span>
+                )}
+                <button className="btn btn-outline btn-sm">Ver detalles</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // =====================================================
+  // RENDERIZAR GUÍAS DE CUIDADO
+  // =====================================================
+  const renderGuiasCuidado = () => (
+    <div className="guias-section">
+      <div className="section-header">
+        <h2>Guías de Cuidado</h2>
+        <p>Instrucciones detalladas para el cuidado de tu prótesis y muñón</p>
+      </div>
+
+      {!activeSubTab ? (
+        <div className="categorias-guias-grid">
+          {Object.entries(categoriasGuias).map(([key, cat]) => (
+            <div
+              key={key}
+              className="categoria-guia-card"
+              style={{ '--cat-color': cat.color }}
+              onClick={() => setActiveSubTab(key)}
+            >
+              <span className="categoria-icon">{cat.icon}</span>
+              <h3>{cat.nombre}</h3>
+              <span className="guias-count">
+                {contenidoEducativo?.guias_cuidado?.[key]?.length || 0} guías
+              </span>
+            </div>
+          ))}
+        </div>
+      ) : selectedItem ? (
+        <div className="guia-detail">
+          <button className="btn-back" onClick={() => setSelectedItem(null)}>
+            ← Volver a {categoriasGuias[activeSubTab]?.nombre}
+          </button>
+
+          <div className="guia-detail-card">
+            <div className="guia-header" style={{ '--cat-color': categoriasGuias[activeSubTab]?.color }}>
+              <span className="guia-icon">{categoriasGuias[activeSubTab]?.icon}</span>
+              <h2>{selectedItem.titulo}</h2>
+            </div>
+
+            <p className="guia-intro">{selectedItem.contenido}</p>
+
+            {selectedItem.pasos && (
+              <div className="guia-section">
+                <h3>Pasos a seguir</h3>
+                <ol className="pasos-list">
+                  {selectedItem.pasos.map((paso, idx) => (
+                    <li key={idx}>{paso}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+
+            {selectedItem.tips && (
+              <div className="guia-section tips">
+                <h3>💡 Consejos</h3>
+                <ul>
+                  {selectedItem.tips.map((tip, idx) => (
+                    <li key={idx}>{tip}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {selectedItem.advertencias && (
+              <div className="guia-section advertencias">
+                <h3>⚠️ Advertencias</h3>
+                <ul>
+                  {selectedItem.advertencias.map((adv, idx) => (
+                    <li key={idx}>{adv}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="guias-list">
+          <button className="btn-back" onClick={() => setActiveSubTab(null)}>
+            ← Volver a categorías
+          </button>
+
+          <h3>{categoriasGuias[activeSubTab]?.icon} {categoriasGuias[activeSubTab]?.nombre}</h3>
+
+          <div className="guias-grid">
+            {contenidoEducativo?.guias_cuidado?.[activeSubTab]?.map((guia) => (
+              <div
+                key={guia.id}
+                className="guia-card"
+                onClick={() => setSelectedItem(guia)}
+              >
+                <h4>{guia.titulo}</h4>
+                <p>{guia.contenido.substring(0, 80)}...</p>
+                <div className="guia-meta">
+                  <span>{guia.pasos?.length || 0} pasos</span>
+                </div>
+                <button className="btn btn-outline btn-sm">Leer guía</button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
+  // =====================================================
+  // RENDERIZAR MI PRÓTESIS
+  // =====================================================
+  const renderMiProtesis = () => (
+    <div className="mi-protesis-section">
+      <div className="section-header">
+        <h2>Mi Prótesis</h2>
+        <p>Información sobre tu dispositivo actual</p>
+      </div>
+
+      {dispositivo?.tiene_dispositivo ? (
+        <div className="dispositivo-info">
+          <div className="dispositivo-card main">
+            <div className="dispositivo-header">
+              <h3>{dispositivo.tipo || 'Prótesis'}</h3>
+              {dispositivo.nivel_k && (
+                <span className="nivel-badge">{dispositivo.nivel_k}</span>
+              )}
+            </div>
+
+            <div className="info-grid">
+              {dispositivo.modelo && (
+                <div className="info-item">
+                  <span className="info-label">Modelo</span>
+                  <span className="info-value">{dispositivo.modelo}</span>
+                </div>
+              )}
+              {dispositivo.fecha_entrega && (
+                <div className="info-item">
+                  <span className="info-label">Fecha de entrega</span>
+                  <span className="info-value">
+                    {new Date(dispositivo.fecha_entrega).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {dispositivo.ultimo_mantenimiento && (
+                <div className="info-item">
+                  <span className="info-label">Último mantenimiento</span>
+                  <span className="info-value">
+                    {new Date(dispositivo.ultimo_mantenimiento).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              {dispositivo.proximo_mantenimiento && (
+                <div className="info-item destacado">
+                  <span className="info-label">Próximo mantenimiento</span>
+                  <span className="info-value">
+                    {new Date(dispositivo.proximo_mantenimiento).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {dispositivo.notas && (
+              <div className="notas-especialista">
+                <h4>Notas del especialista</h4>
+                <p>{dispositivo.notas}</p>
+              </div>
+            )}
+          </div>
+
+          <div className="acciones-dispositivo">
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setModalType('problema');
+                setShowModal(true);
+              }}
+            >
+              Reportar Problema
+            </button>
+            <button className="btn btn-secondary" onClick={() => setActiveTab('cuidados')}>
+              Ver Guías de Cuidado
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="no-dispositivo">
+          <div className="empty-icon">🦿</div>
+          <h3>Sin dispositivo registrado</h3>
+          <p>Tu especialista registrará la información de tu prótesis cuando sea asignada.</p>
+          <button className="btn btn-outline" onClick={() => setActiveTab('tipos')}>
+            Explorar tipos de prótesis
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  // =====================================================
+  // RENDERIZAR PROBLEMAS
+  // =====================================================
+  const renderProblemas = () => (
+    <div className="problemas-section">
+      <div className="section-header">
+        <h2>Problemas Reportados</h2>
+        <p>Historial de problemas y su estado</p>
+      </div>
+
+      <button
+        className="btn btn-primary btn-lg"
+        onClick={() => {
+          setModalType('problema');
+          setShowModal(true);
+        }}
+      >
+        + Reportar Nuevo Problema
+      </button>
+
+      {problemas.length > 0 ? (
+        <div className="problemas-list">
+          {problemas.map(problema => (
+            <div key={problema.id} className={`problema-card urgencia-${problema.urgencia}`}>
+              <div className="problema-header">
+                <span className="problema-tipo">
+                  {tiposProblema.find(t => t.id === problema.tipo)?.icon}{' '}
+                  {tiposProblema.find(t => t.id === problema.tipo)?.nombre || problema.tipo}
+                </span>
+                <span className={`urgencia-badge ${problema.urgencia}`}>
+                  {problema.urgencia}
+                </span>
+              </div>
+              <p className="problema-descripcion">{problema.descripcion}</p>
+              <div className="problema-footer">
+                <span className="problema-fecha">
+                  {new Date(problema.created_at).toLocaleDateString()}
+                </span>
+                <span className={`problema-estado ${problema.estado || 'pendiente'}`}>
+                  {problema.estado || 'Pendiente'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="no-problemas">
+          <p>No hay problemas reportados</p>
+          <p className="text-muted">¡Excelente! Tu prótesis está funcionando bien.</p>
+        </div>
+      )}
+    </div>
+  );
+
+  // =====================================================
+  // RENDERIZAR FAQs
+  // =====================================================
+  const renderFAQs = () => (
+    <div className="faqs-section">
+      <div className="section-header">
+        <h2>Preguntas Frecuentes</h2>
+        <p>Respuestas a las dudas más comunes sobre prótesis</p>
+      </div>
+
+      <div className="faqs-list">
+        {contenidoEducativo?.faqs?.map((faq, idx) => (
+          <details key={faq.id || idx} className="faq-item">
+            <summary>
+              <span className="faq-icon">❓</span>
+              {faq.pregunta}
+            </summary>
+            <div className="faq-answer">
+              <p>{faq.respuesta}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div className="ortesis-page">
       <header className="page-header">
-        <h1>Órtesis y Prótesis</h1>
-        <p className="subtitle">Cuidado y mantenimiento de tu dispositivo</p>
+        <button className="btn-back-header" onClick={() => navigate(getBackRoute())}>
+          ← Regresar
+        </button>
+        <div className="header-content">
+          <h1>🦿 Prótesis</h1>
+          <p className="subtitle">Centro de información y cuidados</p>
+        </div>
       </header>
 
-      <div className="tabs">
+      <nav className="tabs-nav">
         <button
-          className={`tab ${activeTab === 'dispositivo' ? 'active' : ''}`}
-          onClick={() => setActiveTab('dispositivo')}
+          className={`tab ${activeTab === 'inicio' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('inicio'); setActiveSubTab(null); setSelectedItem(null); }}
         >
-          Mi Dispositivo
+          Inicio
         </button>
         <button
-          className={`tab ${activeTab === 'checklist' ? 'active' : ''}`}
-          onClick={() => setActiveTab('checklist')}
+          className={`tab ${activeTab === 'niveles-k' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('niveles-k'); setActiveSubTab(null); setSelectedItem(null); }}
         >
-          Checklist Diario
+          Niveles K
+        </button>
+        <button
+          className={`tab ${activeTab === 'tipos' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('tipos'); setActiveSubTab(null); setSelectedItem(null); }}
+        >
+          Tipos
+        </button>
+        <button
+          className={`tab ${activeTab === 'cuidados' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('cuidados'); setActiveSubTab(null); setSelectedItem(null); }}
+        >
+          Cuidados
+        </button>
+        <button
+          className={`tab ${activeTab === 'mi-protesis' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('mi-protesis'); setActiveSubTab(null); setSelectedItem(null); }}
+        >
+          Mi Prótesis
         </button>
         <button
           className={`tab ${activeTab === 'problemas' ? 'active' : ''}`}
-          onClick={() => setActiveTab('problemas')}
+          onClick={() => { setActiveTab('problemas'); setActiveSubTab(null); setSelectedItem(null); }}
         >
-          Reportar Problema
+          Problemas
         </button>
         <button
-          className={`tab ${activeTab === 'guias' ? 'active' : ''}`}
-          onClick={() => setActiveTab('guias')}
+          className={`tab ${activeTab === 'faqs' ? 'active' : ''}`}
+          onClick={() => { setActiveTab('faqs'); setActiveSubTab(null); setSelectedItem(null); }}
         >
-          Guías de Cuidado
+          FAQs
         </button>
-      </div>
+      </nav>
 
-      {loading ? (
-        <div className="loading-container">
-          <div className="spinner"></div>
-          <p>Cargando...</p>
-        </div>
-      ) : (
-        <div className="tab-content">
-          {activeTab === 'dispositivo' && (
-            <div className="dispositivo-section">
-              {dispositivo ? (
-                <div className="dispositivo-card">
-                  <div className="dispositivo-header">
-                    <h2>{dispositivo.tipo}</h2>
-                    <span className={`estado-badge ${dispositivo.estado}`}>
-                      {dispositivo.estado}
-                    </span>
-                  </div>
-
-                  <div className="dispositivo-info">
-                    <div className="info-row">
-                      <span className="info-label">Modelo:</span>
-                      <span className="info-value">{dispositivo.modelo || 'No especificado'}</span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Fecha de entrega:</span>
-                      <span className="info-value">
-                        {dispositivo.fecha_entrega ? new Date(dispositivo.fecha_entrega).toLocaleDateString() : 'No especificada'}
-                      </span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Último mantenimiento:</span>
-                      <span className="info-value">
-                        {dispositivo.ultimo_mantenimiento ? new Date(dispositivo.ultimo_mantenimiento).toLocaleDateString() : 'No registrado'}
-                      </span>
-                    </div>
-                    <div className="info-row">
-                      <span className="info-label">Próximo mantenimiento:</span>
-                      <span className="info-value proximo">
-                        {dispositivo.proximo_mantenimiento ? new Date(dispositivo.proximo_mantenimiento).toLocaleDateString() : 'Por programar'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {dispositivo.notas && (
-                    <div className="dispositivo-notas">
-                      <h4>Notas del especialista:</h4>
-                      <p>{dispositivo.notas}</p>
-                    </div>
-                  )}
-
-                  <div className="dispositivo-acciones">
-                    <button
-                      className="btn btn-primary"
-                      onClick={() => {
-                        setModalType('problema');
-                        setShowModal(true);
-                      }}
-                    >
-                      Reportar Problema
-                    </button>
-                    <button className="btn btn-secondary">
-                      Solicitar Mantenimiento
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <div className="empty-state">
-                  <p>No hay dispositivo registrado</p>
-                  <p className="help-text">Tu especialista registrará tu dispositivo</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'checklist' && (
-            <div className="checklist-section">
-              <div className="progreso-checklist">
-                <div className="progress-bar">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${calcularProgresoChecklist()}%` }}
-                  ></div>
-                </div>
-                <span className="progress-text">{calcularProgresoChecklist()}% completado</span>
-              </div>
-
-              {checklist.map(categoria => (
-                <div key={categoria.id} className="categoria-checklist">
-                  <h3>{categoria.categoria}</h3>
-                  <div className="items-list">
-                    {categoria.items.map(item => (
-                      <label key={item.id} className="checklist-item">
-                        <input
-                          type="checkbox"
-                          checked={item.completado}
-                          onChange={() => handleChecklistChange(categoria.id, item.id)}
-                        />
-                        <span className={item.completado ? 'completed' : ''}>
-                          {item.nombre}
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'problemas' && (
-            <div className="problemas-section">
-              <button
-                className="btn btn-primary btn-lg btn-block"
-                onClick={() => {
-                  setModalType('problema');
-                  setShowModal(true);
-                }}
-              >
-                + Reportar Nuevo Problema
-              </button>
-
-              <h3>Historial de problemas</h3>
-              {problemas.length > 0 ? (
-                <div className="problemas-list">
-                  {problemas.map(problema => (
-                    <div key={problema.id} className={`problema-card urgencia-${problema.urgencia}`}>
-                      <div className="problema-header">
-                        <span className="problema-tipo">
-                          {tiposProblema.find(t => t.id === problema.tipo)?.icon} {tiposProblema.find(t => t.id === problema.tipo)?.nombre}
-                        </span>
-                        <span className={`urgencia-badge ${problema.urgencia}`}>
-                          {problema.urgencia}
-                        </span>
-                      </div>
-                      <p className="problema-descripcion">{problema.descripcion}</p>
-                      <div className="problema-footer">
-                        <span className="problema-fecha">
-                          {new Date(problema.created_at).toLocaleDateString()}
-                        </span>
-                        <span className={`problema-estado ${problema.estado}`}>
-                          {problema.estado || 'Pendiente'}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="empty-state">
-                  <p>No hay problemas reportados</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'guias' && (
-            <div className="guias-section">
-              {guias.map(guia => (
-                <div key={guia.id} className="guia-card">
-                  <h3>{guia.titulo}</h3>
-                  <p className="guia-intro">{guia.contenido}</p>
-                  <ol className="guia-pasos">
-                    {guia.pasos.map((paso, index) => (
-                      <li key={index}>{paso}</li>
-                    ))}
-                  </ol>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
+      <main className="tab-content">
+        {renderContent()}
+      </main>
 
       {/* Modal para reportar problema */}
       {showModal && modalType === 'problema' && (
@@ -432,16 +837,6 @@ const Ortesis = () => {
                 </select>
               </div>
 
-              <div className="form-group">
-                <label>Foto del problema (opcional)</label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={e => setProblemaForm({...problemaForm, foto: e.target.files[0]})}
-                  className="form-control"
-                />
-              </div>
-
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
                   Cancelar
@@ -459,10 +854,7 @@ const Ortesis = () => {
         </div>
       )}
 
-      {/* Panel de Accesibilidad */}
       <AccessibilityPanel />
-
-      {/* FAB de Accesibilidad */}
       <AccessibilityFAB />
     </div>
   );

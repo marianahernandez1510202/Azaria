@@ -42,6 +42,128 @@ function route($method, $path, $callback, $middleware = []) {
 }
 
 // RUTAS PÚBLICAS
+
+// Ruta de prueba para verificar conexión a base de datos
+route('GET', '/api/test/db', function() {
+    // Mostrar configuración actual (sin contraseña)
+    $config = [
+        'DB_HOST' => $_ENV['DB_HOST'] ?? 'no definido',
+        'DB_PORT' => $_ENV['DB_PORT'] ?? 'no definido',
+        'DB_NAME' => $_ENV['DB_NAME'] ?? 'no definido',
+        'DB_USER' => $_ENV['DB_USER'] ?? 'no definido',
+    ];
+
+    try {
+        $dsn = "mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']};charset=utf8mb4";
+        $pdo = new \PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], [
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+        ]);
+        $result = $pdo->query("SELECT COUNT(*) as total FROM niveles_k")->fetch();
+        \App\Utils\Response::success([
+            'status' => 'connected',
+            'config' => $config,
+            'niveles_k_count' => $result['total'] ?? 0
+        ]);
+    } catch (\PDOException $e) {
+        \App\Utils\Response::error('Error PDO: ' . $e->getMessage() . ' | Config: ' . json_encode($config), 500);
+    } catch (\Exception $e) {
+        \App\Utils\Response::error('Error: ' . $e->getMessage() . ' | Config: ' . json_encode($config), 500);
+    }
+});
+
+// Ruta pública para obtener tipos de prótesis (sin auth para testing)
+route('GET', '/api/test/tipos-protesis', function() {
+    try {
+        $db = \App\Services\DatabaseService::getInstance();
+        $tipos = $db->query("SELECT * FROM tipos_dispositivo WHERE categoria = 'protesis'")->fetchAll();
+        \App\Utils\Response::success($tipos);
+    } catch (\Exception $e) {
+        \App\Utils\Response::error('Error: ' . $e->getMessage(), 500);
+    }
+});
+
+// Ruta pública para contenido educativo (sin auth para testing)
+route('GET', '/api/test/educativo', function() {
+    try {
+        $db = \App\Services\DatabaseService::getInstance();
+
+        // Verificar qué tablas existen
+        $tablas = [];
+
+        // Niveles K
+        try {
+            $nivelesK = $db->query("SELECT * FROM niveles_k ORDER BY nivel")->fetchAll();
+            $tablas['niveles_k'] = count($nivelesK) . ' registros';
+        } catch (\Exception $e) {
+            $tablas['niveles_k'] = 'ERROR: ' . $e->getMessage();
+        }
+
+        // Tipos dispositivo
+        try {
+            $tipos = $db->query("SELECT * FROM tipos_dispositivo WHERE categoria = 'protesis'")->fetchAll();
+            $tablas['tipos_dispositivo'] = count($tipos) . ' registros';
+        } catch (\Exception $e) {
+            $tablas['tipos_dispositivo'] = 'ERROR: ' . $e->getMessage();
+        }
+
+        // Guias cuidado
+        try {
+            $guias = $db->query("SELECT * FROM guias_cuidado")->fetchAll();
+            $tablas['guias_cuidado'] = count($guias) . ' registros';
+        } catch (\Exception $e) {
+            $tablas['guias_cuidado'] = 'ERROR: ' . $e->getMessage();
+        }
+
+        // FAQs
+        try {
+            $faqs = $db->query("SELECT * FROM faq_protesis")->fetchAll();
+            $tablas['faq_protesis'] = count($faqs) . ' registros';
+        } catch (\Exception $e) {
+            $tablas['faq_protesis'] = 'ERROR: ' . $e->getMessage();
+        }
+
+        // Videos
+        try {
+            $videos = $db->query("SELECT * FROM videos_educativos_protesis")->fetchAll();
+            $tablas['videos_educativos_protesis'] = count($videos) . ' registros';
+        } catch (\Exception $e) {
+            $tablas['videos_educativos_protesis'] = 'ERROR: ' . $e->getMessage();
+        }
+
+        \App\Utils\Response::success($tablas);
+    } catch (\Exception $e) {
+        \App\Utils\Response::error('Error general: ' . $e->getMessage(), 500);
+    }
+});
+
+// TEST: Dispositivo del paciente (sin auth para debugging)
+route('GET', '/api/test/dispositivo/(\d+)', function($pacienteId) {
+    try {
+        $db = \App\Services\DatabaseService::getInstance();
+        $dispositivo = $db->query(
+            "SELECT dp.*, td.nombre as tipo_protesis_nombre, td.categoria, td.cuidados_especificos,
+                    nk.nombre as nivel_k_nombre, nk.descripcion as nivel_k_descripcion
+             FROM dispositivos_paciente dp
+             LEFT JOIN tipos_dispositivo td ON dp.tipo_dispositivo_id = td.id
+             LEFT JOIN niveles_k nk ON dp.nivel_k = nk.nivel
+             WHERE dp.paciente_id = ?",
+            [$pacienteId]
+        )->fetch();
+
+        if (!$dispositivo) {
+            \App\Utils\Response::success([
+                'tiene_dispositivo' => false,
+                'mensaje' => 'No hay dispositivo registrado'
+            ]);
+        } else {
+            $dispositivo['tiene_dispositivo'] = true;
+            \App\Utils\Response::success($dispositivo);
+        }
+    } catch (\Exception $e) {
+        \App\Utils\Response::error('Error: ' . $e->getMessage(), 500);
+    }
+});
+
 route('POST', '/api/auth/login', function() {
     $rawInput = file_get_contents('php://input');
     $data = json_decode($rawInput, true);
@@ -278,17 +400,91 @@ route('POST', '/api/neuropsicologia/cuestionarios', function() {
     $controller->guardarCuestionario(json_decode(file_get_contents('php://input'), true));
 }, ['auth']);
 
-// RUTAS DE ÓRTESIS
+// ===== RUTAS DE PRÓTESIS Y ÓRTESIS =====
+
+// Contenido educativo completo (niveles K, tipos, guías, FAQs)
+route('GET', '/api/protesis/educativo', function() {
+    $controller = new OrtesisController();
+    $controller->getContenidoEducativo();
+}, ['auth']);
+
+// Niveles K
+route('GET', '/api/protesis/niveles-k', function() {
+    $controller = new OrtesisController();
+    $controller->getNivelesK();
+}, ['auth']);
+
+route('GET', '/api/protesis/niveles-k/([A-Za-z0-9]+)', function($nivel) {
+    $controller = new OrtesisController();
+    $controller->getNivelK($nivel);
+}, ['auth']);
+
+// Tipos de Prótesis
+route('GET', '/api/protesis/tipos', function() {
+    $categoria = $_GET['categoria'] ?? null;
+    $controller = new OrtesisController();
+    $controller->getTiposProtesis($categoria);
+}, ['auth']);
+
+route('GET', '/api/protesis/tipos/(\d+)', function($id) {
+    $controller = new OrtesisController();
+    $controller->getTipoProtesis($id);
+}, ['auth']);
+
+route('GET', '/api/protesis/categorias', function() {
+    $controller = new OrtesisController();
+    $controller->getCategoriasProtesis();
+}, ['auth']);
+
+// Guías de Cuidado
+route('GET', '/api/protesis/guias', function() {
+    $categoria = $_GET['categoria'] ?? null;
+    $controller = new OrtesisController();
+    $controller->getGuias($categoria);
+}, ['auth']);
+
+route('GET', '/api/protesis/guias/(\d+)', function($id) {
+    $controller = new OrtesisController();
+    $controller->getGuia($id);
+}, ['auth']);
+
+route('GET', '/api/protesis/guias/categorias', function() {
+    $controller = new OrtesisController();
+    $controller->getCategoriasGuias();
+}, ['auth']);
+
+// FAQs de Prótesis
+route('GET', '/api/protesis/faqs', function() {
+    $categoria = $_GET['categoria'] ?? null;
+    $controller = new OrtesisController();
+    $controller->getFAQs($categoria);
+}, ['auth']);
+
+// Videos Educativos
+route('GET', '/api/protesis/videos', function() {
+    $categoria = $_GET['categoria'] ?? null;
+    $controller = new OrtesisController();
+    $controller->getVideos($categoria);
+}, ['auth']);
+
+// Dispositivo del paciente
 route('GET', '/api/ortesis/dispositivo/(\d+)', function($pacienteId) {
     $controller = new OrtesisController();
     $controller->getDispositivo($pacienteId);
 }, ['auth']);
 
+route('PUT', '/api/ortesis/dispositivo/(\d+)/nivel-k', function($pacienteId) {
+    $controller = new OrtesisController();
+    $controller->actualizarNivelK($pacienteId, json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Checklist de prótesis
 route('GET', '/api/ortesis/checklist/(\d+)/([0-9-]+)', function($pacienteId, $fecha) {
     $controller = new FisioterapiaController();
     $controller->getChecklist($pacienteId, $fecha);
 }, ['auth']);
 
+// Problemas reportados
 route('GET', '/api/ortesis/problemas/(\d+)', function($pacienteId) {
     $controller = new OrtesisController();
     $controller->getProblemas($pacienteId);
@@ -299,14 +495,16 @@ route('POST', '/api/ortesis/problemas', function() {
     $controller->reportarProblema(json_decode(file_get_contents('php://input'), true));
 }, ['auth']);
 
-route('GET', '/api/ortesis/guias', function() {
-    $controller = new OrtesisController();
-    $controller->getGuias();
-}, ['auth']);
-
+// Ajustes realizados
 route('GET', '/api/ortesis/ajustes/(\d+)', function($pacienteId) {
     $controller = new OrtesisController();
     $controller->getAjustes($pacienteId);
+}, ['auth']);
+
+// Mantener compatibilidad con rutas antiguas
+route('GET', '/api/ortesis/guias', function() {
+    $controller = new OrtesisController();
+    $controller->getGuias();
 }, ['auth']);
 
 // RUTAS DE CITAS
@@ -635,6 +833,80 @@ route('PUT', '/api/citas/(\d+)/cancelar', function($citaId) {
     $controller->cancelarCita($citaId, ['motivo_cancelacion' => 'Cancelada por usuario']);
 }, ['auth']);
 
+// ===== RUTAS DE INTEGRACIÓN CON OUTLOOK =====
+use App\Controllers\OutlookCalendarController;
+
+// Verificar estado de configuración de Microsoft
+route('GET', '/api/outlook/status', function() {
+    $controller = new OutlookCalendarController();
+    $controller->checkStatus();
+}, ['auth']);
+
+// Verificar si el usuario tiene Outlook conectado
+route('GET', '/api/outlook/connected', function() {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $controller = new OutlookCalendarController();
+    $controller->isConnected($user['id']);
+}, ['auth']);
+
+// Iniciar flujo de autorización OAuth con Microsoft
+route('GET', '/api/outlook/auth', function() {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $controller = new OutlookCalendarController();
+    $controller->startAuth($user['id']);
+}, ['auth']);
+
+// Callback de autorización OAuth (sin auth porque viene de Microsoft)
+route('GET', '/api/auth/microsoft/callback', function() {
+    $controller = new OutlookCalendarController();
+    $controller->handleCallback();
+});
+
+// Desconectar cuenta de Outlook
+route('DELETE', '/api/outlook/disconnect', function() {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $controller = new OutlookCalendarController();
+    $controller->disconnect($user['id']);
+}, ['auth']);
+
+// Sincronizar cita con Outlook
+route('POST', '/api/outlook/sync/(\d+)', function($citaId) {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $controller = new OutlookCalendarController();
+    $controller->syncCitaToOutlook($user['id'], $citaId);
+}, ['auth']);
+
+// Obtener eventos de Outlook
+route('GET', '/api/outlook/events', function() {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $startDate = $_GET['start'] ?? date('Y-m-d\T00:00:00');
+    $endDate = $_GET['end'] ?? date('Y-m-d\T23:59:59', strtotime('+30 days'));
+    $controller = new OutlookCalendarController();
+    $controller->getOutlookEvents($user['id'], $startDate, $endDate);
+}, ['auth']);
+
+// Obtener disponibilidad de calendario
+route('POST', '/api/outlook/availability', function() {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $data = json_decode(file_get_contents('php://input'), true);
+    $controller = new OutlookCalendarController();
+    $controller->getAvailability($user['id'], $data);
+}, ['auth']);
+
+// Actualizar evento en Outlook
+route('PUT', '/api/outlook/sync/(\d+)', function($citaId) {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $controller = new OutlookCalendarController();
+    $controller->updateOutlookEvent($user['id'], $citaId);
+}, ['auth']);
+
+// Eliminar evento de Outlook
+route('DELETE', '/api/outlook/sync/(\d+)', function($citaId) {
+    $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+    $controller = new OutlookCalendarController();
+    $controller->deleteOutlookEvent($user['id'], $citaId);
+}, ['auth']);
+
 // ===== RUTAS DE ESTUDIOS CLÍNICOS =====
 route('POST', '/api/estudios', function() {
     $data = json_decode(file_get_contents('php://input'), true);
@@ -655,4 +927,55 @@ route('POST', '/api/estudios', function() {
     );
 
     \App\Utils\Response::success(['id' => $db->lastInsertId()], 'Estudio registrado', 201);
+}, ['auth']);
+
+// ===== RUTAS DE PLANES NUTRICIONALES =====
+use App\Controllers\PlanNutricionalController;
+
+// Obtener planes del especialista
+route('GET', '/api/nutricion/planes/especialista/(\d+)', function($especialistaId) {
+    $controller = new PlanNutricionalController();
+    $controller->getPlanesEspecialista($especialistaId);
+}, ['auth']);
+
+// Subir PDF y crear plan
+route('POST', '/api/nutricion/planes/upload/(\d+)', function($especialistaId) {
+    $controller = new PlanNutricionalController();
+    $controller->uploadPlan($especialistaId);
+}, ['auth']);
+
+// Obtener detalle de un plan
+route('GET', '/api/nutricion/planes/(\d+)', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->getPlan($planId);
+}, ['auth']);
+
+// Actualizar contenido del plan
+route('PUT', '/api/nutricion/planes/(\d+)', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->updatePlanContent($planId);
+}, ['auth']);
+
+// Eliminar plan
+route('DELETE', '/api/nutricion/planes/(\d+)', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->deletePlan($planId);
+}, ['auth']);
+
+// Asignar plan a paciente
+route('POST', '/api/nutricion/planes/(\d+)/asignar', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->asignarPlan($planId);
+}, ['auth']);
+
+// Obtener plan activo del paciente
+route('GET', '/api/nutricion/plan-paciente/(\d+)', function($pacienteId) {
+    $controller = new PlanNutricionalController();
+    $controller->getPlanPaciente($pacienteId);
+}, ['auth']);
+
+// Registrar seguimiento del plan
+route('POST', '/api/nutricion/plan-paciente/(\d+)/seguimiento', function($pacienteId) {
+    $controller = new PlanNutricionalController();
+    $controller->registrarSeguimiento($pacienteId);
 }, ['auth']);

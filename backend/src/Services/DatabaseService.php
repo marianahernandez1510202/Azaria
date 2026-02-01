@@ -41,7 +41,8 @@ class DatabaseService
             return $stmt;
         } catch (PDOException $e) {
             error_log("Query error: " . $e->getMessage());
-            throw new \Exception("Error en la consulta a la base de datos");
+            // DEBUG: Mostrar error real (quitar en producción)
+            throw new \Exception("DB Error: " . $e->getMessage());
         }
     }
 

@@ -1,0 +1,228 @@
+/* Componente OutlookConnect */
+.outlook-connect {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  border: 1px solid var(--border-color, #334155);
+  transition: all 0.3s ease;
+}
+
+.outlook-connect:hover {
+  border-color: var(--primary-color, #10b981);
+}
+
+.outlook-connect.connected {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+}
+
+.outlook-connect.loading {
+  justify-content: center;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.outlook-connect.disabled {
+  opacity: 0.6;
+}
+
+.outlook-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0078d4;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.outlook-icon svg {
+  width: 24px;
+  height: 24px;
+  fill: white;
+}
+
+.outlook-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.outlook-title {
+  font-weight: 600;
+  color: var(--text-primary, #f1f5f9);
+  font-size: 14px;
+}
+
+.outlook-status {
+  font-size: 12px;
+  color: var(--text-secondary, #94a3b8);
+}
+
+.outlook-status.connected {
+  color: #10b981;
+}
+
+.outlook-status.disabled {
+  color: #ef4444;
+}
+
+.outlook-email {
+  font-size: 11px;
+  color: var(--text-muted, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
+.outlook-actions {
+  flex-shrink: 0;
+}
+
+.btn-outlook {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.btn-outlook.connect {
+  background: #0078d4;
+  color: white;
+}
+
+.btn-outlook.connect:hover {
+  background: #106ebe;
+  transform: translateY(-1px);
+}
+
+.btn-outlook.disconnect {
+  background: transparent;
+  color: var(--text-secondary, #94a3b8);
+  border: 1px solid var(--border-color, #334155);
+}
+
+.btn-outlook.disconnect:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.outlook-error {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid #ef4444;
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.outlook-error button {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+}
+
+/* Spinner pequeño */
+.spinner-small {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border-color, #334155);
+  border-top-color: var(--primary-color, #10b981);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Botón de sincronización individual */
+.outlook-sync-btn {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid #0078d4;
+  background: transparent;
+  color: #0078d4;
+}
+
+.outlook-sync-btn:hover {
+  background: #0078d4;
+  color: white;
+}
+
+.outlook-sync-btn.synced {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: #10b981;
+  color: #10b981;
+}
+
+.outlook-sync-btn.synced:hover {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.outlook-sync-btn.syncing {
+  opacity: 0.7;
+  cursor: wait;
+}
+
+/* Tema claro */
+[data-theme="light"] .outlook-connect {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="light"] .outlook-title {
+  color: #1e293b;
+}
+
+[data-theme="light"] .outlook-status {
+  color: #64748b;
+}
+
+[data-theme="light"] .btn-outlook.disconnect {
+  color: #64748b;
+  border-color: #e2e8f0;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .outlook-connect {
+    flex-wrap: wrap;
+  }
+
+  .outlook-info {
+    flex: 1 1 auto;
+  }
+
+  .outlook-actions {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .btn-outlook {
+    width: 100%;
+  }
+}

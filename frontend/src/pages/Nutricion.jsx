@@ -43,7 +43,11 @@ const Nutricion = () => {
   // Historial
   const [historialDias, setHistorialDias] = useState({});
 
-  // Recetas
+  // Plan nutricional asignado
+  const [planAsignado, setPlanAsignado] = useState(null);
+  const [loadingPlan, setLoadingPlan] = useState(false);
+
+  // Recetas (legacy)
   const [recetas, setRecetas] = useState([]);
 
   // Modales
@@ -77,15 +81,27 @@ const Nutricion = () => {
     { id: 20, nombre: 'Atún en agua', calorias: 100, carbohidratos: 0, proteinas: 22, grasas: 1 }
   ];
 
+  // Cargar el plan al inicio para sincronizar con el Diario
+  useEffect(() => {
+    cargarPlanNutricional();
+  }, [pacienteId]);
+
   useEffect(() => {
     cargarDatosDia();
   }, [selectedDate]);
 
+  // Sincronizar objetivos cuando se carga el plan
   useEffect(() => {
-    if (activeTab === 'recetas') {
-      cargarRecetas();
+    // Verificar si hay calorías en cualquiera de los campos posibles
+    const tieneCaloriasPlan = planAsignado?.tiene_plan && (
+      planAsignado.calorias_diarias > 0 ||
+      planAsignado.contenido?.totales?.calorias > 0
+    );
+
+    if (tieneCaloriasPlan) {
+      sincronizarObjetivosConPlan();
     }
-  }, [activeTab]);
+  }, [planAsignado]);
 
   const cargarDatosDia = async () => {
     setLoading(true);
@@ -95,15 +111,34 @@ const Nutricion = () => {
       // Cargar resumen del día
       const response = await api.get(`/nutricion/resumen/${pacienteId}/${fechaStr}`);
       if (response.data) {
-        setResumenDia(response.data.macros || resumenDia);
+        // Mantener los objetivos del plan si existen
+        const objetivoActual = resumenDia.calorias.objetivo;
+        const nuevosMacros = response.data.macros || resumenDia;
+
+        // Si ya tenemos objetivos del plan, mantenerlos
+        if (planAsignado?.tiene_plan && objetivoActual !== 1800) {
+          nuevosMacros.calorias.objetivo = objetivoActual;
+          nuevosMacros.proteinas.objetivo = resumenDia.proteinas.objetivo;
+          nuevosMacros.carbohidratos.objetivo = resumenDia.carbohidratos.objetivo;
+          nuevosMacros.grasas.objetivo = resumenDia.grasas.objetivo;
+        }
+
+        setResumenDia(nuevosMacros);
         setComidas(response.data.comidas || comidas);
         setAgua(response.data.agua || agua);
       }
     } catch (err) {
       console.error('Error al cargar datos:', err);
-      // Usar datos de ejemplo
-      setResumenDia(getDatosEjemplo().macros);
-      setComidas(getDatosEjemplo().comidas);
+      // Usar datos de ejemplo pero mantener objetivos del plan si existen
+      const ejemplos = getDatosEjemplo();
+      if (planAsignado?.tiene_plan) {
+        ejemplos.macros.calorias.objetivo = resumenDia.calorias.objetivo;
+        ejemplos.macros.proteinas.objetivo = resumenDia.proteinas.objetivo;
+        ejemplos.macros.carbohidratos.objetivo = resumenDia.carbohidratos.objetivo;
+        ejemplos.macros.grasas.objetivo = resumenDia.grasas.objetivo;
+      }
+      setResumenDia(ejemplos.macros);
+      setComidas(ejemplos.comidas);
     } finally {
       setLoading(false);
     }
@@ -136,13 +171,128 @@ const Nutricion = () => {
     }
   });
 
-  const cargarRecetas = async () => {
+  // Sincronizar los objetivos del Diario con el plan nutricional
+  const sincronizarObjetivosConPlan = (plan = planAsignado) => {
+    if (!plan?.tiene_plan) return;
+
+    // Obtener calorías del plan (priorizar campo directo, luego contenido JSON)
+    const caloriasDirectas = Number(plan.calorias_diarias) || 0;
+    const caloriasContenido = Number(plan.contenido?.totales?.calorias) || 0;
+
+    console.log('Sincronizando plan:', {
+      calorias_diarias: caloriasDirectas,
+      contenido_totales_calorias: caloriasContenido
+    });
+
+    const caloriasTotales = caloriasDirectas > 0 ? caloriasDirectas : (caloriasContenido > 0 ? caloriasContenido : 1800);
+    const proteinasTotales = Number(plan.proteinas_g) || Number(plan.contenido?.totales?.proteinas) || 93;
+    const carbosTotales = Number(plan.carbohidratos_g) || Number(plan.contenido?.totales?.carbohidratos) || 167;
+    const grasasTotales = Number(plan.grasas_g) || Number(plan.contenido?.totales?.grasas) || 49;
+
+    // Calcular distribución de calorías por comida basado en el plan
+    let objetivosPorComida = {
+      desayuno: Math.round(caloriasTotales * 0.30),  // 30%
+      almuerzo: Math.round(caloriasTotales * 0.35),  // 35%
+      cena: Math.round(caloriasTotales * 0.25),      // 25%
+      snacks: Math.round(caloriasTotales * 0.10)     // 10%
+    };
+
+    // Si el plan tiene comidas con calorías específicas, usar esas
+    if (plan.contenido?.comidas?.length > 0) {
+      const comidasPlan = plan.contenido.comidas;
+      const distribucion = { desayuno: 0, almuerzo: 0, cena: 0, snacks: 0 };
+
+      comidasPlan.forEach(comida => {
+        const tipo = comida.tipo_comida?.toLowerCase();
+        if (tipo === 'desayuno') {
+          distribucion.desayuno += comida.calorias || 0;
+        } else if (tipo === 'almuerzo' || tipo === 'comida') {
+          distribucion.almuerzo += comida.calorias || 0;
+        } else if (tipo === 'cena') {
+          distribucion.cena += comida.calorias || 0;
+        } else if (tipo === 'snack' || tipo === 'merienda' || tipo === 'colacion') {
+          distribucion.snacks += comida.calorias || 0;
+        }
+      });
+
+      // Si hay calorías específicas en el plan, usarlas
+      if (distribucion.desayuno > 0 || distribucion.almuerzo > 0 || distribucion.cena > 0) {
+        objetivosPorComida = {
+          desayuno: distribucion.desayuno || objetivosPorComida.desayuno,
+          almuerzo: distribucion.almuerzo || objetivosPorComida.almuerzo,
+          cena: distribucion.cena || objetivosPorComida.cena,
+          snacks: distribucion.snacks || objetivosPorComida.snacks
+        };
+      }
+    }
+
+    // Actualizar el resumen del día con los objetivos del plan
+    setResumenDia(prev => ({
+      ...prev,
+      calorias: { ...prev.calorias, objetivo: caloriasTotales },
+      proteinas: { ...prev.proteinas, objetivo: Math.round(proteinasTotales) },
+      carbohidratos: { ...prev.carbohidratos, objetivo: Math.round(carbosTotales) },
+      grasas: { ...prev.grasas, objetivo: Math.round(grasasTotales) }
+    }));
+
+    // Actualizar los objetivos de cada comida
+    setComidas(prev => ({
+      ...prev,
+      desayuno: { ...prev.desayuno, objetivo: objetivosPorComida.desayuno },
+      almuerzo: { ...prev.almuerzo, objetivo: objetivosPorComida.almuerzo },
+      cena: { ...prev.cena, objetivo: objetivosPorComida.cena },
+      snacks: { ...prev.snacks, objetivo: objetivosPorComida.snacks }
+    }));
+  };
+
+  const cargarPlanNutricional = async () => {
+    if (!pacienteId) return;
+
+    setLoadingPlan(true);
     try {
-      const response = await api.get('/nutricion/recetas');
-      setRecetas(response.data || []);
+      const response = await api.get(`/nutricion/plan-paciente/${pacienteId}`);
+      // Manejar estructura de respuesta (puede venir en response.data o response.data.data)
+      let data = response?.data?.data || response?.data || response;
+
+      console.log('Plan nutricional cargado:', data);
+
+      if (data && data.tiene_plan) {
+        // Asegurar que las calorías estén disponibles
+        if (!data.calorias_diarias && data.contenido?.totales?.calorias) {
+          data.calorias_diarias = data.contenido.totales.calorias;
+        }
+        if (!data.proteinas_g && data.contenido?.totales?.proteinas) {
+          data.proteinas_g = data.contenido.totales.proteinas;
+        }
+        if (!data.carbohidratos_g && data.contenido?.totales?.carbohidratos) {
+          data.carbohidratos_g = data.contenido.totales.carbohidratos;
+        }
+        if (!data.grasas_g && data.contenido?.totales?.grasas) {
+          data.grasas_g = data.contenido.totales.grasas;
+        }
+
+        setPlanAsignado(data);
+        if (data.contenido?.comidas) {
+          setRecetas(data.contenido.comidas);
+        }
+        // Sincronizar inmediatamente con los datos cargados
+        sincronizarObjetivosConPlan(data);
+      } else {
+        setPlanAsignado(data);
+      }
     } catch (err) {
-      console.error('Error al cargar recetas:', err);
+      console.error('Error al cargar plan:', err);
+      setPlanAsignado(null);
       setRecetas([]);
+    } finally {
+      setLoadingPlan(false);
+    }
+  };
+
+  const cargarRecetas = async () => {
+    // Ya cargado por cargarPlanNutricional
+    if (!planAsignado) {
+      await cargarPlanNutricional();
     }
   };
 
@@ -229,13 +379,65 @@ const Nutricion = () => {
     }
   };
 
+  // Obtener alimentos del plan nutricional como opciones rápidas
+  const getAlimentosDelPlan = () => {
+    if (!planAsignado?.contenido?.comidas) return [];
+
+    const alimentosPlan = [];
+    let idCounter = 1000;
+
+    planAsignado.contenido.comidas.forEach(comida => {
+      if (comida.opciones && comida.opciones.length > 0) {
+        comida.opciones.forEach(opcion => {
+          // Verificar si este alimento es relevante para el tipo de comida actual
+          const tipoComidaOpcion = comida.tipo_comida?.toLowerCase();
+          const esRelevante =
+            (tipoComidaActual === 'desayuno' && tipoComidaOpcion === 'desayuno') ||
+            (tipoComidaActual === 'almuerzo' && (tipoComidaOpcion === 'almuerzo' || tipoComidaOpcion === 'comida')) ||
+            (tipoComidaActual === 'cena' && tipoComidaOpcion === 'cena') ||
+            (tipoComidaActual === 'snacks' && (tipoComidaOpcion === 'snack' || tipoComidaOpcion === 'merienda' || tipoComidaOpcion === 'colacion'));
+
+          alimentosPlan.push({
+            id: idCounter++,
+            nombre: opcion.nombre,
+            descripcion: opcion.descripcion,
+            calorias: opcion.calorias_estimadas || 0,
+            carbohidratos: opcion.carbohidratos_estimados || 0,
+            proteinas: opcion.proteinas_estimadas || 0,
+            grasas: opcion.grasas_estimadas || 0,
+            esDelPlan: true,
+            esRelevante: esRelevante,
+            tipoComida: comida.tipo_comida
+          });
+        });
+      }
+    });
+
+    return alimentosPlan;
+  };
+
   const getAlimentosFiltrados = () => {
+    const alimentosPlan = getAlimentosDelPlan();
+
+    // Si no hay búsqueda, mostrar primero los del plan relevantes, luego todos
     if (!alimentosBusqueda.trim()) {
-      return alimentosPredefinidos;
+      // Ordenar: primero los relevantes del plan, luego otros del plan, luego predefinidos
+      const relevantes = alimentosPlan.filter(a => a.esRelevante);
+      const otrosDelPlan = alimentosPlan.filter(a => !a.esRelevante);
+      return [...relevantes, ...otrosDelPlan, ...alimentosPredefinidos];
     }
-    return alimentosPredefinidos.filter(a =>
-      a.nombre.toLowerCase().includes(alimentosBusqueda.toLowerCase())
+
+    // Filtrar por búsqueda
+    const busqueda = alimentosBusqueda.toLowerCase();
+    const planFiltrados = alimentosPlan.filter(a =>
+      a.nombre.toLowerCase().includes(busqueda) ||
+      (a.descripcion && a.descripcion.toLowerCase().includes(busqueda))
     );
+    const predefinidosFiltrados = alimentosPredefinidos.filter(a =>
+      a.nombre.toLowerCase().includes(busqueda)
+    );
+
+    return [...planFiltrados, ...predefinidosFiltrados];
   };
 
   const formatearFecha = (fecha) => {
@@ -397,6 +599,13 @@ const Nutricion = () => {
       <div className="nutricion-content">
         {activeTab === 'diario' && (
           <>
+            {/* Indicador de sincronización con plan */}
+            {planAsignado?.tiene_plan && (
+              <div className="synced-with-plan">
+                Objetivos sincronizados con tu plan: <strong>{planAsignado.nombre}</strong>
+              </div>
+            )}
+
             {/* Resumen de macros */}
             <section className="section-card resumen-section">
               <div className="section-header">
@@ -533,44 +742,199 @@ const Nutricion = () => {
               </p>
             </div>
 
-            {/* Recetas asignadas */}
-            <section className="recetas-list-section">
-              <h3>Recetas recomendadas</h3>
-              {recetas.length > 0 ? (
-                <div className="recetas-grid">
-                  {recetas.map(receta => (
-                    <div
-                      key={receta.id}
-                      className="receta-card-new"
-                      onClick={() => setShowRecetaDetail(receta)}
-                    >
-                      <div className="receta-image">
-                        {receta.imagen ? (
-                          <img src={receta.imagen} alt={receta.titulo} />
-                        ) : (
-                          <div className="receta-placeholder">
-                            <span>🍽️</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="receta-info-new">
-                        <h4>{receta.titulo}</h4>
-                        <div className="receta-meta-new">
-                          <span>⏱️ {receta.tiempo} min</span>
-                          <span>🔥 {receta.calorias} kcal</span>
-                        </div>
-                      </div>
+            {loadingPlan ? (
+              <div className="loading-state">
+                <div className="loading-spinner"></div>
+                <p>Cargando tu plan nutricional...</p>
+              </div>
+            ) : planAsignado?.tiene_plan ? (
+              <>
+                {/* Info del plan */}
+                <section className="plan-info-section">
+                  <div className="plan-header-info">
+                    <h3>📋 {planAsignado.nombre}</h3>
+                    <span className="plan-badge-activo">Activo</span>
+                  </div>
+                  {planAsignado.descripcion && (
+                    <p className="plan-descripcion">{planAsignado.descripcion}</p>
+                  )}
+                  <p className="plan-especialista">
+                    Asignado por: <strong>{planAsignado.especialista_nombre}</strong>
+                  </p>
+
+                  {/* Objetivo si existe */}
+                  {planAsignado.contenido?.objetivo && (
+                    <div className="plan-objetivo-paciente">
+                      <strong>🎯 Objetivo:</strong> {planAsignado.contenido.objetivo}
                     </div>
-                  ))}
-                </div>
-              ) : (
+                  )}
+
+                  {/* Macros del plan */}
+                  <div className="plan-macros-resumen">
+                    <div className="macro-item calorias">
+                      <span className="macro-icon">🔥</span>
+                      <span className="macro-value">{planAsignado.calorias_diarias || planAsignado.contenido?.totales?.calorias || 0}</span>
+                      <span className="macro-label">kcal/día</span>
+                    </div>
+                    <div className="macro-item proteinas">
+                      <span className="macro-icon">🥩</span>
+                      <span className="macro-value">{Number(planAsignado.proteinas_g || planAsignado.contenido?.totales?.proteinas || 0).toFixed(0)}g</span>
+                      <span className="macro-label">Proteínas</span>
+                    </div>
+                    <div className="macro-item carbos">
+                      <span className="macro-icon">🍞</span>
+                      <span className="macro-value">{Number(planAsignado.carbohidratos_g || planAsignado.contenido?.totales?.carbohidratos || 0).toFixed(0)}g</span>
+                      <span className="macro-label">Carbos</span>
+                    </div>
+                    <div className="macro-item grasas">
+                      <span className="macro-icon">🥑</span>
+                      <span className="macro-value">{Number(planAsignado.grasas_g || planAsignado.contenido?.totales?.grasas || 0).toFixed(0)}g</span>
+                      <span className="macro-label">Grasas</span>
+                    </div>
+                  </div>
+                </section>
+
+                {/* Comidas del plan - Diseño mejorado */}
+                <section className="recetas-list-section">
+                  <h3>🍽️ Tu Menú del Día</h3>
+                  {planAsignado.contenido?.comidas?.length > 0 ? (
+                    <div className="comidas-timeline-paciente">
+                      {planAsignado.contenido.comidas.map((comida, idx) => {
+                        const tipoLabels = {
+                          desayuno: { icon: '🌅', label: 'Desayuno' },
+                          almuerzo: { icon: '🍽️', label: 'Almuerzo' },
+                          cena: { icon: '🌙', label: 'Cena' },
+                          snack: { icon: '🥜', label: 'Snack' },
+                          merienda: { icon: '🍪', label: 'Merienda' }
+                        };
+                        const tipoInfo = tipoLabels[comida.tipo_comida] || { icon: '🍴', label: comida.nombre_original || comida.tipo_comida };
+
+                        return (
+                          <div key={idx} className="comida-card-paciente">
+                            <div className="comida-card-header">
+                              <div className="comida-tipo-info">
+                                <span className="comida-icono">{tipoInfo.icon}</span>
+                                <div className="comida-tipo-text">
+                                  <span className="comida-tipo-label">{tipoInfo.label}</span>
+                                  {comida.horario && <span className="comida-hora">⏰ {comida.horario}</span>}
+                                </div>
+                              </div>
+                              {comida.calorias > 0 && (
+                                <span className="comida-kcal-pill">~{comida.calorias} kcal</span>
+                              )}
+                            </div>
+
+                            {/* Opciones de la comida */}
+                            {comida.opciones && comida.opciones.length > 0 ? (
+                              <div className="opciones-grid-paciente">
+                                <div className="opciones-titulo">
+                                  <span className="opciones-count">{comida.opciones.length} {comida.opciones.length === 1 ? 'opción' : 'opciones'} para elegir:</span>
+                                </div>
+                                {comida.opciones.map((opcion, opIdx) => (
+                                  <div key={opIdx} className="opcion-card-paciente">
+                                    <div className="opcion-card-top">
+                                      <span className="opcion-num">#{opcion.numero || opIdx + 1}</span>
+                                      {opcion.calorias_estimadas > 0 && (
+                                        <span className="opcion-kcal-badge">~{opcion.calorias_estimadas} kcal</span>
+                                      )}
+                                    </div>
+                                    <h5 className="opcion-nombre-paciente">{opcion.nombre}</h5>
+                                    <p className="opcion-desc-paciente">
+                                      {opcion.descripcion?.length > 180
+                                        ? opcion.descripcion.substring(0, 180) + '...'
+                                        : opcion.descripcion || 'Ver receta'}
+                                    </p>
+                                    {opcion.calorias_estimadas > 0 && (
+                                      <div className="opcion-macros-paciente">
+                                        <span className="macro proteinas">🥩 {opcion.proteinas_estimadas}g</span>
+                                        <span className="macro carbos">🍞 {opcion.carbohidratos_estimados}g</span>
+                                        <span className="macro grasas">🥑 {opcion.grasas_estimadas}g</span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            ) : (
+                              <div className="comida-simple">
+                                <p>{comida.nombre_plato || 'Sin opciones detalladas'}</p>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="empty-state">
+                      <span className="empty-icon">📋</span>
+                      <p>El plan no tiene comidas estructuradas</p>
+                      <p className="help-text">Consulta con tu nutriólogo para más detalles</p>
+                    </div>
+                  )}
+                </section>
+
+                {/* Indicaciones generales */}
+                {planAsignado.contenido?.indicaciones_generales?.length > 0 && (
+                  <section className="indicaciones-section">
+                    <h3>📝 Indicaciones Generales</h3>
+                    <ul className="indicaciones-list-paciente">
+                      {planAsignado.contenido.indicaciones_generales.map((ind, idx) => (
+                        <li key={idx}>{ind}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
+                {/* Recomendaciones */}
+                {planAsignado.contenido?.recomendaciones?.length > 0 && (
+                  <section className="recomendaciones-section">
+                    <h3>💡 Recomendaciones</h3>
+                    <ul className="recomendaciones-list">
+                      {planAsignado.contenido.recomendaciones.map((rec, idx) => (
+                        <li key={idx}>{rec}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )}
+
+                {/* Gráficas e imágenes informativas */}
+                {(planAsignado.contenido?.graficas?.length > 0 || planAsignado.contenido?.imagenes?.length > 0) && (
+                  <section className="graficas-section-paciente">
+                    <h3>📊 Material Informativo</h3>
+                    <div className="graficas-scroll">
+                      {(planAsignado.contenido.graficas || planAsignado.contenido.imagenes || []).map((item, idx) => {
+                        const imagen = item.imagen || item;
+                        const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+                        const imagePath = imagen.path || imagen;
+
+                        return (
+                          <div key={idx} className="grafica-card-paciente">
+                            <img
+                              src={`${apiUrl}${imagePath}`}
+                              alt={item.titulo || `Gráfica ${idx + 1}`}
+                              className="grafica-img-paciente"
+                              onClick={() => window.open(`${apiUrl}${imagePath}`, '_blank')}
+                            />
+                            <div className="grafica-overlay">
+                              <span className="grafica-title">{item.titulo || `Gráfica ${idx + 1}`}</span>
+                              <span className="grafica-tap">Toca para ampliar</span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                )}
+              </>
+            ) : (
+              <section className="recetas-list-section">
+                <h3>Recetas recomendadas</h3>
                 <div className="empty-state">
                   <span className="empty-icon">📋</span>
                   <p>No tienes recetas asignadas aún</p>
                   <p className="help-text">Tu nutriólogo te asignará recetas personalizadas</p>
                 </div>
-              )}
-            </section>
+              </section>
+            )}
           </>
         )}
       </div>
@@ -624,12 +988,48 @@ const Nutricion = () => {
             </div>
 
             <div className="food-suggestions">
-              <h4>Alimentos disponibles</h4>
+              {/* Sección de alimentos del plan */}
+              {planAsignado?.tiene_plan && getAlimentosDelPlan().filter(a => a.esRelevante).length > 0 && (
+                <div className="plan-foods-section">
+                  <h4>📋 De tu plan nutricional</h4>
+                  <div className="food-list plan-foods">
+                    {getAlimentosDelPlan().filter(a => a.esRelevante).slice(0, alimentosBusqueda ? undefined : 5).map((alimento) => (
+                      <div key={alimento.id} className="food-suggestion-item plan-food">
+                        <div className="food-info">
+                          <span className="food-name">
+                            {alimento.nombre}
+                            <span className="plan-badge">Del plan</span>
+                          </span>
+                          <span className="food-macros">
+                            {alimento.calorias} kcal · C:{alimento.carbohidratos}g · P:{alimento.proteinas}g · G:{alimento.grasas}g
+                          </span>
+                          {alimento.descripcion && (
+                            <span className="food-description">{alimento.descripcion.substring(0, 80)}...</span>
+                          )}
+                        </div>
+                        <button
+                          className="add-food-btn plan-add-btn"
+                          onClick={() => registrarAlimento(alimento)}
+                          disabled={registrando}
+                        >
+                          {registrando ? '...' : '+'}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Sección de otros alimentos */}
+              <h4>🍴 Otros alimentos</h4>
               <div className="food-list">
-                {getAlimentosFiltrados().map((alimento) => (
-                  <div key={alimento.id} className="food-suggestion-item">
+                {getAlimentosFiltrados().filter(a => !a.esDelPlan || !a.esRelevante).map((alimento) => (
+                  <div key={alimento.id} className={`food-suggestion-item ${alimento.esDelPlan ? 'from-plan' : ''}`}>
                     <div className="food-info">
-                      <span className="food-name">{alimento.nombre}</span>
+                      <span className="food-name">
+                        {alimento.nombre}
+                        {alimento.esDelPlan && <span className="plan-badge small">Plan</span>}
+                      </span>
                       <span className="food-macros">
                         {alimento.calorias} kcal · C:{alimento.carbohidratos}g · P:{alimento.proteinas}g · G:{alimento.grasas}g
                       </span>

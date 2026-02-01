@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\Cita;
 use App\Services\GoogleCalendarService;
+use App\Services\MicrosoftGraphService;
 use App\Services\EmailService;
 use App\Services\DatabaseService;
 use App\Utils\Response;
@@ -14,12 +15,14 @@ class CitasController
     private $calendarService;
     private $emailService;
     private $db;
+    private $graphService;
 
     public function __construct()
     {
         $this->calendarService = new GoogleCalendarService();
         $this->emailService = new EmailService();
         $this->db = DatabaseService::getInstance();
+        $this->graphService = new MicrosoftGraphService();
     }
 
     // ===== NUEVOS MÉTODOS PARA ESPECIALISTA =====
@@ -106,7 +109,131 @@ class CitasController
         $citaId = $this->db->lastInsertId();
         error_log("=== CITA CREADA CON ID: $citaId ===");
 
-        return Response::success(['id' => $citaId], 'Cita agendada exitosamente', 201);
+        // Sincronizar automáticamente con Outlook si el especialista tiene cuenta conectada
+        $outlookEventId = $this->syncCitaToOutlook($data['especialista_id'], $citaId);
+
+        return Response::success([
+            'id' => $citaId,
+            'outlook_synced' => !empty($outlookEventId),
+            'outlook_event_id' => $outlookEventId
+        ], 'Cita agendada exitosamente', 201);
+    }
+
+    /**
+     * Sincronizar cita con Outlook Calendar del especialista
+     */
+    private function syncCitaToOutlook($especialistaId, $citaId)
+    {
+        try {
+            // Verificar si el especialista tiene Outlook conectado
+            $tokenRecord = $this->db->query(
+                "SELECT access_token, refresh_token, expira_en FROM integraciones_usuario
+                 WHERE usuario_id = ? AND proveedor = 'microsoft'",
+                [$especialistaId]
+            )->fetch();
+
+            if (!$tokenRecord) {
+                error_log("Especialista $especialistaId no tiene Outlook conectado");
+                return null;
+            }
+
+            // Obtener token válido (refrescando si es necesario)
+            $accessToken = base64_decode($tokenRecord['access_token']);
+            $expiresAt = strtotime($tokenRecord['expira_en']);
+
+            if ($expiresAt < time() + 300 && $tokenRecord['refresh_token']) {
+                $refreshToken = base64_decode($tokenRecord['refresh_token']);
+                $newTokens = $this->graphService->refreshToken($refreshToken);
+
+                if ($newTokens) {
+                    $this->db->query(
+                        "UPDATE integraciones_usuario SET
+                            access_token = ?,
+                            refresh_token = ?,
+                            expira_en = ?
+                         WHERE usuario_id = ? AND proveedor = 'microsoft'",
+                        [
+                            base64_encode($newTokens['access_token']),
+                            base64_encode($newTokens['refresh_token']),
+                            date('Y-m-d H:i:s', time() + $newTokens['expires_in']),
+                            $especialistaId
+                        ]
+                    );
+                    $accessToken = $newTokens['access_token'];
+                } else {
+                    error_log("No se pudo refrescar token de Outlook para especialista $especialistaId");
+                    return null;
+                }
+            }
+
+            // Obtener datos de la cita
+            $cita = $this->db->query(
+                "SELECT c.*, tc.nombre as tipo_cita_nombre, tc.duracion_minutos,
+                        u_esp.nombre_completo as especialista_nombre, u_esp.email as especialista_email,
+                        u_pac.nombre_completo as paciente_nombre, u_pac.email as paciente_email
+                 FROM citas c
+                 LEFT JOIN tipos_cita tc ON c.tipo_cita_id = tc.id
+                 LEFT JOIN usuarios u_esp ON c.especialista_id = u_esp.id
+                 LEFT JOIN pacientes p ON c.paciente_id = p.id
+                 LEFT JOIN usuarios u_pac ON p.usuario_id = u_pac.id
+                 WHERE c.id = ?",
+                [$citaId]
+            )->fetch();
+
+            if (!$cita) {
+                error_log("Cita $citaId no encontrada para sincronizar");
+                return null;
+            }
+
+            // Calcular fecha/hora de fin
+            $inicio = new \DateTime($cita['fecha'] . ' ' . $cita['hora_inicio']);
+            $duracion = $cita['duracion_minutos'] ?? 30;
+            $fin = clone $inicio;
+            $fin->modify("+{$duracion} minutes");
+
+            // Preparar datos del evento
+            $eventData = [
+                'titulo' => "Cita: {$cita['tipo_cita_nombre']} - {$cita['paciente_nombre']}",
+                'fecha_inicio' => $inicio->format('Y-m-d\TH:i:s'),
+                'fecha_fin' => $fin->format('Y-m-d\TH:i:s'),
+                'tipo_cita' => $cita['tipo_cita_nombre'],
+                'especialista' => $cita['especialista_nombre'],
+                'paciente' => $cita['paciente_nombre'],
+                'notas' => $cita['motivo'] ?? '',
+                'ubicacion' => 'Centro de Rehabilitación Vitalia',
+                'es_virtual' => false,
+                'recordatorio_minutos' => 30,
+                'asistentes' => []
+            ];
+
+            // Agregar paciente como asistente si tiene email
+            if (!empty($cita['paciente_email'])) {
+                $eventData['asistentes'][] = [
+                    'email' => $cita['paciente_email'],
+                    'nombre' => $cita['paciente_nombre']
+                ];
+            }
+
+            // Crear evento en Outlook
+            $result = $this->graphService->createCalendarEvent($accessToken, $eventData);
+
+            if ($result && isset($result['event_id'])) {
+                // Guardar referencia del evento de Outlook
+                $this->db->query(
+                    "UPDATE citas SET outlook_event_id = ?, outlook_synced_at = NOW() WHERE id = ?",
+                    [$result['event_id'], $citaId]
+                );
+                error_log("Cita $citaId sincronizada con Outlook: {$result['event_id']}");
+                return $result['event_id'];
+            }
+
+            error_log("Error al crear evento en Outlook para cita $citaId");
+            return null;
+
+        } catch (\Exception $e) {
+            error_log("Error sincronizando cita con Outlook: " . $e->getMessage());
+            return null;
+        }
     }
 
     /**
@@ -277,7 +404,21 @@ class CitasController
                 error_log('Email notification failed: ' . $e->getMessage());
             }
 
+            // Sincronizar con Outlook Calendar del especialista (si tiene cuenta conectada)
+            $outlookEventId = null;
+            try {
+                $outlookEventId = $this->syncCitaToOutlook($data['especialista_id'], $result['id']);
+                if ($outlookEventId) {
+                    error_log("Cita sincronizada con Outlook: $outlookEventId");
+                }
+            } catch (\Exception $e) {
+                // Si falla Outlook, continuar sin error
+                error_log('Outlook Calendar sync failed: ' . $e->getMessage());
+            }
+
             error_log("=== FIN agendarCita - ÉXITO ===");
+            $result['outlook_synced'] = !empty($outlookEventId);
+            $result['outlook_event_id'] = $outlookEventId;
             return Response::success($result, 'Cita agendada exitosamente', 201);
         }
 

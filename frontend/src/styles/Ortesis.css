@@ -1,290 +1,1326 @@
-/* Órtesis Page Styles */
+/* =====================================================
+   MÓDULO DE PRÓTESIS - ESTILOS COMPLETOS
+   ===================================================== */
 
 .ortesis-page {
   min-height: 100vh;
-  background: var(--gray-100);
+  background: var(--bg-primary, #0f172a);
   padding-bottom: 100px;
 }
 
-/* Dispositivo Section */
-.dispositivo-section {
-  padding-bottom: var(--spacing-lg);
+/* =====================================================
+   HEADER
+   ===================================================== */
+
+.ortesis-page .page-header {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  padding: 1rem 1.5rem;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
-.dispositivo-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-}
-
-.dispositivo-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-.dispositivo-header h2 {
-  margin: 0;
-}
-
-.estado-badge {
-  padding: 4px 12px;
-  border-radius: 20px;
-  font-size: var(--font-size-xs);
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.estado-badge.activo { background: #e8f5e9; color: #2e7d32; }
-.estado-badge.mantenimiento { background: #fff3e0; color: #e65100; }
-.estado-badge.inactivo { background: #ffebee; color: #c62828; }
-
-.dispositivo-info {
-  margin-bottom: var(--spacing-lg);
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--spacing-sm) 0;
-  border-bottom: 1px solid var(--gray-100);
-}
-
-.info-label {
-  color: var(--gray-500);
-}
-
-.info-value {
-  font-weight: 500;
-}
-
-.info-value.proximo {
-  color: var(--warning);
-}
-
-.dispositivo-notas {
-  background: var(--gray-100);
-  padding: var(--spacing-md);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.dispositivo-notas h4 {
-  margin-bottom: var(--spacing-sm);
-  color: var(--gray-700);
-}
-
-.dispositivo-notas p {
-  margin: 0;
-  color: var(--gray-600);
-}
-
-.dispositivo-acciones {
-  display: flex;
-  gap: var(--spacing-sm);
-}
-
-/* Checklist Section */
-.checklist-section {
-  padding-bottom: var(--spacing-lg);
-}
-
-.progreso-checklist {
-  background: white;
-  padding: var(--spacing-md);
-  border-radius: var(--radius-lg);
-  margin-bottom: var(--spacing-lg);
-}
-
-.categoria-checklist {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.categoria-checklist h3 {
-  font-size: var(--font-size-base);
-  color: var(--primary);
-  margin-bottom: var(--spacing-md);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 2px solid var(--primary);
-}
-
-.items-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.checklist-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--gray-100);
+.ortesis-page .btn-back-header {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  transition: background 0.2s;
 }
 
-.checklist-item:last-child {
+.ortesis-page .btn-back-header:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.ortesis-page .header-content h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.ortesis-page .header-content .subtitle {
+  margin: 0.25rem 0 0;
+  opacity: 0.9;
+  font-size: 0.9rem;
+}
+
+/* =====================================================
+   NAVEGACIÓN POR TABS
+   ===================================================== */
+
+.ortesis-page .tabs-nav {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  background: var(--bg-secondary, #1e293b);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.ortesis-page .tabs-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.ortesis-page .tabs-nav .tab {
+  flex-shrink: 0;
+  padding: 0.6rem 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.ortesis-page .tabs-nav .tab:hover {
+  background: var(--bg-tertiary, #334155);
+  color: var(--text-primary, #f1f5f9);
+}
+
+.ortesis-page .tabs-nav .tab.active {
+  background: #10b981;
+  color: white;
+}
+
+/* =====================================================
+   CONTENIDO PRINCIPAL
+   ===================================================== */
+
+.ortesis-page .tab-content {
+  padding: 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.ortesis-page .section-header {
+  margin-bottom: 1.5rem;
+}
+
+.ortesis-page .section-header h2 {
+  color: var(--text-primary, #f1f5f9);
+  font-size: 1.5rem;
+  margin: 0 0 0.5rem;
+}
+
+.ortesis-page .section-header p {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+}
+
+/* =====================================================
+   PÁGINA DE INICIO
+   ===================================================== */
+
+.welcome-banner {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.welcome-banner h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.4rem;
+}
+
+.welcome-banner p {
+  margin: 0;
+  opacity: 0.9;
+}
+
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.action-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.action-card:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+}
+
+.action-card .action-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.action-card h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.action-card p {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+/* Card de Nivel K del usuario */
+.user-nivel-k-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  border: 2px solid #10b981;
+}
+
+.user-nivel-k-card .nivel-badge {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-nivel-k-card .nivel-letra {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.user-nivel-k-card .nivel-info {
+  flex: 1;
+}
+
+.user-nivel-k-card .nivel-info h3 {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.8rem;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.user-nivel-k-card .nivel-nombre {
+  color: var(--text-primary, #f1f5f9);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0 0 0.25rem;
+}
+
+.user-nivel-k-card .nivel-desc {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+/* Resumen de contenido */
+.content-summary {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.content-summary h3 {
+  color: var(--text-primary, #f1f5f9);
+  font-size: 1rem;
+  margin: 0 0 1rem;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+}
+
+.summary-item {
+  text-align: center;
+}
+
+.summary-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.summary-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* =====================================================
+   NIVELES K
+   ===================================================== */
+
+.niveles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.nivel-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  position: relative;
+}
+
+.nivel-card:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+}
+
+.nivel-card.current {
+  border-color: #10b981;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+}
+
+.current-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: #10b981;
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.nivel-badge {
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.nivel-badge span {
+  color: white;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.nivel-badge.large {
+  width: 80px;
+  height: 80px;
+}
+
+.nivel-badge.large span {
+  font-size: 2rem;
+}
+
+.nivel-badge.small {
+  width: 36px;
+  height: 36px;
+}
+
+.nivel-badge.small span {
+  font-size: 0.9rem;
+}
+
+.nivel-badge.mini {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  margin: 0;
+}
+
+.nivel-badge.mini span {
+  font-size: 0.7rem;
+}
+
+.nivel-card h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.5rem;
+  font-size: 1.1rem;
+}
+
+.nivel-card > p {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  line-height: 1.5;
+}
+
+.nivel-preview {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+}
+
+/* Detalle de Nivel K */
+.nivel-detail-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.nivel-header {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--bg-tertiary, #334155);
+}
+
+.nivel-header h2 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.5rem;
+}
+
+.nivel-header .nivel-desc {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.nivel-sections {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.nivel-section h3 {
+  color: #10b981;
+  font-size: 1rem;
+  margin: 0 0 0.75rem;
+}
+
+.nivel-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.nivel-section li {
+  color: var(--text-primary, #f1f5f9);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.actividades-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  list-style: none;
+  margin-left: -1.25rem;
+}
+
+.check-icon {
+  color: #10b981;
+  font-weight: bold;
+}
+
+/* =====================================================
+   TIPOS DE PRÓTESIS
+   ===================================================== */
+
+.categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.categoria-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+}
+
+.categoria-card:hover {
+  border-color: #10b981;
+  transform: translateY(-2px);
+}
+
+.categoria-icon {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: 0.75rem;
+}
+
+.categoria-card h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.categoria-card p {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+}
+
+.tipos-count {
+  color: #10b981;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tipos-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.tipo-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.tipo-card:hover {
+  border-color: #10b981;
+}
+
+.tipo-card h4 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+}
+
+.tipo-card p {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+}
+
+/* Detalle de Tipo */
+.tipo-detail-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+}
+
+.tipo-detail-card h2 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.5rem;
+}
+
+.tipo-categoria {
+  display: inline-block;
+  background: var(--bg-tertiary, #334155);
+  color: var(--text-secondary, #94a3b8);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.tipo-descripcion {
+  color: var(--text-primary, #f1f5f9);
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.nivel-minimo {
+  background: var(--bg-tertiary, #334155);
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.nivel-minimo span:first-child {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.9rem;
+}
+
+.tipo-sections {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.tipo-section h3 {
+  color: var(--text-primary, #f1f5f9);
+  font-size: 1rem;
+  margin: 0 0 0.75rem;
+}
+
+.tipo-section.ventajas h3 {
+  color: #10b981;
+}
+
+.tipo-section.desventajas h3 {
+  color: #f59e0b;
+}
+
+.tipo-section.cuidados {
+  background: rgba(16, 185, 129, 0.1);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 3px solid #10b981;
+}
+
+.tipo-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.tipo-section li {
+  color: var(--text-primary, #f1f5f9);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   GUÍAS DE CUIDADO
+   ===================================================== */
+
+.categorias-guias-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.categoria-guia-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: 2px solid transparent;
+  border-left: 4px solid var(--cat-color, #10b981);
+}
+
+.categoria-guia-card:hover {
+  border-color: var(--cat-color, #10b981);
+}
+
+.categoria-guia-card .categoria-icon {
+  font-size: 2rem;
+}
+
+.categoria-guia-card h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0.5rem 0 0.25rem;
+  font-size: 1rem;
+}
+
+.guias-count {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.8rem;
+}
+
+.guias-grid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.guia-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.guia-card:hover {
+  transform: translateY(-2px);
+}
+
+.guia-card h4 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.5rem;
+}
+
+.guia-card p {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 0.75rem;
+  font-size: 0.85rem;
+}
+
+.guia-meta {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #94a3b8);
+  margin-bottom: 0.75rem;
+}
+
+/* Detalle de Guía */
+.guia-detail-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.guia-header {
+  background: linear-gradient(135deg, var(--cat-color, #10b981), transparent);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.guia-header .guia-icon {
+  font-size: 2.5rem;
+}
+
+.guia-header h2 {
+  color: white;
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.guia-intro {
+  padding: 1.5rem;
+  color: var(--text-primary, #f1f5f9);
+  line-height: 1.6;
+  border-bottom: 1px solid var(--bg-tertiary, #334155);
+  margin: 0;
+}
+
+.guia-section {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--bg-tertiary, #334155);
+}
+
+.guia-section:last-child {
   border-bottom: none;
 }
 
-.checklist-item input {
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
+.guia-section h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 1rem;
+  font-size: 1rem;
 }
 
-.checklist-item span.completed {
-  text-decoration: line-through;
-  color: var(--gray-400);
+.guia-section.tips {
+  background: rgba(59, 130, 246, 0.1);
 }
 
-/* Problemas Section */
-.problemas-section {
-  padding-bottom: var(--spacing-lg);
+.guia-section.advertencias {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.pasos-list {
+  margin: 0;
+  padding-left: 1.5rem;
+}
+
+.pasos-list li {
+  color: var(--text-primary, #f1f5f9);
+  margin-bottom: 0.75rem;
+  line-height: 1.6;
+}
+
+.guia-section ul {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.guia-section li {
+  color: var(--text-primary, #f1f5f9);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   MI PRÓTESIS
+   ===================================================== */
+
+.mi-protesis-section .dispositivo-card {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mi-protesis-section .dispositivo-card .dispositivo-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--bg-tertiary, #334155);
+}
+
+.mi-protesis-section .dispositivo-header h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.info-item {
+  background: var(--bg-tertiary, #334155);
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.info-item.destacado {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), transparent);
+  border: 1px solid #10b981;
+}
+
+.info-label {
+  display: block;
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.8rem;
+  margin-bottom: 0.25rem;
+}
+
+.info-value {
+  color: var(--text-primary, #f1f5f9);
+  font-weight: 600;
+}
+
+.notas-especialista {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-tertiary, #334155);
+  border-radius: 8px;
+  border-left: 3px solid #10b981;
+}
+
+.notas-especialista h4 {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+}
+
+.notas-especialista p {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0;
+}
+
+.acciones-dispositivo {
+  display: flex;
+  gap: 1rem;
+}
+
+.no-dispositivo {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.no-dispositivo h3 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 0.5rem;
+}
+
+.no-dispositivo p {
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 1.5rem;
+}
+
+/* =====================================================
+   PROBLEMAS
+   ===================================================== */
+
+.problemas-section .btn-lg {
+  width: 100%;
+  padding: 1rem;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .problemas-list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
+  display: grid;
+  gap: 1rem;
 }
 
 .problema-card {
-  background: white;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
-  border-left: 4px solid var(--gray-300);
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  padding: 1.25rem;
+  border-left: 4px solid;
 }
 
-.problema-card.urgencia-baja { border-left-color: var(--success); }
-.problema-card.urgencia-media { border-left-color: var(--warning); }
-.problema-card.urgencia-alta { border-left-color: var(--danger); }
+.problema-card.urgencia-baja {
+  border-left-color: #10b981;
+}
+
+.problema-card.urgencia-media {
+  border-left-color: #f59e0b;
+}
+
+.problema-card.urgencia-alta {
+  border-left-color: #ef4444;
+}
 
 .problema-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.75rem;
 }
 
 .problema-tipo {
+  color: var(--text-primary, #f1f5f9);
   font-weight: 500;
 }
 
 .urgencia-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: var(--font-size-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
   text-transform: capitalize;
 }
 
-.urgencia-badge.baja { background: #e8f5e9; color: #2e7d32; }
-.urgencia-badge.media { background: #fff3e0; color: #e65100; }
-.urgencia-badge.alta { background: #ffebee; color: #c62828; }
+.urgencia-badge.baja {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.urgencia-badge.media {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
+
+.urgencia-badge.alta {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
 
 .problema-descripcion {
-  color: var(--gray-600);
-  margin-bottom: var(--spacing-md);
+  color: var(--text-secondary, #94a3b8);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
 }
 
 .problema-footer {
   display: flex;
   justify-content: space-between;
-  font-size: var(--font-size-sm);
+  align-items: center;
+  font-size: 0.8rem;
 }
 
 .problema-fecha {
-  color: var(--gray-400);
+  color: var(--text-secondary, #94a3b8);
 }
 
 .problema-estado {
-  padding: 2px 8px;
-  border-radius: 10px;
-  font-size: var(--font-size-xs);
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
-.problema-estado.pendiente { background: #fff3e0; color: #e65100; }
-.problema-estado.en_revision { background: #e3f2fd; color: #1565c0; }
-.problema-estado.resuelto { background: #e8f5e9; color: #2e7d32; }
+.problema-estado.pendiente {
+  background: rgba(245, 158, 11, 0.2);
+  color: #f59e0b;
+}
 
-/* Tipo Problema Grid */
+.problema-estado.resuelto {
+  background: rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.no-problemas {
+  text-align: center;
+  padding: 2rem;
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+}
+
+.no-problemas p {
+  margin: 0;
+  color: var(--text-primary, #f1f5f9);
+}
+
+.no-problemas .text-muted {
+  color: var(--text-secondary, #94a3b8);
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+/* =====================================================
+   FAQs
+   ===================================================== */
+
+.faqs-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.faq-item {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.faq-item summary {
+  padding: 1rem 1.25rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-primary, #f1f5f9);
+  font-weight: 500;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: '+';
+  margin-left: auto;
+  font-size: 1.25rem;
+  color: var(--text-secondary, #94a3b8);
+  transition: transform 0.2s;
+}
+
+.faq-item[open] summary::after {
+  content: '-';
+}
+
+.faq-icon {
+  font-size: 1.25rem;
+}
+
+.faq-answer {
+  padding: 0 1.25rem 1.25rem;
+  color: var(--text-secondary, #94a3b8);
+  line-height: 1.6;
+}
+
+.faq-answer p {
+  margin: 0;
+}
+
+/* =====================================================
+   BOTONES
+   ===================================================== */
+
+.ortesis-page .btn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.ortesis-page .btn-primary {
+  background: #10b981;
+  color: white;
+}
+
+.ortesis-page .btn-primary:hover {
+  background: #059669;
+}
+
+.ortesis-page .btn-secondary {
+  background: var(--bg-tertiary, #334155);
+  color: var(--text-primary, #f1f5f9);
+}
+
+.ortesis-page .btn-secondary:hover {
+  background: #475569;
+}
+
+.ortesis-page .btn-outline {
+  background: transparent;
+  border: 1px solid #10b981;
+  color: #10b981;
+}
+
+.ortesis-page .btn-outline:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.ortesis-page .btn-sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+.btn-back {
+  background: var(--bg-tertiary, #334155);
+  color: var(--text-primary, #f1f5f9);
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* =====================================================
+   MODAL
+   ===================================================== */
+
+.ortesis-page .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.ortesis-page .modal-content {
+  background: var(--bg-secondary, #1e293b);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.ortesis-page .modal-content h2 {
+  color: var(--text-primary, #f1f5f9);
+  margin: 0 0 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  color: var(--text-primary, #f1f5f9);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-tertiary, #334155);
+  border: 1px solid var(--bg-tertiary, #475569);
+  border-radius: 8px;
+  color: var(--text-primary, #f1f5f9);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
 .tipo-problema-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-lg);
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
 }
 
 .tipo-btn {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--spacing-md);
-  background: white;
-  border: 2px solid var(--gray-200);
-  border-radius: var(--radius-md);
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--bg-tertiary, #334155);
+  border: 2px solid transparent;
+  border-radius: 12px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .tipo-btn:hover {
-  border-color: var(--primary);
+  border-color: var(--bg-tertiary, #475569);
 }
 
 .tipo-btn.selected {
-  border-color: var(--primary);
-  background: rgba(102, 126, 234, 0.1);
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.1);
 }
 
-.tipo-icon {
+.tipo-btn .tipo-icon {
   font-size: 1.5rem;
-  margin-bottom: var(--spacing-xs);
 }
 
-.tipo-nombre {
-  font-size: var(--font-size-xs);
+.tipo-btn .tipo-nombre {
+  color: var(--text-primary, #f1f5f9);
+  font-size: 0.8rem;
   text-align: center;
 }
 
-/* Guías Section */
-.guias-section {
+.modal-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.modal-actions .btn {
+  flex: 1;
+}
+
+/* =====================================================
+   UTILIDADES
+   ===================================================== */
+
+.loading-container {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
 }
 
-.guia-card {
+.loading-container p {
+  color: var(--text-secondary, #94a3b8);
+  margin-top: 1rem;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--bg-tertiary, #334155);
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-container p {
+  color: #ef4444;
+  margin-bottom: 1rem;
+}
+
+/* =====================================================
+   MODO CLARO
+   ===================================================== */
+
+[data-theme="light"] .ortesis-page {
+  background: #f8fafc;
+}
+
+[data-theme="light"] .ortesis-page .tabs-nav {
   background: white;
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.guia-card h3 {
-  margin-bottom: var(--spacing-sm);
-  color: var(--primary);
+[data-theme="light"] .ortesis-page .tabs-nav .tab {
+  color: #64748b;
 }
 
-.guia-intro {
-  color: var(--gray-600);
-  margin-bottom: var(--spacing-md);
+[data-theme="light"] .ortesis-page .tabs-nav .tab:hover {
+  background: #f1f5f9;
+  color: #1e293b;
 }
 
-.guia-pasos {
-  padding-left: var(--spacing-lg);
-  margin: 0;
+[data-theme="light"] .action-card,
+[data-theme="light"] .nivel-card,
+[data-theme="light"] .categoria-card,
+[data-theme="light"] .categoria-guia-card,
+[data-theme="light"] .tipo-card,
+[data-theme="light"] .guia-card,
+[data-theme="light"] .problema-card,
+[data-theme="light"] .faq-item,
+[data-theme="light"] .ortesis-page .modal-content,
+[data-theme="light"] .mi-protesis-section .dispositivo-card,
+[data-theme="light"] .content-summary,
+[data-theme="light"] .user-nivel-k-card,
+[data-theme="light"] .nivel-detail-card,
+[data-theme="light"] .tipo-detail-card,
+[data-theme="light"] .guia-detail-card,
+[data-theme="light"] .no-dispositivo,
+[data-theme="light"] .no-problemas {
+  background: white;
+  border: 1px solid #e2e8f0;
 }
 
-.guia-pasos li {
-  margin-bottom: var(--spacing-sm);
-  color: var(--gray-700);
+[data-theme="light"] .form-control,
+[data-theme="light"] .tipo-btn,
+[data-theme="light"] .info-item,
+[data-theme="light"] .btn-back {
+  background: #f1f5f9;
+  border-color: #e2e8f0;
 }
 
-@media (max-width: 480px) {
-  .tipo-problema-grid {
+[data-theme="light"] .ortesis-page .btn-secondary {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+/* =====================================================
+   RESPONSIVE
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-grid {
     grid-template-columns: repeat(2, 1fr);
+  }
+
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .acciones-dispositivo {
+    flex-direction: column;
+  }
+
+  .nivel-header {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .user-nivel-k-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .categorias-grid,
+  .categorias-guias-grid {
+    grid-template-columns: 1fr;
   }
 }

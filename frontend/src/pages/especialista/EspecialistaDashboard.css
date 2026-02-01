@@ -133,6 +133,7 @@
 .dashboard-content {
   flex: 1;
   padding: var(--spacing-lg);
+  padding-bottom: 80px; /* Espacio para el navbar inferior fijo */
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
@@ -1113,6 +1114,11 @@
   text-transform: capitalize;
 }
 
+/* Integración con Outlook */
+.outlook-integration-section {
+  margin: var(--spacing-lg) 0;
+}
+
 .agenda-content {
   margin-top: var(--spacing-lg);
 }
@@ -1134,12 +1140,25 @@
   display: grid;
   grid-template-columns: 80px 1fr auto auto;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   padding: var(--spacing-lg);
   background: var(--surface-primary);
   border: 2px solid var(--border-color);
   border-left: 4px solid var(--status-color);
   border-radius: var(--border-radius-md);
+}
+
+@media (max-width: 768px) {
+  .agenda-item {
+    grid-template-columns: 60px 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .agenda-status,
+  .agenda-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
 }
 
 .agenda-time .time-hour {
@@ -1188,6 +1207,13 @@
   border-radius: var(--border-radius-sm);
   font-size: var(--font-size-sm);
   font-weight: 600;
+}
+
+.agenda-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
 /* ===== FOLLOWUPS VIEW ===== */
@@ -1266,6 +1292,15 @@
 /* ===== MESSAGES VIEW ===== */
 .messages-view {
   padding: var(--spacing-md);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* Importante para flexbox */
+}
+
+.messages-view .section-header {
+  flex-shrink: 0;
+  margin-bottom: var(--spacing-md);
 }
 
 .unread-badge {
@@ -2698,7 +2733,8 @@ button.section-link {
   display: grid;
   grid-template-columns: 320px 1fr;
   height: calc(100vh - 200px);
-  min-height: 500px;
+  max-height: calc(100vh - 180px); /* Considerar header y navbar */
+  min-height: 400px;
   background: var(--surface-primary);
   border-radius: var(--border-radius-lg);
   overflow: hidden;
@@ -3049,7 +3085,8 @@ button.section-link {
 @media (max-width: 768px) {
   .chat-container {
     grid-template-columns: 1fr;
-    height: calc(100vh - 150px);
+    height: calc(100vh - 220px); /* Espacio para header + navbar */
+    max-height: calc(100vh - 220px);
   }
 
   .chat-sidebar {
@@ -3076,6 +3113,11 @@ button.section-link {
 
   .chat-message {
     max-width: 90%;
+  }
+
+  /* Asegurar que la vista de mensajes tenga el padding correcto */
+  .messages-view.chat-view {
+    padding-bottom: 0 !important;
   }
 }
 

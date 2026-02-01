@@ -32,7 +32,8 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !isLoginEndpoint) {
       // Token expirado o inválido (pero no en login)
       localStorage.removeItem('token');
-      window.location.href = '/login';
+      const basename = process.env.REACT_APP_BASENAME || '';
+      window.location.href = `${basename}/login`;
     }
 
     // Para errores de login, devolver los datos del error sin rechazar

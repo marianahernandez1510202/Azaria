@@ -1,0 +1,443 @@
+/* =============================================
+   MI PLAN NUTRICIONAL - VISTA DEL PACIENTE
+   ============================================= */
+
+.mi-plan-nutricional {
+  padding: var(--spacing-md);
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Loading y Empty States */
+.mi-plan-loading,
+.mi-plan-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xxl);
+  text-align: center;
+  min-height: 300px;
+}
+
+.mi-plan-empty .empty-icon {
+  font-size: 64px;
+  margin-bottom: var(--spacing-md);
+}
+
+.mi-plan-empty h3 {
+  font-size: var(--font-size-xl);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.mi-plan-empty p {
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-xs);
+}
+
+/* Header del Plan */
+.plan-header-card {
+  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  color: white;
+  margin-bottom: var(--spacing-lg);
+}
+
+.plan-info h2 {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  margin: 0 0 var(--spacing-xs);
+}
+
+.plan-info .plan-desc {
+  opacity: 0.9;
+  margin: 0 0 var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.plan-info .plan-especialista {
+  font-size: var(--font-size-sm);
+  opacity: 0.8;
+  margin: 0;
+}
+
+.plan-macros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.macro-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.macro-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.macro-value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+}
+
+.macro-label {
+  font-size: var(--font-size-xs);
+  opacity: 0.8;
+}
+
+/* Progreso del día */
+.progreso-dia {
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
+}
+
+.progreso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.progreso-header h3 {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.progreso-porcentaje {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.progreso-bar {
+  height: 12px;
+  background: var(--surface-primary);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-sm);
+}
+
+.progreso-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  border-radius: 6px;
+  transition: width 0.5s ease;
+}
+
+.progreso-texto {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0;
+  text-align: center;
+}
+
+/* Comidas del día */
+.comidas-hoy {
+  margin-bottom: var(--spacing-lg);
+}
+
+.comidas-hoy h3 {
+  font-size: var(--font-size-lg);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md);
+}
+
+.no-comidas-hoy {
+  padding: var(--spacing-lg);
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-md);
+  text-align: center;
+  color: var(--text-secondary);
+}
+
+.comidas-lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.comida-card {
+  display: flex;
+  gap: var(--spacing-md);
+  background: var(--surface-primary);
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-md);
+  transition: all 0.3s ease;
+}
+
+.comida-card.completada {
+  border-color: #4CAF50;
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.comida-card.completada .comida-nombre {
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+
+.comida-check {
+  display: flex;
+  align-items: flex-start;
+  padding-top: var(--spacing-sm);
+}
+
+.check-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--border-color);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.check-btn:hover {
+  border-color: #4CAF50;
+}
+
+.check-btn.checked {
+  background: #4CAF50;
+  border-color: #4CAF50;
+}
+
+.comida-main {
+  flex: 1;
+}
+
+.comida-tipo-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xs);
+}
+
+.comida-icon {
+  font-size: 20px;
+}
+
+.comida-tipo-label {
+  font-weight: 600;
+  color: #4CAF50;
+  font-size: var(--font-size-sm);
+}
+
+.comida-hora {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.comida-nombre {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-xs);
+}
+
+.comida-descripcion {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--spacing-sm);
+  line-height: 1.5;
+}
+
+.comida-macros-mini {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+}
+
+/* Secciones adicionales del plan */
+.plan-section {
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.plan-section h3 {
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm);
+}
+
+.plan-section ul {
+  margin: 0;
+  padding-left: var(--spacing-lg);
+}
+
+.plan-section li {
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xs);
+  font-size: var(--font-size-sm);
+}
+
+.plan-section.restricciones {
+  border-left: 4px solid #FF9800;
+}
+
+.plan-section.recomendaciones {
+  border-left: 4px solid #2196F3;
+}
+
+.plan-section.notas {
+  border-left: 4px solid #9C27B0;
+}
+
+.plan-section.notas p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Plan de la semana */
+.plan-semana-completo {
+  margin-top: var(--spacing-lg);
+}
+
+.plan-semana-completo summary {
+  cursor: pointer;
+  padding: var(--spacing-md);
+  background: var(--surface-secondary);
+  border-radius: var(--border-radius-md);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.semana-content {
+  padding: var(--spacing-md);
+  background: var(--surface-secondary);
+  border-radius: 0 0 var(--border-radius-md) var(--border-radius-md);
+  margin-top: -4px;
+}
+
+.dia-resumen {
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  background: var(--surface-primary);
+  border-radius: var(--border-radius-sm);
+}
+
+.dia-resumen.dia-actual {
+  border: 2px solid #4CAF50;
+}
+
+.dia-resumen h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-sm);
+  text-transform: capitalize;
+}
+
+.badge-hoy {
+  padding: 2px 8px;
+  background: #4CAF50;
+  color: white;
+  font-size: var(--font-size-xs);
+  border-radius: var(--border-radius-sm);
+  font-weight: 600;
+}
+
+.dia-comidas {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.comida-mini {
+  display: flex;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+}
+
+.comida-mini-tipo {
+  color: var(--text-muted);
+  min-width: 120px;
+}
+
+.comida-mini-nombre {
+  color: var(--text-primary);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .plan-macros {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .comida-card {
+    flex-direction: column;
+  }
+
+  .comida-check {
+    padding-top: 0;
+  }
+
+  .comida-tipo-header {
+    flex-wrap: wrap;
+  }
+
+  .comida-hora {
+    width: 100%;
+    margin-left: 0;
+    margin-top: var(--spacing-xs);
+  }
+}
+
+@media (max-width: 480px) {
+  .plan-macros {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-xs);
+  }
+
+  .macro-value {
+    font-size: var(--font-size-base);
+  }
+
+  .comida-macros-mini {
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}
+
+/* ===== LIGHT THEME ===== */
+[data-theme="light"] .comida-card {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .comida-card.completada {
+  background: rgba(76, 175, 80, 0.08);
+}
+
+[data-theme="light"] .dia-resumen {
+  background: white;
+}
+
+[data-theme="light"] .check-btn {
+  border-color: #ccc;
+}

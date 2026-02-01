@@ -138,10 +138,16 @@ class SessionService
         // Si es especialista, agregar área
         if ($user['rol_id'] == 2 && $user['area_medica_id']) {
             $area = $db->query(
-                "SELECT nombre FROM areas_medicas WHERE id = ?",
+                "SELECT nombre, color, icono FROM areas_medicas WHERE id = ?",
                 [$user['area_medica_id']]
             )->fetch();
-            $user['area_nombre'] = $area ? $area['nombre'] : null;
+            // area_medica es el código usado por el frontend (fisioterapia, nutricion, medicina, etc.)
+            $user['area_medica'] = $area ? $area['nombre'] : 'medicina';
+            $user['area_nombre'] = $area ? ucfirst($area['nombre']) : 'Medicina General';
+            $user['area_color'] = $area ? $area['color'] : '#F44336';
+            $user['area_icono'] = $area ? $area['icono'] : 'medical_services';
+            // También guardar el id del especialista para uso en el dashboard
+            $user['especialista_id'] = $user['id'];
         }
 
         return $user;

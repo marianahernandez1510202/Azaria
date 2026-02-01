@@ -4,6 +4,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice, Speakable } from '../../components/VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../../components/accessibility/AccessibilityPanel';
+import OutlookConnect, { OutlookSyncButton } from '../../components/outlook/OutlookConnect';
+import OutlookCalendar from '../../components/outlook/OutlookCalendar';
+import PlanesNutricionales from '../../components/nutricion/PlanesNutricionales';
 import api from '../../services/api';
 import './EspecialistaDashboard.css';
 
@@ -151,6 +154,9 @@ const EspecialistaDashboard = () => {
   });
   const [tiposCita, setTiposCita] = useState([]);
   const [horariosDisponibles, setHorariosDisponibles] = useState([]);
+
+  // Estado para integración con Outlook
+  const [outlookConnected, setOutlookConnected] = useState(false);
 
   // Obtener área médica del especialista
   const areaCodigo = user?.area_medica || 'medicina';
@@ -702,6 +708,12 @@ const EspecialistaDashboard = () => {
       </div>
       <p className="date-today">{new Date().toLocaleDateString('es-MX', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
 
+      {/* Integración con Outlook */}
+      <div className="outlook-integration-section">
+        <OutlookConnect onConnectionChange={setOutlookConnected} />
+        {outlookConnected && <OutlookCalendar isConnected={outlookConnected} />}
+      </div>
+
       <div className="agenda-content">
         <h3 className="subsection-title">Citas de Hoy ({dashboardData.todayCitas.length})</h3>
 
@@ -726,6 +738,13 @@ const EspecialistaDashboard = () => {
                   <span className={`status-badge ${cita.estado}`}>{cita.estado}</span>
                 </div>
                 <div className="agenda-actions">
+                  {outlookConnected && (
+                    <OutlookSyncButton
+                      citaId={cita.id}
+                      outlookEventId={cita.outlook_event_id}
+                      onSync={() => loadData()}
+                    />
+                  )}
                   <Link to={`/especialista/pacientes/${cita.paciente_id}/expediente`} className="btn-small">
                     Expediente
                   </Link>
@@ -1357,6 +1376,19 @@ const EspecialistaDashboard = () => {
   };
 
   // Vista genérica para módulos en desarrollo
+  // Vista: Planes Nutricionales (Nutrición)
+  const renderPlanesNutricionales = () => {
+    const especialistaId = user?.especialista_id || user?.id;
+
+    return (
+      <PlanesNutricionales
+        especialistaId={especialistaId}
+        pacientes={dashboardData.pacientes}
+        onBack={() => setActiveView('inicio')}
+      />
+    );
+  };
+
   const renderModuloEnDesarrollo = (titulo, icono) => (
     <section className="module-view">
       <div className="module-header">
@@ -1397,7 +1429,7 @@ const EspecialistaDashboard = () => {
       case 'mod-evaluaciones': return renderModuloEnDesarrollo('Evaluaciones Físicas', '📊');
       case 'mod-planes': return renderModuloEnDesarrollo('Planes de Tratamiento', '📋');
       case 'mod-progreso': return renderModuloEnDesarrollo('Progreso de Pacientes', '📈');
-      case 'mod-planes-nutricionales': return renderModuloEnDesarrollo('Planes Nutricionales', '🍽️');
+      case 'mod-planes-nutricionales': return renderPlanesNutricionales();
       case 'mod-seguimiento-peso': return renderModuloEnDesarrollo('Seguimiento de Peso', '📉');
       case 'mod-historial-alimenticio': return renderModuloEnDesarrollo('Historial Alimenticio', '🥗');
       case 'mod-imc': return renderModuloEnDesarrollo('IMC de Pacientes', '⚖️');
