@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Ortesis.css';
 
 const Ortesis = () => {
@@ -33,28 +34,28 @@ const Ortesis = () => {
   });
 
   const tiposProblema = [
-    { id: 'dolor', nombre: 'Dolor o molestia', icon: '🔴' },
-    { id: 'ajuste', nombre: 'Problema de ajuste', icon: '🔧' },
-    { id: 'piel', nombre: 'Irritación en la piel', icon: '🩹' },
-    { id: 'mecanico', nombre: 'Falla mecánica', icon: '⚙️' },
-    { id: 'limpieza', nombre: 'Necesita limpieza', icon: '🧼' },
-    { id: 'otro', nombre: 'Otro problema', icon: '❓' }
+    { id: 'dolor', nombre: 'Dolor o molestia', icon: 'heart-pulse' },
+    { id: 'ajuste', nombre: 'Problema de ajuste', icon: 'wrench' },
+    { id: 'piel', nombre: 'Irritación en la piel', icon: 'heart-pulse' },
+    { id: 'mecanico', nombre: 'Falla mecánica', icon: 'settings' },
+    { id: 'limpieza', nombre: 'Necesita limpieza', icon: 'droplet' },
+    { id: 'otro', nombre: 'Otro problema', icon: 'circle-help' }
   ];
 
   const categoriasGuias = {
-    'cuidado_munon': { nombre: 'Cuidado del Muñón', icon: '🦵', color: '#10b981' },
-    'limpieza_protesis': { nombre: 'Limpieza', icon: '🧼', color: '#3b82f6' },
-    'colocacion': { nombre: 'Colocación', icon: '👟', color: '#8b5cf6' },
-    'mantenimiento': { nombre: 'Mantenimiento', icon: '🔧', color: '#f59e0b' },
-    'emergencias': { nombre: 'Alertas', icon: '⚠️', color: '#ef4444' },
-    'ejercicios': { nombre: 'Ejercicios', icon: '💪', color: '#06b6d4' }
+    'cuidado_munon': { nombre: 'Cuidado del Muñón', icon: 'footprints', color: '#10b981' },
+    'limpieza_protesis': { nombre: 'Limpieza', icon: 'droplet', color: '#3b82f6' },
+    'colocacion': { nombre: 'Colocación', icon: 'wrench', color: '#8b5cf6' },
+    'mantenimiento': { nombre: 'Mantenimiento', icon: 'wrench', color: '#f59e0b' },
+    'emergencias': { nombre: 'Alertas', icon: 'alert-triangle', color: '#ef4444' },
+    'ejercicios': { nombre: 'Ejercicios', icon: 'zap', color: '#06b6d4' }
   };
 
   const categoriasProtesis = {
-    'transtibial': { nombre: 'Transtibial', desc: 'Debajo de rodilla', icon: '🦿' },
-    'transfemoral': { nombre: 'Transfemoral', desc: 'Arriba de rodilla', icon: '🦵' },
-    'desarticulacion_rodilla': { nombre: 'Desart. Rodilla', desc: 'A nivel de rodilla', icon: '🔄' },
-    'parcial_pie': { nombre: 'Pie Parcial', desc: 'Amputación parcial', icon: '🦶' }
+    'transtibial': { nombre: 'Transtibial', desc: 'Debajo de rodilla', icon: 'accessibility' },
+    'transfemoral': { nombre: 'Transfemoral', desc: 'Arriba de rodilla', icon: 'footprints' },
+    'desarticulacion_rodilla': { nombre: 'Desart. Rodilla', desc: 'A nivel de rodilla', icon: 'footprints' },
+    'parcial_pie': { nombre: 'Pie Parcial', desc: 'Amputación parcial', icon: 'footprints' }
   };
 
   useEffect(() => {
@@ -173,22 +174,22 @@ const Ortesis = () => {
 
       <div className="quick-actions">
         <div className="action-card" onClick={() => setActiveTab('niveles-k')}>
-          <span className="action-icon">📊</span>
+          <span className="action-icon"><LucideIcon name="bar-chart" size={24} /></span>
           <h3>Niveles K</h3>
           <p>Conoce tu clasificación funcional</p>
         </div>
         <div className="action-card" onClick={() => setActiveTab('tipos')}>
-          <span className="action-icon">🦿</span>
+          <span className="action-icon"><LucideIcon name="accessibility" size={24} /></span>
           <h3>Tipos de Prótesis</h3>
           <p>Explora las opciones disponibles</p>
         </div>
         <div className="action-card" onClick={() => setActiveTab('cuidados')}>
-          <span className="action-icon">📚</span>
+          <span className="action-icon"><LucideIcon name="book-open" size={24} /></span>
           <h3>Guías de Cuidado</h3>
           <p>Aprende a cuidar tu prótesis</p>
         </div>
         <div className="action-card" onClick={() => setActiveTab('mi-protesis')}>
-          <span className="action-icon">⚙️</span>
+          <span className="action-icon"><LucideIcon name="settings" size={24} /></span>
           <h3>Mi Prótesis</h3>
           <p>Información de tu dispositivo</p>
         </div>
@@ -349,7 +350,7 @@ const Ortesis = () => {
               className="categoria-card"
               onClick={() => setActiveSubTab(key)}
             >
-              <span className="categoria-icon">{cat.icon}</span>
+              <span className="categoria-icon"><LucideIcon name={cat.icon} size={24} /></span>
               <h3>{cat.nombre}</h3>
               <p>{cat.desc}</p>
               <span className="tipos-count">
@@ -432,7 +433,7 @@ const Ortesis = () => {
             ← Volver a categorías
           </button>
 
-          <h3>{categoriasProtesis[activeSubTab]?.icon} {categoriasProtesis[activeSubTab]?.nombre}</h3>
+          <h3><LucideIcon name={categoriasProtesis[activeSubTab]?.icon} size={20} /> {categoriasProtesis[activeSubTab]?.nombre}</h3>
 
           <div className="tipos-grid">
             {contenidoEducativo?.tipos_protesis?.[activeSubTab]?.map((tipo) => (
@@ -474,7 +475,7 @@ const Ortesis = () => {
               style={{ '--cat-color': cat.color }}
               onClick={() => setActiveSubTab(key)}
             >
-              <span className="categoria-icon">{cat.icon}</span>
+              <span className="categoria-icon"><LucideIcon name={cat.icon} size={24} /></span>
               <h3>{cat.nombre}</h3>
               <span className="guias-count">
                 {contenidoEducativo?.guias_cuidado?.[key]?.length || 0} guías
@@ -490,7 +491,7 @@ const Ortesis = () => {
 
           <div className="guia-detail-card">
             <div className="guia-header" style={{ '--cat-color': categoriasGuias[activeSubTab]?.color }}>
-              <span className="guia-icon">{categoriasGuias[activeSubTab]?.icon}</span>
+              <span className="guia-icon"><LucideIcon name={categoriasGuias[activeSubTab]?.icon} size={24} /></span>
               <h2>{selectedItem.titulo}</h2>
             </div>
 
@@ -509,7 +510,7 @@ const Ortesis = () => {
 
             {selectedItem.tips && (
               <div className="guia-section tips">
-                <h3>💡 Consejos</h3>
+                <h3><LucideIcon name="lightbulb" size={20} /> Consejos</h3>
                 <ul>
                   {selectedItem.tips.map((tip, idx) => (
                     <li key={idx}>{tip}</li>
@@ -520,7 +521,7 @@ const Ortesis = () => {
 
             {selectedItem.advertencias && (
               <div className="guia-section advertencias">
-                <h3>⚠️ Advertencias</h3>
+                <h3><LucideIcon name="alert-triangle" size={20} /> Advertencias</h3>
                 <ul>
                   {selectedItem.advertencias.map((adv, idx) => (
                     <li key={idx}>{adv}</li>
@@ -536,7 +537,7 @@ const Ortesis = () => {
             ← Volver a categorías
           </button>
 
-          <h3>{categoriasGuias[activeSubTab]?.icon} {categoriasGuias[activeSubTab]?.nombre}</h3>
+          <h3><LucideIcon name={categoriasGuias[activeSubTab]?.icon} size={20} /> {categoriasGuias[activeSubTab]?.nombre}</h3>
 
           <div className="guias-grid">
             {contenidoEducativo?.guias_cuidado?.[activeSubTab]?.map((guia) => (
@@ -637,7 +638,7 @@ const Ortesis = () => {
         </div>
       ) : (
         <div className="no-dispositivo">
-          <div className="empty-icon">🦿</div>
+          <div className="empty-icon"><LucideIcon name="accessibility" size={32} /></div>
           <h3>Sin dispositivo registrado</h3>
           <p>Tu especialista registrará la información de tu prótesis cuando sea asignada.</p>
           <button className="btn btn-outline" onClick={() => setActiveTab('tipos')}>
@@ -674,7 +675,7 @@ const Ortesis = () => {
             <div key={problema.id} className={`problema-card urgencia-${problema.urgencia}`}>
               <div className="problema-header">
                 <span className="problema-tipo">
-                  {tiposProblema.find(t => t.id === problema.tipo)?.icon}{' '}
+                  <LucideIcon name={tiposProblema.find(t => t.id === problema.tipo)?.icon || 'circle-help'} size={16} />{' '}
                   {tiposProblema.find(t => t.id === problema.tipo)?.nombre || problema.tipo}
                 </span>
                 <span className={`urgencia-badge ${problema.urgencia}`}>
@@ -716,7 +717,7 @@ const Ortesis = () => {
         {contenidoEducativo?.faqs?.map((faq, idx) => (
           <details key={faq.id || idx} className="faq-item">
             <summary>
-              <span className="faq-icon">❓</span>
+              <span className="faq-icon"><LucideIcon name="circle-help" size={18} /></span>
               {faq.pregunta}
             </summary>
             <div className="faq-answer">
@@ -735,7 +736,7 @@ const Ortesis = () => {
           ← Regresar
         </button>
         <div className="header-content">
-          <h1>🦿 Prótesis</h1>
+          <h1><LucideIcon name="accessibility" size={24} /> Prótesis</h1>
           <p className="subtitle">Centro de información y cuidados</p>
         </div>
       </header>
@@ -805,7 +806,7 @@ const Ortesis = () => {
                       className={`tipo-btn ${problemaForm.tipo === tipo.id ? 'selected' : ''}`}
                       onClick={() => setProblemaForm({...problemaForm, tipo: tipo.id})}
                     >
-                      <span className="tipo-icon">{tipo.icon}</span>
+                      <span className="tipo-icon"><LucideIcon name={tipo.icon} size={20} /></span>
                       <span className="tipo-nombre">{tipo.nombre}</span>
                     </button>
                   ))}

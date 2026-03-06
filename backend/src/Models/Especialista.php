@@ -18,7 +18,7 @@ class Especialista
     {
         $db = DatabaseService::getInstance();
         return $db->query("SELECT e.*, u.* FROM " . self::$table . " e
-                          JOIN users u ON e.user_id = u.id
+                          JOIN usuarios u ON e.usuario_id = u.id
                           WHERE e.user_id = ?", [$userId])->fetch();
     }
 
@@ -71,9 +71,9 @@ class Especialista
         $db = DatabaseService::getInstance();
         return $db->query(
             "SELECT p.*, u.nombre_completo, u.email, u.fecha_nacimiento, pe.especialidad
-             FROM paciente_especialista pe
+             FROM asignaciones_especialista pe
              JOIN pacientes p ON pe.paciente_id = p.id
-             JOIN users u ON p.user_id = u.id
+             JOIN usuarios u ON p.usuario_id = u.id
              WHERE pe.especialista_id = ?
              ORDER BY u.nombre_completo",
             [$especialistaId]
@@ -86,7 +86,7 @@ class Especialista
         return $db->query(
             "SELECT e.*, u.nombre_completo, u.email
              FROM " . self::$table . " e
-             JOIN users u ON e.user_id = u.id
+             JOIN usuarios u ON e.usuario_id = u.id
              WHERE e.especialidad = ?",
             [$especialidad]
         )->fetchAll();

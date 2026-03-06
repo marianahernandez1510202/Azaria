@@ -163,12 +163,16 @@ const OutlookConnect = ({ onConnectionChange }) => {
             Desconectar
           </button>
         ) : (
-          <button
-            className="btn-outlook connect"
-            onClick={handleConnect}
-          >
-            Conectar
-          </button>
+          <>
+            <button
+              className="btn-outlook connect"
+              onClick={handleConnect}
+              title="Usa una cuenta personal (outlook.com, hotmail.com, live.com)"
+            >
+              Conectar
+            </button>
+            <span className="outlook-hint">Solo cuentas personales (outlook.com, hotmail.com, live.com)</span>
+          </>
         )}
       </div>
 

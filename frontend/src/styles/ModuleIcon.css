@@ -27,12 +27,12 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--icon-color-light, rgba(0, 191, 165, 0.15));
+  background: var(--icon-color-light, rgba(46, 125, 50, 0.15));
   transition: all 0.2s ease;
 }
 
 .module-icon-wrapper:hover .module-icon-circle {
-  background: var(--icon-color-light, rgba(0, 191, 165, 0.25));
+  background: var(--icon-color-light, rgba(46, 125, 50, 0.25));
   box-shadow: 0 4px 20px var(--icon-color-light);
 }
 
@@ -42,7 +42,6 @@
   height: 40px;
 }
 
-.icon-sm .module-icon-flaticon,
 .icon-sm .module-icon-emoji {
   font-size: 20px;
 }
@@ -52,7 +51,6 @@
   height: 56px;
 }
 
-.icon-md .module-icon-flaticon,
 .icon-md .module-icon-emoji {
   font-size: 28px;
 }
@@ -62,7 +60,6 @@
   height: 72px;
 }
 
-.icon-lg .module-icon-flaticon,
 .icon-lg .module-icon-emoji {
   font-size: 36px;
 }
@@ -72,36 +69,24 @@
   height: 96px;
 }
 
-.icon-xl .module-icon-flaticon,
 .icon-xl .module-icon-emoji {
   font-size: 48px;
 }
 
-/* Icon styles */
-.module-icon-flaticon {
-  color: var(--icon-color, #00BFA5);
+/* Lucide icon styles */
+.module-icon-lucide {
+  color: var(--icon-color, #2E7D32);
 }
 
 .module-icon-emoji {
   line-height: 1;
 }
 
-/* Fallback: mostrar emoji si Flaticon no carga */
-.module-icon-emoji-fallback {
-  display: none;
-}
-
-/* Si Flaticon no está disponible */
-.module-icon-flaticon:empty + .module-icon-emoji-fallback,
-.module-icon-flaticon.fi:not([class*="fi-"]) + .module-icon-emoji-fallback {
-  display: block;
-}
-
 /* Label */
 .module-icon-label {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   text-align: center;
   max-width: 80px;
   line-height: 1.2;
@@ -128,7 +113,7 @@
   flex-direction: column;
   align-items: center;
   padding: 16px;
-  background: #161B22;
+  background: #FFFFFF;
   border-radius: 16px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -136,8 +121,8 @@
 }
 
 .module-grid-item:hover {
-  background: #21262D;
-  border-color: var(--icon-color, #30363D);
+  background: #F0F2ED;
+  border-color: var(--icon-color, #E0E0E0);
   transform: translateY(-2px);
 }
 
@@ -149,7 +134,7 @@
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #F44336;
+  background: #C62828;
   color: white;
   font-size: 12px;
   font-weight: 700;
@@ -165,16 +150,16 @@
   align-items: center;
   gap: 16px;
   padding: 20px;
-  background: #161B22;
+  background: #FFFFFF;
   border-radius: 16px;
-  border-left: 4px solid var(--card-color, #00BFA5);
+  border-left: 4px solid var(--card-color, #2E7D32);
   cursor: pointer;
   transition: all 0.2s ease;
   position: relative;
 }
 
 .module-card-full:hover {
-  background: #21262D;
+  background: #F0F2ED;
   transform: translateX(4px);
 }
 
@@ -196,7 +181,7 @@
   position: absolute;
   top: -4px;
   right: -4px;
-  background: #F44336;
+  background: #C62828;
   color: white;
   font-size: 11px;
   font-weight: 700;
@@ -214,13 +199,13 @@
 .module-card-title {
   font-size: 18px;
   font-weight: 600;
-  color: #E6EDF3;
+  color: #1A1A1A;
   margin: 0 0 4px;
 }
 
 .module-card-description {
   font-size: 14px;
-  color: #8B949E;
+  color: #6B6B6B;
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -237,14 +222,14 @@
 .progress-bar {
   flex: 1;
   height: 6px;
-  background: #30363D;
+  background: #E0E0E0;
   border-radius: 3px;
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: var(--card-color, #00BFA5);
+  background: var(--card-color, #2E7D32);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -252,13 +237,13 @@
 .progress-text {
   font-size: 12px;
   font-weight: 600;
-  color: var(--card-color, #00BFA5);
+  color: var(--card-color, #2E7D32);
   min-width: 36px;
 }
 
 .module-card-arrow {
   font-size: 24px;
-  color: #8B949E;
+  color: #6B6B6B;
   transition: transform 0.2s ease;
 }
 
@@ -302,8 +287,51 @@
     height: 56px;
   }
 
-  .icon-lg .module-icon-flaticon,
   .icon-lg .module-icon-emoji {
     font-size: 28px;
   }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .module-icon-label {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .module-grid-item {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .module-grid-item:hover {
+  background: var(--surface-secondary);
+  border-color: var(--icon-color, var(--border-color));
+}
+
+[data-theme="dark"] .module-card-full {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .module-card-full:hover {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .module-card-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .module-card-description {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .module-card-arrow {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .progress-bar {
+  background: var(--border-color);
+}
+
+[data-theme="dark"] .module-badge,
+[data-theme="dark"] .module-card-badge {
+  background: #C62828;
+  color: white;
 }

@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Comunidad.css';
 
 const Comunidad = () => {
@@ -252,7 +253,7 @@ const Comunidad = () => {
 
       {/* Normas de la comunidad */}
       <div className="normas-banner">
-        <span className="normas-icon">📋</span>
+        <span className="normas-icon"><LucideIcon name="clipboard" size={18} /></span>
         <span>Recuerda mantener un ambiente respetuoso y de apoyo mutuo</span>
       </div>
 
@@ -296,13 +297,13 @@ const Comunidad = () => {
                   className={`btn-accion ${post.liked ? 'liked' : ''}`}
                   onClick={() => handleLike(post.id)}
                 >
-                  {post.liked ? '❤️' : '🤍'} Me gusta
+                  <LucideIcon name="heart" size={18} color={post.liked ? '#C62828' : undefined} /> Me gusta
                 </button>
                 <button
                   className="btn-accion"
                   onClick={() => setSelectedPublicacion(post)}
                 >
-                  💬 Comentar
+                  <LucideIcon name="message" size={18} /> Comentar
                 </button>
               </div>
 
@@ -365,7 +366,7 @@ const Comunidad = () => {
                     onChange={e => setNuevaPublicacion({...nuevaPublicacion, imagen: e.target.files[0]})}
                     hidden
                   />
-                  📷 Agregar foto
+                  <LucideIcon name="camera" size={16} /> Agregar foto
                 </label>
                 {nuevaPublicacion.imagen && (
                   <div className="imagen-preview">
@@ -431,7 +432,7 @@ const Comunidad = () => {
                   className={`btn-accion ${selectedPublicacion.liked ? 'liked' : ''}`}
                   onClick={() => handleLike(selectedPublicacion.id)}
                 >
-                  {selectedPublicacion.liked ? '❤️' : '🤍'} {selectedPublicacion.likes}
+                  <LucideIcon name="heart" size={18} color={selectedPublicacion.liked ? '#C62828' : undefined} /> {selectedPublicacion.likes}
                 </button>
               </div>
 

@@ -1,0 +1,941 @@
+/* =============================================
+   AdmisionesTab - Módulo de Admisiones Admin
+   ============================================= */
+
+.admisiones-tab {
+  padding: 0;
+}
+
+/* Sub-navegación */
+.admisiones-subnav {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.admisiones-subnav-btn {
+  padding: 10px 18px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-primary, #161B22);
+  color: var(--text-secondary, #8B949E);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.admisiones-subnav-btn:hover {
+  background: var(--surface-secondary, #21262D);
+}
+
+.admisiones-subnav-btn.active {
+  background: #0097A7;
+  color: #fff;
+  border-color: #0097A7;
+}
+
+/* Filtros del pipeline */
+.admisiones-filtros {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.admisiones-filtros select {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary, #21262D);
+  color: var(--text-primary, #E6EDF3);
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.admisiones-filtros input[type="text"] {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary, #21262D);
+  color: var(--text-primary, #E6EDF3);
+  font-size: 14px;
+  min-height: 40px;
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Estado chips */
+.admisiones-estado-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.estado-chip {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.estado-chip.active {
+  font-weight: 600;
+}
+
+.estado-chip-todos { background: var(--surface-tertiary, #30363D); color: var(--text-primary, #E6EDF3); }
+.estado-chip-todos.active { background: #0097A7; color: #fff; }
+
+.estado-chip-recibida { background: rgba(33, 150, 243, 0.15); color: #58a6ff; }
+.estado-chip-recibida.active { background: #2196F3; color: #fff; }
+
+.estado-chip-aprobado { background: rgba(46, 160, 67, 0.15); color: #3fb950; }
+.estado-chip-aprobado.active { background: #2ea043; color: #fff; }
+
+.estado-chip-rechazado { background: rgba(248, 81, 73, 0.15); color: #f85149; }
+.estado-chip-rechazado.active { background: #f85149; color: #fff; }
+
+.estado-chip-docs { background: rgba(255, 152, 0, 0.15); color: #FF9800; }
+.estado-chip-docs.active { background: #FF9800; color: #fff; }
+
+.estado-chip-pago { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+.estado-chip-pago.active { background: #FFC107; color: #000; }
+
+.estado-chip-preconsulta { background: rgba(156, 39, 176, 0.15); color: #ce93d8; }
+.estado-chip-preconsulta.active { background: #9C27B0; color: #fff; }
+
+.estado-chip-admitido { background: rgba(46, 160, 67, 0.25); color: #3fb950; }
+.estado-chip-admitido.active { background: #1b7f37; color: #fff; }
+
+/* Lista de solicitudes */
+.admisiones-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admisiones-card {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admisiones-card:hover {
+  border-color: var(--text-muted, #6E7681);
+}
+
+.admisiones-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  gap: 8px;
+}
+
+.admisiones-card-nombre {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.admisiones-card-folio {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+}
+
+.admisiones-card-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--text-secondary, #8B949E);
+  margin-bottom: 8px;
+}
+
+.admisiones-card-body span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admisiones-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.admisiones-card-fecha {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+}
+
+/* Badge de estado */
+.estado-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.estado-solicitud_recibida { background: rgba(33, 150, 243, 0.15); color: #58a6ff; }
+.estado-screening_aprobado { background: rgba(46, 160, 67, 0.15); color: #3fb950; }
+.estado-screening_rechazado { background: rgba(248, 81, 73, 0.15); color: #f85149; }
+.estado-documentos_pendientes { background: rgba(255, 152, 0, 0.15); color: #FF9800; }
+.estado-documentos_recibidos { background: rgba(255, 152, 0, 0.25); color: #FFB74D; }
+.estado-pago_pendiente { background: rgba(255, 193, 7, 0.15); color: #FFC107; }
+.estado-pago_confirmado { background: rgba(255, 193, 7, 0.25); color: #FFD54F; }
+.estado-preconsulta_programada { background: rgba(156, 39, 176, 0.15); color: #ce93d8; }
+.estado-preconsulta_completada { background: rgba(156, 39, 176, 0.25); color: #e1bee7; }
+.estado-admitido { background: rgba(46, 160, 67, 0.25); color: #3fb950; font-weight: 700; }
+.estado-rechazado { background: rgba(248, 81, 73, 0.2); color: #f85149; }
+
+/* ===== DETALLE DE SOLICITUD ===== */
+.admisiones-detalle {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.admisiones-detalle-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.admisiones-back-btn {
+  padding: 8px 14px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-primary, #161B22);
+  color: var(--text-primary, #E6EDF3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  min-height: 40px;
+}
+
+.admisiones-detalle-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  flex: 1;
+}
+
+/* Info card del detalle */
+.admisiones-info-card {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+
+.admisiones-info-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 14px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admisiones-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.admisiones-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admisiones-info-label {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+  font-weight: 500;
+}
+
+.admisiones-info-value {
+  font-size: 15px;
+  color: var(--text-primary, #E6EDF3);
+}
+
+/* Pipeline stepper */
+.pipeline-stepper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  overflow-x: auto;
+  padding: 4px 0 12px;
+}
+
+.pipeline-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 80px;
+  position: relative;
+}
+
+.pipeline-step-dot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--surface-tertiary, #30363D);
+  border: 2px solid var(--border-color, #30363D);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  font-size: 12px;
+  color: transparent;
+}
+
+.pipeline-step-dot.completed {
+  background: #2ea043;
+  border-color: #2ea043;
+  color: #fff;
+}
+
+.pipeline-step-dot.current {
+  background: #0097A7;
+  border-color: #0097A7;
+  color: #fff;
+}
+
+.pipeline-step-dot.rejected {
+  background: #f85149;
+  border-color: #f85149;
+  color: #fff;
+}
+
+.pipeline-step-label {
+  font-size: 11px;
+  color: var(--text-muted, #6E7681);
+  text-align: center;
+  margin-top: 6px;
+  max-width: 80px;
+}
+
+.pipeline-step-label.current {
+  color: #0097A7;
+  font-weight: 600;
+}
+
+.pipeline-step-line {
+  flex: 1;
+  height: 2px;
+  background: var(--surface-tertiary, #30363D);
+  min-width: 20px;
+  margin-top: 12px;
+}
+
+.pipeline-step-line.completed {
+  background: #2ea043;
+}
+
+/* Acciones contextuales */
+.admisiones-acciones {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.admisiones-accion-btn {
+  padding: 10px 18px;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  transition: opacity 0.2s;
+}
+
+.admisiones-accion-btn:hover {
+  opacity: 0.85;
+}
+
+.admisiones-accion-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-aprobar { background: #2ea043; color: #fff; }
+.btn-rechazar { background: #f85149; color: #fff; }
+.btn-generar-link { background: #FF9800; color: #fff; }
+.btn-pago { background: #FFC107; color: #000; }
+.btn-confirmar-pago { background: #4CAF50; color: #fff; }
+.btn-preconsulta { background: #9C27B0; color: #fff; }
+.btn-admitir { background: #1b7f37; color: #fff; }
+.btn-completar { background: #0097A7; color: #fff; }
+
+/* Documentos en detalle */
+.admisiones-docs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admisiones-doc-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.admisiones-doc-categoria {
+  padding: 3px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(0, 151, 167, 0.15);
+  color: #0097A7;
+  text-transform: uppercase;
+}
+
+.admisiones-doc-nombre {
+  flex: 1;
+  font-size: 14px;
+  color: var(--text-primary, #E6EDF3);
+  word-break: break-word;
+}
+
+.admisiones-doc-fecha {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+  white-space: nowrap;
+}
+
+/* Doc items clickable (preview) */
+.admisiones-doc-clickable {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.admisiones-doc-clickable:hover {
+  background: var(--surface-tertiary, #30363D);
+}
+
+.admisiones-doc-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.admisiones-doc-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.admisiones-doc-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-primary, #161B22);
+  color: var(--text-secondary, #8B949E);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admisiones-doc-btn:hover {
+  background: #0097A7;
+  color: #fff;
+  border-color: #0097A7;
+}
+
+/* ===== MODAL ===== */
+.admisiones-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+.admisiones-modal {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-lg, 16px);
+  padding: 24px;
+  max-width: 480px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.admisiones-modal h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 16px 0;
+}
+
+.admisiones-modal-group {
+  margin-bottom: 14px;
+}
+
+.admisiones-modal-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary, #8B949E);
+  margin-bottom: 4px;
+}
+
+.admisiones-modal-group input,
+.admisiones-modal-group textarea,
+.admisiones-modal-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary, #21262D);
+  color: var(--text-primary, #E6EDF3);
+  font-size: 15px;
+  font-family: inherit;
+  box-sizing: border-box;
+  min-height: 44px;
+}
+
+.admisiones-modal-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.admisiones-modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.admisiones-modal-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+.modal-btn-cancel {
+  background: var(--surface-tertiary, #30363D);
+  color: var(--text-primary, #E6EDF3);
+}
+
+.modal-btn-confirm {
+  background: #0097A7;
+  color: #fff;
+}
+
+.modal-btn-danger {
+  background: #f85149;
+  color: #fff;
+}
+
+.modal-btn-success {
+  background: #2ea043;
+  color: #fff;
+}
+
+/* Password temporal */
+.temp-password-display {
+  margin: 12px 0;
+  padding: 14px;
+  background: rgba(0, 151, 167, 0.1);
+  border: 1px solid rgba(0, 151, 167, 0.3);
+  border-radius: var(--radius-sm, 8px);
+  text-align: center;
+}
+
+.temp-password-display .label {
+  font-size: 13px;
+  color: var(--text-secondary, #8B949E);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.temp-password-display .password {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0097A7;
+  font-family: 'Courier New', monospace;
+}
+
+/* Link generado */
+.link-generado {
+  margin: 12px 0;
+  padding: 12px;
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-sm, 8px);
+  word-break: break-all;
+  font-size: 14px;
+  color: #58a6ff;
+}
+
+.link-copiar-btn {
+  margin-top: 8px;
+  padding: 8px 16px;
+  background: #0097A7;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+  cursor: pointer;
+  min-height: 40px;
+  width: 100%;
+}
+
+/* ===== REPORTES ===== */
+.admisiones-reportes {
+  animation: fadeIn 0.2s ease;
+}
+
+.reportes-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.reportes-selector {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 0;
+}
+
+.btn-descargar-pdf {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: #0097A7;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 44px;
+}
+
+.btn-descargar-pdf:hover {
+  background: #00838F;
+}
+
+.btn-descargar-pdf:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.admisiones-spinner-sm {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.reportes-selector label {
+  font-size: 15px;
+  color: var(--text-secondary, #8B949E);
+  font-weight: 500;
+}
+
+.reportes-selector select {
+  padding: 8px 14px;
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary, #21262D);
+  color: var(--text-primary, #E6EDF3);
+  font-size: 15px;
+  min-height: 40px;
+}
+
+.reportes-metricas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.reporte-metrica-card {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+  text-align: center;
+}
+
+.reporte-metrica-card .valor {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+  display: block;
+}
+
+.reporte-metrica-card .label {
+  font-size: 14px;
+  color: var(--text-secondary, #8B949E);
+  margin-top: 4px;
+  display: block;
+}
+
+.reportes-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.reporte-chart-card {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+}
+
+.reporte-chart-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 12px 0;
+}
+
+.reporte-chart-card canvas {
+  max-height: 250px;
+}
+
+/* Tabla de procedencia */
+.procedencia-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.procedencia-tabla th,
+.procedencia-tabla td {
+  padding: 8px 12px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid var(--border-color, #30363D);
+}
+
+.procedencia-tabla th {
+  color: var(--text-muted, #6E7681);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.procedencia-tabla td {
+  color: var(--text-primary, #E6EDF3);
+}
+
+.procedencia-count {
+  font-weight: 600;
+  color: #0097A7;
+}
+
+/* ===== DOCUMENTOS OFICIALES ===== */
+.docs-oficiales-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.doc-oficial-card {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.doc-oficial-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.doc-oficial-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-sm, 8px);
+  background: rgba(248, 81, 73, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #f85149;
+  flex-shrink: 0;
+}
+
+.doc-oficial-meta h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 2px 0;
+}
+
+.doc-oficial-meta p {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+  margin: 0;
+}
+
+.doc-oficial-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.doc-oficial-upload-btn {
+  padding: 8px 14px;
+  background: #0097A7;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  cursor: pointer;
+  min-height: 36px;
+  white-space: nowrap;
+}
+
+.doc-oficial-delete-btn {
+  padding: 8px 10px;
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  min-height: 36px;
+}
+
+/* Empty state */
+.admisiones-empty {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-muted, #6E7681);
+}
+
+.admisiones-empty h4 {
+  font-size: 18px;
+  color: var(--text-secondary, #8B949E);
+  margin: 12px 0 4px;
+}
+
+.admisiones-empty p {
+  font-size: 15px;
+}
+
+/* Loading */
+.admisiones-loading {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.admisiones-spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--surface-tertiary, #30363D);
+  border-top: 3px solid #0097A7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admisiones-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reportes-charts {
+    grid-template-columns: 1fr;
+  }
+
+  .doc-oficial-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .doc-oficial-actions {
+    width: 100%;
+  }
+
+  .doc-oficial-upload-btn {
+    flex: 1;
+  }
+
+  .pipeline-stepper {
+    padding-bottom: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admisiones-subnav {
+    gap: 4px;
+  }
+
+  .admisiones-subnav-btn {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .admisiones-card {
+    padding: 12px;
+  }
+
+  .admisiones-modal {
+    padding: 16px;
+  }
+}

@@ -17,7 +17,7 @@ class Validator
         $fields = is_array($fields) ? $fields : [$fields];
 
         foreach ($fields as $field) {
-            if (!isset($this->data[$field]) || empty($this->data[$field])) {
+            if (!isset($this->data[$field]) || $this->data[$field] === null || $this->data[$field] === '') {
                 $this->errors[$field] = "El campo $field es requerido";
             }
         }

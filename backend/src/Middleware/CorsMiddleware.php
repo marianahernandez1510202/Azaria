@@ -8,9 +8,10 @@ class CorsMiddleware {
      * Cumplimiento: Lineamientos de Seguridad UNAM Art. 15
      */
     private static array $allowedOrigins = [
-        'http://localhost:3000',      // Desarrollo frontend
-        'http://localhost:5173',      // Vite dev server
-        'https://vitalia.unam.mx',    // Producción (ajustar según dominio real)
+        'http://localhost:3000',             // Desarrollo frontend (CRA)
+        'http://localhost:5173',             // Vite dev server
+        'https://dtai.uteq.edu.mx',         // Produccion UTEQ
+        'http://dtai.uteq.edu.mx',          // Produccion UTEQ (http)
     ];
 
     /**
@@ -26,8 +27,8 @@ class CorsMiddleware {
             header('Access-Control-Allow-Credentials: true');
         }
 
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
+        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With, X-HTTP-Method-Override');
         header('Access-Control-Max-Age: 86400'); // Cache preflight por 24 horas
 
         // Cabeceras de seguridad adicionales

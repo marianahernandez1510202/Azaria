@@ -2,7 +2,7 @@
 
 .expediente-paciente {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   padding: 20px;
 }
 
@@ -17,7 +17,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   color: white;
 }
 
@@ -41,7 +41,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   color: white;
   text-align: center;
   padding: 20px;
@@ -55,7 +55,7 @@
   margin-top: 20px;
   padding: 12px 24px;
   background: white;
-  color: #667eea;
+  color: #00589c;
   border: none;
   border-radius: 8px;
   font-weight: 600;
@@ -115,7 +115,7 @@
 .paciente-avatar {
   width: 80px;
   height: 80px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   color: white;
   border-radius: 50%;
   display: flex;
@@ -153,7 +153,7 @@
 .fase-badge {
   display: inline-block;
   padding: 4px 12px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   color: white;
   border-radius: 20px;
   font-size: 0.85rem;
@@ -189,7 +189,7 @@
 
 .tab-btn.active {
   background: white;
-  color: #667eea;
+  color: #00589c;
 }
 
 /* Content Area */
@@ -209,7 +209,7 @@
 /* General Tab - Info Grid */
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 20px;
 }
 
@@ -288,7 +288,7 @@
   display: block;
   font-size: 2rem;
   font-weight: 700;
-  color: #667eea;
+  color: #00589c;
 }
 
 .stat-label {
@@ -310,7 +310,7 @@
   align-items: center;
   gap: 10px;
   padding: 14px 24px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -351,7 +351,7 @@
   padding: 16px 20px;
   background: #f7fafc;
   border-radius: 12px;
-  border-left: 4px solid #667eea;
+  border-left: 4px solid #00589c;
 }
 
 .cita-card.completada {
@@ -382,7 +382,7 @@
 }
 
 .cita-hora {
-  color: #667eea;
+  color: #00589c;
   font-weight: 700;
   font-size: 1.1rem;
 }
@@ -452,7 +452,7 @@
 
 .notas-textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #00589c;
 }
 
 .notas-actions {
@@ -463,7 +463,7 @@
 
 .btn-primary {
   padding: 12px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -531,6 +531,66 @@
   }
 }
 
+@media (max-width: 480px) {
+  .expediente-paciente {
+    padding: 8px;
+  }
+
+  .expediente-header h1 {
+    font-size: 1.2rem;
+  }
+
+  .paciente-info-card {
+    padding: 16px;
+  }
+
+  .paciente-avatar {
+    width: 64px;
+    height: 64px;
+    font-size: 1.5rem;
+  }
+
+  .paciente-datos h2 {
+    font-size: 1.2rem;
+  }
+
+  .expediente-content {
+    padding: 16px;
+    border-radius: 12px;
+  }
+
+  .tab-btn {
+    padding: 14px 12px;
+    font-size: 0.9rem;
+  }
+
+  .btn-back {
+    min-height: 48px;
+    padding: 12px 16px;
+  }
+
+  .action-btn {
+    min-height: 48px;
+    padding: 14px 20px;
+  }
+
+  .btn-primary {
+    min-height: 48px;
+    padding: 14px 24px;
+  }
+
+  .notas-textarea {
+    font-size: 1rem;
+    min-height: 150px;
+  }
+
+  .info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
 /* Age Mode - Larger text for seniors */
 .expediente-paciente[data-age-mode="mayor"] .tab-btn,
 .expediente-paciente[data-age-mode="mayor"] .btn-primary,
@@ -546,4 +606,352 @@
 .expediente-loading[data-age-mode="mayor"],
 .expediente-error[data-age-mode="mayor"] {
   font-size: 1.2rem;
+}
+
+/* ===== MODO CLARO ===== */
+[data-theme="light"] .expediente-paciente {
+  background: #f0f4f8;
+}
+
+[data-theme="light"] .expediente-loading {
+  background: #f0f4f8;
+  color: #2d3748;
+}
+
+[data-theme="light"] .loading-spinner {
+  border-color: rgba(0, 88, 156, 0.2);
+  border-top-color: #00589c;
+}
+
+[data-theme="light"] .expediente-error {
+  background: #f0f4f8;
+  color: #2d3748;
+}
+
+[data-theme="light"] .expediente-header h1 {
+  color: #1a365d;
+}
+
+[data-theme="light"] .btn-back {
+  background: white;
+  color: #00589c;
+  border: 1px solid #cbd5e0;
+}
+
+[data-theme="light"] .btn-back:hover {
+  background: #edf2f7;
+}
+
+[data-theme="light"] .paciente-info-card {
+  background: linear-gradient(135deg, #00589c 0%, #004179 100%);
+  color: white;
+}
+
+[data-theme="light"] .paciente-datos h2 {
+  color: white;
+}
+
+[data-theme="light"] .paciente-info-card .meta-item {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+[data-theme="light"] .paciente-info-card .meta-item strong {
+  color: white;
+}
+
+[data-theme="light"] .expediente-tabs {
+  background: white;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .tab-btn {
+  color: #4a5568;
+  font-weight: 500;
+}
+
+[data-theme="light"] .tab-btn:hover {
+  background: #edf2f7;
+  color: #2d3748;
+}
+
+[data-theme="light"] .tab-btn.active {
+  background: #00589c;
+  color: white;
+}
+
+[data-theme="light"] .expediente-content {
+  background: white;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .info-card {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .info-card h3 {
+  color: #1a365d;
+  border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .stat-item {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+[data-theme="light"] .stat-value {
+  color: #00589c;
+}
+
+[data-theme="light"] .cita-card {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .action-btn {
+  background: #00589c;
+  color: white;
+}
+
+[data-theme="light"] .btn-primary {
+  background: #00589c;
+  color: white;
+}
+
+[data-theme="light"] .notas-textarea {
+  background: white;
+  border-color: #cbd5e0;
+  color: #2d3748;
+}
+
+[data-theme="light"] .notas-textarea:focus {
+  border-color: #00589c;
+  box-shadow: 0 0 0 3px rgba(0, 88, 156, 0.15);
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .expediente-paciente {
+  background: var(--background-primary);
+}
+
+[data-theme="dark"] .expediente-loading {
+  background: var(--background-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .loading-spinner {
+  border-color: var(--border-color);
+  border-top-color: var(--text-primary);
+}
+
+[data-theme="dark"] .expediente-error {
+  background: var(--background-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .expediente-error .btn-primary {
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .expediente-error .btn-primary:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .expediente-header h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-back {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-back:hover {
+  background: var(--surface-tertiary);
+}
+
+[data-theme="dark"] .paciente-info-card {
+  background: var(--surface-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .paciente-avatar {
+  background: linear-gradient(135deg, #1a6fb5 0%, #0d4a80 100%);
+  color: white;
+}
+
+[data-theme="dark"] .paciente-datos h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .meta-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .meta-item strong {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .fase-badge {
+  background: linear-gradient(135deg, #1a6fb5 0%, #0d4a80 100%);
+  color: white;
+}
+
+[data-theme="dark"] .expediente-tabs {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .tab-btn {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tab-btn:hover {
+  background: var(--surface-tertiary);
+}
+
+[data-theme="dark"] .tab-btn.active {
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .expediente-content {
+  background: var(--surface-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .tab-content h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .info-card {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .info-card h3 {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .info-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .info-value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .status-badge.active {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+}
+
+[data-theme="dark"] .status-badge.inactive {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+
+[data-theme="dark"] .stat-item {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .stat-value {
+  color: #58a6ff;
+}
+
+[data-theme="dark"] .stat-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .empty-state {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .cita-card {
+  background: var(--surface-secondary);
+  border-left-color: #58a6ff;
+}
+
+[data-theme="dark"] .cita-card.completada {
+  border-left-color: #3fb950;
+}
+
+[data-theme="dark"] .cita-card.cancelada {
+  border-left-color: #f85149;
+}
+
+[data-theme="dark"] .cita-card.programada,
+[data-theme="dark"] .cita-card.confirmada {
+  border-left-color: #d29922;
+}
+
+[data-theme="dark"] .cita-dia {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .cita-hora {
+  color: #58a6ff;
+}
+
+[data-theme="dark"] .cita-tipo {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .cita-estado {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .estado-completada {
+  background: rgba(63, 185, 80, 0.15);
+  color: #3fb950;
+}
+
+[data-theme="dark"] .estado-programada,
+[data-theme="dark"] .estado-confirmada {
+  background: rgba(210, 153, 34, 0.15);
+  color: #d29922;
+}
+
+[data-theme="dark"] .estado-cancelada {
+  background: rgba(248, 81, 73, 0.15);
+  color: #f85149;
+}
+
+[data-theme="dark"] .cita-notas {
+  border-top-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .notas-description {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .notas-textarea {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .notas-textarea:focus {
+  border-color: #58a6ff;
+}
+
+[data-theme="dark"] .quick-actions .action-btn {
+  background: linear-gradient(135deg, #1a6fb5 0%, #0d4a80 100%);
+  color: white;
+}
+
+[data-theme="dark"] .quick-actions .action-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .btn-primary {
+  background: linear-gradient(135deg, #1a6fb5 0%, #0d4a80 100%);
+  color: white;
+}
+
+[data-theme="dark"] .btn-primary:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Citas.css';
 
 const Citas = () => {
@@ -27,9 +28,9 @@ const Citas = () => {
   });
 
   const tiposCita = [
-    { id: 'presencial', nombre: 'Presencial', icon: '🏥' },
-    { id: 'videollamada', nombre: 'Videollamada', icon: '💻' },
-    { id: 'telefonica', nombre: 'Telefónica', icon: '📞' }
+    { id: 'presencial', nombre: 'Presencial', icon: 'hospital' },
+    { id: 'videollamada', nombre: 'Videollamada', icon: 'monitor' },
+    { id: 'telefonica', nombre: 'Telefonica', icon: 'smartphone' }
   ];
 
   useEffect(() => {
@@ -230,7 +231,7 @@ const Citas = () => {
 
                     <div className="cita-meta">
                       <span className="cita-tipo">
-                        {tiposCita.find(t => t.id === cita.tipo)?.icon} {tiposCita.find(t => t.id === cita.tipo)?.nombre}
+                        <LucideIcon name={tiposCita.find(t => t.id === cita.tipo)?.icon} size={16} /> {tiposCita.find(t => t.id === cita.tipo)?.nombre}
                       </span>
                       <span className={`cita-estado ${cita.estado}`}>
                         {cita.estado}
@@ -330,7 +331,7 @@ const Citas = () => {
                         checked={nuevaCita.tipo === tipo.id}
                         onChange={e => setNuevaCita({...nuevaCita, tipo: e.target.value})}
                       />
-                      <span className="tipo-icon">{tipo.icon}</span>
+                      <span className="tipo-icon"><LucideIcon name={tipo.icon} size={20} /></span>
                       <span className="tipo-nombre">{tipo.nombre}</span>
                     </label>
                   ))}
@@ -389,7 +390,7 @@ const Citas = () => {
               <div className="detalle-row">
                 <span className="detalle-label">Tipo:</span>
                 <span className="detalle-value">
-                  {tiposCita.find(t => t.id === selectedCita.tipo)?.icon} {tiposCita.find(t => t.id === selectedCita.tipo)?.nombre}
+                  <LucideIcon name={tiposCita.find(t => t.id === selectedCita.tipo)?.icon} size={16} /> {tiposCita.find(t => t.id === selectedCita.tipo)?.nombre}
                 </span>
               </div>
               <div className="detalle-row">

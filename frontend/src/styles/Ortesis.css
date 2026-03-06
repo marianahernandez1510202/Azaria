@@ -1,10 +1,10 @@
 /* =====================================================
-   MÓDULO DE PRÓTESIS - ESTILOS COMPLETOS
+   MODULO DE PROTESIS - ESTILOS COMPLETOS
    ===================================================== */
 
 .ortesis-page {
   min-height: 100vh;
-  background: var(--bg-primary, #0f172a);
+  background: var(--bg-primary, #F5F7F2);
   padding-bottom: 100px;
 }
 
@@ -13,7 +13,7 @@
    ===================================================== */
 
 .ortesis-page .page-header {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
   padding: 1rem 1.5rem;
   color: white;
   position: sticky;
@@ -50,17 +50,18 @@
 }
 
 /* =====================================================
-   NAVEGACIÓN POR TABS
+   NAVEGACION POR TABS
    ===================================================== */
 
 .ortesis-page .tabs-nav {
   display: flex;
   gap: 0.25rem;
   padding: 0.75rem 1rem;
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  border-bottom: 1px solid var(--border-color, #E0E0E0);
 }
 
 .ortesis-page .tabs-nav::-webkit-scrollbar {
@@ -72,7 +73,7 @@
   padding: 0.6rem 1rem;
   background: transparent;
   border: none;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.85rem;
   font-weight: 500;
   border-radius: 8px;
@@ -82,12 +83,12 @@
 }
 
 .ortesis-page .tabs-nav .tab:hover {
-  background: var(--bg-tertiary, #334155);
-  color: var(--text-primary, #f1f5f9);
+  background: var(--bg-tertiary, #E8E8E8);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .ortesis-page .tabs-nav .tab.active {
-  background: #10b981;
+  background: #1565C0;
   color: white;
 }
 
@@ -106,22 +107,23 @@
 }
 
 .ortesis-page .section-header h2 {
-  color: var(--text-primary, #f1f5f9);
+  font-family: 'Open Sans', sans-serif;
+  color: var(--inst-title, #0c71c3);
   font-size: 1.5rem;
   margin: 0 0 0.5rem;
 }
 
 .ortesis-page .section-header p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0;
 }
 
 /* =====================================================
-   PÁGINA DE INICIO
+   PAGINA DE INICIO
    ===================================================== */
 
 .welcome-banner {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  background: linear-gradient(135deg, #1565C0 0%, #0D47A1 100%);
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 1.5rem;
@@ -146,17 +148,18 @@
 }
 
 .action-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .action-card:hover {
-  border-color: #10b981;
+  border-color: #1565C0;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .action-card .action-icon {
@@ -166,33 +169,33 @@
 }
 
 .action-card h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.25rem;
   font-size: 1rem;
 }
 
 .action-card p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0;
   font-size: 0.8rem;
 }
 
 /* Card de Nivel K del usuario */
 .user-nivel-k-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1rem;
   margin-bottom: 1.5rem;
-  border: 2px solid #10b981;
+  border: 2px solid #1565C0;
 }
 
 .user-nivel-k-card .nivel-badge {
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #10b981, #059669);
+  background: linear-gradient(135deg, #1565C0, #0D47A1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -211,34 +214,35 @@
 }
 
 .user-nivel-k-card .nivel-info h3 {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.8rem;
   margin: 0 0 0.25rem;
   text-transform: uppercase;
 }
 
 .user-nivel-k-card .nivel-nombre {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-size: 1.1rem;
   font-weight: 600;
   margin: 0 0 0.25rem;
 }
 
 .user-nivel-k-card .nivel-desc {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.85rem;
   margin: 0;
 }
 
 /* Resumen de contenido */
 .content-summary {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
   padding: 1.25rem;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .content-summary h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-size: 1rem;
   margin: 0 0 1rem;
 }
@@ -257,12 +261,12 @@
   display: block;
   font-size: 1.5rem;
   font-weight: 700;
-  color: #10b981;
+  color: #1565C0;
 }
 
 .summary-label {
   font-size: 0.75rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
 }
 
 /* =====================================================
@@ -271,12 +275,12 @@
 
 .niveles-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
   gap: 1rem;
 }
 
 .nivel-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
   cursor: pointer;
@@ -286,20 +290,21 @@
 }
 
 .nivel-card:hover {
-  border-color: #10b981;
+  border-color: #1565C0;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .nivel-card.current {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+  border-color: #1565C0;
+  background: linear-gradient(135deg, rgba(21, 101, 192, 0.06), transparent);
 }
 
 .current-badge {
   position: absolute;
   top: 1rem;
   right: 1rem;
-  background: #10b981;
+  background: #1565C0;
   color: white;
   font-size: 0.7rem;
   padding: 0.25rem 0.5rem;
@@ -310,7 +315,7 @@
 .nivel-badge {
   width: 50px;
   height: 50px;
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  background: linear-gradient(135deg, #1565C0, #0D47A1);
   border-radius: 12px;
   display: flex;
   align-items: center;
@@ -354,13 +359,13 @@
 }
 
 .nivel-card h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.5rem;
   font-size: 1.1rem;
 }
 
 .nivel-card > p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.85rem;
   margin: 0 0 1rem;
   line-height: 1.5;
@@ -371,14 +376,15 @@
   gap: 1rem;
   margin-bottom: 1rem;
   font-size: 0.75rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
 }
 
 /* Detalle de Nivel K */
 .nivel-detail-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .nivel-header {
@@ -387,16 +393,16 @@
   align-items: flex-start;
   margin-bottom: 2rem;
   padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--bg-tertiary, #334155);
+  border-bottom: 1px solid var(--bg-tertiary, #E0E0E0);
 }
 
 .nivel-header h2 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.5rem;
 }
 
 .nivel-header .nivel-desc {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0;
   line-height: 1.6;
 }
@@ -407,7 +413,7 @@
 }
 
 .nivel-section h3 {
-  color: #10b981;
+  color: #1565C0;
   font-size: 1rem;
   margin: 0 0 0.75rem;
 }
@@ -418,7 +424,7 @@
 }
 
 .nivel-section li {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
@@ -432,12 +438,12 @@
 }
 
 .check-icon {
-  color: #10b981;
+  color: #1565C0;
   font-weight: bold;
 }
 
 /* =====================================================
-   TIPOS DE PRÓTESIS
+   TIPOS DE PROTESIS
    ===================================================== */
 
 .categorias-grid {
@@ -447,7 +453,7 @@
 }
 
 .categoria-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
   text-align: center;
@@ -457,8 +463,9 @@
 }
 
 .categoria-card:hover {
-  border-color: #10b981;
+  border-color: #1565C0;
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .categoria-icon {
@@ -468,19 +475,19 @@
 }
 
 .categoria-card h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.25rem;
   font-size: 1rem;
 }
 
 .categoria-card p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0 0 0.5rem;
   font-size: 0.8rem;
 }
 
 .tipos-count {
-  color: #10b981;
+  color: #1565C0;
   font-size: 0.75rem;
   font-weight: 600;
 }
@@ -492,46 +499,47 @@
 }
 
 .tipo-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .tipo-card:hover {
-  border-color: #10b981;
+  border-color: #1565C0;
 }
 
 .tipo-card h4 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.5rem;
   font-size: 1rem;
 }
 
 .tipo-card p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0 0 0.75rem;
   font-size: 0.85rem;
 }
 
 /* Detalle de Tipo */
 .tipo-detail-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .tipo-detail-card h2 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.5rem;
 }
 
 .tipo-categoria {
   display: inline-block;
-  background: var(--bg-tertiary, #334155);
-  color: var(--text-secondary, #94a3b8);
+  background: var(--bg-tertiary, #E8E8E8);
+  color: var(--text-secondary, #6B6B6B);
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
   font-size: 0.8rem;
@@ -539,13 +547,13 @@
 }
 
 .tipo-descripcion {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   line-height: 1.6;
   margin-bottom: 1.5rem;
 }
 
 .nivel-minimo {
-  background: var(--bg-tertiary, #334155);
+  background: var(--bg-tertiary, #F0F2ED);
   padding: 0.75rem 1rem;
   border-radius: 8px;
   display: flex;
@@ -555,7 +563,7 @@
 }
 
 .nivel-minimo span:first-child {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.9rem;
 }
 
@@ -565,24 +573,24 @@
 }
 
 .tipo-section h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-size: 1rem;
   margin: 0 0 0.75rem;
 }
 
 .tipo-section.ventajas h3 {
-  color: #10b981;
+  color: #1565C0;
 }
 
 .tipo-section.desventajas h3 {
-  color: #f59e0b;
+  color: #F57F17;
 }
 
 .tipo-section.cuidados {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(21, 101, 192, 0.06);
   padding: 1rem;
   border-radius: 8px;
-  border-left: 3px solid #10b981;
+  border-left: 3px solid #1565C0;
 }
 
 .tipo-section ul {
@@ -591,13 +599,13 @@
 }
 
 .tipo-section li {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
 
 /* =====================================================
-   GUÍAS DE CUIDADO
+   GUIAS DE CUIDADO
    ===================================================== */
 
 .categorias-guias-grid {
@@ -607,18 +615,18 @@
 }
 
 .categoria-guia-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.2s;
   border: 2px solid transparent;
-  border-left: 4px solid var(--cat-color, #10b981);
+  border-left: 4px solid var(--cat-color, #1565C0);
 }
 
 .categoria-guia-card:hover {
-  border-color: var(--cat-color, #10b981);
+  border-color: var(--cat-color, #1565C0);
 }
 
 .categoria-guia-card .categoria-icon {
@@ -626,13 +634,13 @@
 }
 
 .categoria-guia-card h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0.5rem 0 0.25rem;
   font-size: 1rem;
 }
 
 .guias-count {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.8rem;
 }
 
@@ -643,43 +651,46 @@
 }
 
 .guia-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
   padding: 1.25rem;
   cursor: pointer;
   transition: all 0.2s;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .guia-card:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .guia-card h4 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.5rem;
 }
 
 .guia-card p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0 0 0.75rem;
   font-size: 0.85rem;
 }
 
 .guia-meta {
   font-size: 0.75rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin-bottom: 0.75rem;
 }
 
-/* Detalle de Guía */
+/* Detalle de Guia */
 .guia-detail-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   overflow: hidden;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .guia-header {
-  background: linear-gradient(135deg, var(--cat-color, #10b981), transparent);
+  background: linear-gradient(135deg, var(--cat-color, #1565C0), transparent);
   padding: 1.5rem;
   display: flex;
   align-items: center;
@@ -698,15 +709,15 @@
 
 .guia-intro {
   padding: 1.5rem;
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   line-height: 1.6;
-  border-bottom: 1px solid var(--bg-tertiary, #334155);
+  border-bottom: 1px solid var(--bg-tertiary, #E0E0E0);
   margin: 0;
 }
 
 .guia-section {
   padding: 1.5rem;
-  border-bottom: 1px solid var(--bg-tertiary, #334155);
+  border-bottom: 1px solid var(--bg-tertiary, #E0E0E0);
 }
 
 .guia-section:last-child {
@@ -714,17 +725,17 @@
 }
 
 .guia-section h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 1rem;
   font-size: 1rem;
 }
 
 .guia-section.tips {
-  background: rgba(59, 130, 246, 0.1);
+  background: rgba(21, 101, 192, 0.05);
 }
 
 .guia-section.advertencias {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(198, 40, 40, 0.05);
 }
 
 .pasos-list {
@@ -733,7 +744,7 @@
 }
 
 .pasos-list li {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin-bottom: 0.75rem;
   line-height: 1.6;
 }
@@ -744,20 +755,21 @@
 }
 
 .guia-section li {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin-bottom: 0.5rem;
   line-height: 1.5;
 }
 
 /* =====================================================
-   MI PRÓTESIS
+   MI PROTESIS
    ===================================================== */
 
 .mi-protesis-section .dispositivo-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .mi-protesis-section .dispositivo-card .dispositivo-header {
@@ -766,11 +778,11 @@
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--bg-tertiary, #334155);
+  border-bottom: 1px solid var(--bg-tertiary, #E0E0E0);
 }
 
 .mi-protesis-section .dispositivo-header h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0;
 }
 
@@ -781,44 +793,44 @@
 }
 
 .info-item {
-  background: var(--bg-tertiary, #334155);
+  background: var(--bg-tertiary, #F0F2ED);
   padding: 1rem;
   border-radius: 8px;
 }
 
 .info-item.destacado {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), transparent);
-  border: 1px solid #10b981;
+  background: linear-gradient(135deg, rgba(21, 101, 192, 0.08), transparent);
+  border: 1px solid #1565C0;
 }
 
 .info-label {
   display: block;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.8rem;
   margin-bottom: 0.25rem;
 }
 
 .info-value {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-weight: 600;
 }
 
 .notas-especialista {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: var(--bg-tertiary, #334155);
+  background: var(--bg-tertiary, #F0F2ED);
   border-radius: 8px;
-  border-left: 3px solid #10b981;
+  border-left: 3px solid #1565C0;
 }
 
 .notas-especialista h4 {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0 0 0.5rem;
   font-size: 0.85rem;
 }
 
 .notas-especialista p {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0;
 }
 
@@ -830,8 +842,9 @@
 .no-dispositivo {
   text-align: center;
   padding: 3rem 1.5rem;
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .empty-icon {
@@ -840,12 +853,12 @@
 }
 
 .no-dispositivo h3 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 0.5rem;
 }
 
 .no-dispositivo p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0 0 1.5rem;
 }
 
@@ -866,22 +879,24 @@
 }
 
 .problema-card {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
   padding: 1.25rem;
+  border-left: 4px solid;
+  border: 1px solid var(--border-color, #E8E8E8);
   border-left: 4px solid;
 }
 
 .problema-card.urgencia-baja {
-  border-left-color: #10b981;
+  border-left-color: #1565C0;
 }
 
 .problema-card.urgencia-media {
-  border-left-color: #f59e0b;
+  border-left-color: #F57F17;
 }
 
 .problema-card.urgencia-alta {
-  border-left-color: #ef4444;
+  border-left-color: #C62828;
 }
 
 .problema-header {
@@ -892,7 +907,7 @@
 }
 
 .problema-tipo {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-weight: 500;
 }
 
@@ -905,22 +920,22 @@
 }
 
 .urgencia-badge.baja {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  background: rgba(21, 101, 192, 0.1);
+  color: #1565C0;
 }
 
 .urgencia-badge.media {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+  background: rgba(245, 127, 23, 0.1);
+  color: #F57F17;
 }
 
 .urgencia-badge.alta {
-  background: rgba(239, 68, 68, 0.2);
-  color: #ef4444;
+  background: rgba(198, 40, 40, 0.1);
+  color: #C62828;
 }
 
 .problema-descripcion {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin: 0 0 0.75rem;
   line-height: 1.5;
 }
@@ -933,7 +948,7 @@
 }
 
 .problema-fecha {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
 }
 
 .problema-estado {
@@ -943,29 +958,30 @@
 }
 
 .problema-estado.pendiente {
-  background: rgba(245, 158, 11, 0.2);
-  color: #f59e0b;
+  background: rgba(245, 127, 23, 0.1);
+  color: #F57F17;
 }
 
 .problema-estado.resuelto {
-  background: rgba(16, 185, 129, 0.2);
-  color: #10b981;
+  background: rgba(21, 101, 192, 0.1);
+  color: #1565C0;
 }
 
 .no-problemas {
   text-align: center;
   padding: 2rem;
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .no-problemas p {
   margin: 0;
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .no-problemas .text-muted {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   font-size: 0.85rem;
   margin-top: 0.5rem;
 }
@@ -980,9 +996,10 @@
 }
 
 .faq-item {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
   overflow: hidden;
+  border: 1px solid var(--border-color, #E8E8E8);
 }
 
 .faq-item summary {
@@ -991,7 +1008,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-weight: 500;
   list-style: none;
 }
@@ -1004,7 +1021,7 @@
   content: '+';
   margin-left: auto;
   font-size: 1.25rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   transition: transform 0.2s;
 }
 
@@ -1018,7 +1035,7 @@
 
 .faq-answer {
   padding: 0 1.25rem 1.25rem;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   line-height: 1.6;
 }
 
@@ -1041,31 +1058,31 @@
 }
 
 .ortesis-page .btn-primary {
-  background: #10b981;
+  background: #1565C0;
   color: white;
 }
 
 .ortesis-page .btn-primary:hover {
-  background: #059669;
+  background: #0D47A1;
 }
 
 .ortesis-page .btn-secondary {
-  background: var(--bg-tertiary, #334155);
-  color: var(--text-primary, #f1f5f9);
+  background: var(--bg-tertiary, #E8E8E8);
+  color: var(--text-primary, #1A1A1A);
 }
 
 .ortesis-page .btn-secondary:hover {
-  background: #475569;
+  background: #D5D5D5;
 }
 
 .ortesis-page .btn-outline {
   background: transparent;
-  border: 1px solid #10b981;
-  color: #10b981;
+  border: 1px solid #1565C0;
+  color: #1565C0;
 }
 
 .ortesis-page .btn-outline:hover {
-  background: rgba(16, 185, 129, 0.1);
+  background: rgba(21, 101, 192, 0.06);
 }
 
 .ortesis-page .btn-sm {
@@ -1074,8 +1091,8 @@
 }
 
 .btn-back {
-  background: var(--bg-tertiary, #334155);
-  color: var(--text-primary, #f1f5f9);
+  background: var(--bg-tertiary, #E8E8E8);
+  color: var(--text-primary, #1A1A1A);
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 8px;
@@ -1094,7 +1111,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1103,17 +1120,18 @@
 }
 
 .ortesis-page .modal-content {
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 16px;
   padding: 1.5rem;
   width: 100%;
   max-width: 500px;
   max-height: 90vh;
   overflow-y: auto;
+  border: 1px solid var(--border-color, #E0E0E0);
 }
 
 .ortesis-page .modal-content h2 {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin: 0 0 1.5rem;
 }
 
@@ -1123,7 +1141,7 @@
 
 .form-group label {
   display: block;
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   margin-bottom: 0.5rem;
   font-weight: 500;
 }
@@ -1131,17 +1149,17 @@
 .form-control {
   width: 100%;
   padding: 0.75rem;
-  background: var(--bg-tertiary, #334155);
-  border: 1px solid var(--bg-tertiary, #475569);
+  background: var(--bg-tertiary, #F0F2ED);
+  border: 1px solid var(--border-color, #E0E0E0);
   border-radius: 8px;
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-size: 0.95rem;
   box-sizing: border-box;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: #10b981;
+  border-color: #1565C0;
 }
 
 .tipo-problema-grid {
@@ -1156,7 +1174,7 @@
   align-items: center;
   gap: 0.5rem;
   padding: 1rem;
-  background: var(--bg-tertiary, #334155);
+  background: var(--bg-tertiary, #F0F2ED);
   border: 2px solid transparent;
   border-radius: 12px;
   cursor: pointer;
@@ -1164,12 +1182,12 @@
 }
 
 .tipo-btn:hover {
-  border-color: var(--bg-tertiary, #475569);
+  border-color: var(--border-color, #E0E0E0);
 }
 
 .tipo-btn.selected {
-  border-color: #10b981;
-  background: rgba(16, 185, 129, 0.1);
+  border-color: #1565C0;
+  background: rgba(21, 101, 192, 0.06);
 }
 
 .tipo-btn .tipo-icon {
@@ -1177,7 +1195,7 @@
 }
 
 .tipo-btn .tipo-nombre {
-  color: var(--text-primary, #f1f5f9);
+  color: var(--text-primary, #1A1A1A);
   font-size: 0.8rem;
   text-align: center;
 }
@@ -1205,15 +1223,15 @@
 }
 
 .loading-container p {
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
   margin-top: 1rem;
 }
 
 .spinner {
   width: 40px;
   height: 40px;
-  border: 3px solid var(--bg-tertiary, #334155);
-  border-top-color: #10b981;
+  border: 3px solid var(--bg-tertiary, #E0E0E0);
+  border-top-color: #1565C0;
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -1228,30 +1246,30 @@
 }
 
 .error-container p {
-  color: #ef4444;
+  color: #C62828;
   margin-bottom: 1rem;
 }
 
 /* =====================================================
-   MODO CLARO
+   MODO CLARO (ya es el default, mantener para compat)
    ===================================================== */
 
 [data-theme="light"] .ortesis-page {
-  background: #f8fafc;
+  background: #F5F7F2;
 }
 
 [data-theme="light"] .ortesis-page .tabs-nav {
   background: white;
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #E0E0E0;
 }
 
 [data-theme="light"] .ortesis-page .tabs-nav .tab {
-  color: #64748b;
+  color: #6B6B6B;
 }
 
 [data-theme="light"] .ortesis-page .tabs-nav .tab:hover {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: #F0F2ED;
+  color: #1A1A1A;
 }
 
 [data-theme="light"] .action-card,
@@ -1272,20 +1290,421 @@
 [data-theme="light"] .no-dispositivo,
 [data-theme="light"] .no-problemas {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #E0E0E0;
 }
 
 [data-theme="light"] .form-control,
 [data-theme="light"] .tipo-btn,
 [data-theme="light"] .info-item,
 [data-theme="light"] .btn-back {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
+  background: #F0F2ED;
+  border-color: #E0E0E0;
 }
 
 [data-theme="light"] .ortesis-page .btn-secondary {
-  background: #e2e8f0;
-  color: #1e293b;
+  background: #E8E8E8;
+  color: #1A1A1A;
+}
+
+/* =====================================================
+   MODO OSCURO
+   ===================================================== */
+
+[data-theme="dark"] .ortesis-page {
+  background: var(--background-primary);
+}
+
+[data-theme="dark"] .ortesis-page .tabs-nav {
+  background: var(--surface-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .ortesis-page .tabs-nav .tab {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .ortesis-page .tabs-nav .tab:hover {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ortesis-page .section-header h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ortesis-page .section-header p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .action-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .action-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .action-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .action-card p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .user-nivel-k-card {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .user-nivel-k-card .nivel-info h3 {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .user-nivel-k-card .nivel-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .user-nivel-k-card .nivel-desc {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .content-summary {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .content-summary h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .summary-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nivel-card {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .nivel-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .nivel-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .nivel-card > p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nivel-preview {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nivel-detail-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .nivel-header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .nivel-header h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .nivel-header .nivel-desc {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .nivel-section li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .categoria-card {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .categoria-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .categoria-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .categoria-card p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tipo-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .tipo-card h4 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tipo-card p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tipo-detail-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .tipo-detail-card h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tipo-categoria {
+  background: var(--surface-tertiary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tipo-descripcion {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .nivel-minimo {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .nivel-minimo span:first-child {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .tipo-section h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tipo-section li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tipo-section.cuidados {
+  background: rgba(21, 101, 192, 0.1);
+}
+
+[data-theme="dark"] .categoria-guia-card {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .categoria-guia-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .guias-count {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .guia-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .guia-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .guia-card h4 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .guia-card p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .guia-meta {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .guia-detail-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .guia-intro {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .guia-section {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .guia-section h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .guia-section li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .guia-section.tips {
+  background: rgba(21, 101, 192, 0.1);
+}
+
+[data-theme="dark"] .guia-section.advertencias {
+  background: rgba(198, 40, 40, 0.1);
+}
+
+[data-theme="dark"] .pasos-list li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .mi-protesis-section .dispositivo-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .mi-protesis-section .dispositivo-card .dispositivo-header {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .mi-protesis-section .dispositivo-header h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .info-item {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .info-label {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .info-value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .notas-especialista {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .notas-especialista h4 {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .notas-especialista p {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .no-dispositivo {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .no-dispositivo h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .no-dispositivo p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .problema-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .problema-tipo {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .problema-descripcion {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .problema-fecha {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .no-problemas {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .no-problemas p {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .no-problemas .text-muted {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .faq-item {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .faq-item summary {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .faq-item summary::after {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .faq-answer {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .ortesis-page .btn-secondary {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ortesis-page .btn-secondary:hover {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .btn-back {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ortesis-page .modal-content {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .ortesis-page .modal-content h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group label {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .tipo-btn {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .tipo-btn:hover {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .tipo-btn .tipo-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .loading-container p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .spinner {
+  border-color: var(--border-color);
 }
 
 /* =====================================================
@@ -1322,5 +1741,39 @@
   .categorias-grid,
   .categorias-guias-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .ortesis-page .tab-content {
+    padding: 1rem;
+  }
+
+  .welcome-banner {
+    padding: 1.25rem;
+  }
+
+  .welcome-banner h2 {
+    font-size: 1.2rem;
+  }
+
+  .nivel-card {
+    padding: 1rem;
+  }
+
+  .tipo-problema-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+  }
+
+  .ortesis-page .page-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .ortesis-page .header-content h1 {
+    font-size: 1.25rem;
   }
 }

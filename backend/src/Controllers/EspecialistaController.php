@@ -15,6 +15,53 @@ class EspecialistaController
     }
 
     /**
+     * Obtener todos los especialistas activos
+     */
+    public function getEspecialistasActivos()
+    {
+        try {
+            $especialistas = $this->db->query(
+                "SELECT u.id, u.nombre_completo, u.email, u.avatar,
+                        COALESCE(am.nombre, 'Medicina General') as area_medica
+                 FROM usuarios u
+                 LEFT JOIN areas_medicas am ON u.area_medica_id = am.id
+                 WHERE u.rol_id = 2 AND u.activo = 1
+                 ORDER BY u.nombre_completo"
+            )->fetchAll();
+
+            return Response::success($especialistas ?: []);
+        } catch (\Exception $e) {
+            return Response::error('Error al cargar especialistas', 500);
+        }
+    }
+
+    /**
+     * Registrar estudio clínico
+     */
+    public function registrarEstudio($data)
+    {
+        try {
+            $this->db->query(
+                "INSERT INTO estudios_clinicos (paciente_id, especialista_id, nombre, tipo, fecha, resultado, observaciones, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
+                [
+                    $data['paciente_id'],
+                    $data['especialista_id'],
+                    $data['nombre'],
+                    $data['tipo'] ?? 'laboratorio',
+                    $data['fecha'],
+                    $data['resultado'] ?? null,
+                    $data['observaciones'] ?? null
+                ]
+            );
+
+            return Response::success(['id' => $this->db->lastInsertId()], 'Estudio registrado', 201);
+        } catch (\Exception $e) {
+            return Response::error('Error al registrar estudio', 500);
+        }
+    }
+
+    /**
      * Obtener citas de hoy para un especialista
      */
     public function getCitasHoy($especialistaId)

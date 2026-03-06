@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice } from '../VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../accessibility/AccessibilityPanel';
+import LucideIcon from '../LucideIcon';
 import './layouts.css';
 
 /**
@@ -93,7 +94,7 @@ const BaseLayout = ({
             onClick={() => isSpeaking ? stop() : speak(`Estás en ${title}. ${subtitle || ''}`)}
             aria-label={isSpeaking ? 'Detener audio' : 'Escuchar descripción de página'}
           >
-            {isSpeaking ? '⏹️' : '🔊'}
+            <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
           </button>
 
           {/* Botón de accesibilidad */}
@@ -102,7 +103,7 @@ const BaseLayout = ({
             onClick={togglePanel}
             aria-label="Abrir configuración de accesibilidad"
           >
-            ♿
+            <LucideIcon name="accessibility" size={20} />
           </button>
 
           {/* Perfil de usuario */}
@@ -128,7 +129,7 @@ const BaseLayout = ({
             onClick={handleLogout}
             aria-label="Cerrar sesión"
           >
-            🚪
+            <LucideIcon name="logout" size={20} />
           </button>
         </div>
       </header>
@@ -146,7 +147,7 @@ const BaseLayout = ({
                   aria-current={location.pathname === item.path ? 'page' : undefined}
                   onFocus={() => settings.autoSpeak && speak(item.label)}
                 >
-                  <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+                  <span className="nav-icon" aria-hidden="true"><LucideIcon name={item.icon} size={20} /></span>
                   <span className="nav-label">{item.label}</span>
                   {item.badge && (
                     <span className="nav-badge" aria-label={`${item.badge} pendientes`}>
@@ -175,7 +176,7 @@ const BaseLayout = ({
               className={`bottom-nav-item ${location.pathname === item.path ? 'active' : ''}`}
               aria-current={location.pathname === item.path ? 'page' : undefined}
             >
-              <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+              <span className="nav-icon" aria-hidden="true"><LucideIcon name={item.icon} size={20} /></span>
               <span className="nav-label">{item.label}</span>
             </Link>
           ))}

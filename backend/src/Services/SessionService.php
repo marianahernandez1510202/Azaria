@@ -93,6 +93,11 @@ class SessionService
         $headers = getallheaders();
         $token = $headers['Authorization'] ?? null;
 
+        // Fallback: aceptar token desde query parameter (para preview de archivos en nueva pestaña)
+        if (!$token && isset($_GET['token'])) {
+            $token = $_GET['token'];
+        }
+
         if (!$token) {
             return null;
         }

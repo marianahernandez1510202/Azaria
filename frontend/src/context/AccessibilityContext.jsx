@@ -9,8 +9,8 @@ const DEFAULT_SETTINGS = {
   // Tamaño de fuente: xs, sm, md, lg, xl, xxl
   fontScale: 'md',
 
-  // Tema: dark, light
-  theme: 'dark',
+  // Tema: light, dark
+  theme: 'light',
 
   // Contraste: normal, high-dark, high-light
   contrast: 'normal',

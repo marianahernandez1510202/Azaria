@@ -44,14 +44,10 @@ class CitasController
      */
     public function crearCitaEspecialista($data)
     {
-        error_log("=== INICIO crearCitaEspecialista ===");
-        error_log("Datos recibidos: " . json_encode($data));
-
         // Validar datos requeridos
         $required = ['paciente_id', 'especialista_id', 'fecha', 'hora_inicio', 'tipo_cita_id'];
         foreach ($required as $field) {
             if (empty($data[$field])) {
-                error_log("Campo requerido faltante: $field");
                 return Response::error("El campo $field es requerido", 422);
             }
         }
@@ -64,7 +60,6 @@ class CitasController
         )->fetch();
 
         if ($citaExistente) {
-            error_log("Ya existe cita en ese horario");
             return Response::error('Ya existe una cita programada en ese horario', 422);
         }
 
@@ -82,8 +77,7 @@ class CitasController
             [$data['especialista_id']]
         )->fetch();
 
-        $areaMedicaId = $especialista['area_medica_id'] ?? 1; // Default a 1 si no tiene
-        error_log("area_medica_id del especialista: $areaMedicaId");
+        $areaMedicaId = $especialista['area_medica_id'] ?? 1;
 
         // Calcular hora fin
         $horaInicio = new \DateTime($data['hora_inicio']);
@@ -107,7 +101,6 @@ class CitasController
         );
 
         $citaId = $this->db->lastInsertId();
-        error_log("=== CITA CREADA CON ID: $citaId ===");
 
         // Sincronizar automáticamente con Outlook si el especialista tiene cuenta conectada
         $outlookEventId = $this->syncCitaToOutlook($data['especialista_id'], $citaId);
@@ -133,7 +126,6 @@ class CitasController
             )->fetch();
 
             if (!$tokenRecord) {
-                error_log("Especialista $especialistaId no tiene Outlook conectado");
                 return null;
             }
 
@@ -161,7 +153,6 @@ class CitasController
                     );
                     $accessToken = $newTokens['access_token'];
                 } else {
-                    error_log("No se pudo refrescar token de Outlook para especialista $especialistaId");
                     return null;
                 }
             }
@@ -181,7 +172,6 @@ class CitasController
             )->fetch();
 
             if (!$cita) {
-                error_log("Cita $citaId no encontrada para sincronizar");
                 return null;
             }
 
@@ -223,15 +213,12 @@ class CitasController
                     "UPDATE citas SET outlook_event_id = ?, outlook_synced_at = NOW() WHERE id = ?",
                     [$result['event_id'], $citaId]
                 );
-                error_log("Cita $citaId sincronizada con Outlook: {$result['event_id']}");
                 return $result['event_id'];
             }
 
-            error_log("Error al crear evento en Outlook para cita $citaId");
             return null;
 
         } catch (\Exception $e) {
-            error_log("Error sincronizando cita con Outlook: " . $e->getMessage());
             return null;
         }
     }
@@ -335,15 +322,11 @@ class CitasController
     // AGENDAR CITA
     public function agendarCita($data)
     {
-        error_log("=== INICIO agendarCita ===");
-        error_log("Datos recibidos: " . json_encode($data));
-
         // Normalizar datos: el frontend envía fecha_hora combinada
         if (isset($data['fecha_hora']) && !isset($data['fecha'])) {
             $dateTime = new \DateTime($data['fecha_hora']);
             $data['fecha'] = $dateTime->format('Y-m-d');
             $data['hora'] = $dateTime->format('H:i:s');
-            error_log("Fecha/hora normalizadas - fecha: {$data['fecha']}, hora: {$data['hora']}");
         }
 
         // El frontend envía 'tipo', usarlo como especialidad si no existe
@@ -351,34 +334,22 @@ class CitasController
             $data['especialidad'] = $data['tipo'];
         }
 
-        error_log("Datos después de normalizar: " . json_encode($data));
-
         $validator = new Validator($data);
         $validator->required(['paciente_id', 'especialista_id', 'fecha', 'hora']);
 
         if (!$validator->passes()) {
-            error_log("Validación fallida: " . json_encode($validator->errors()));
             return Response::error($validator->errors(), 422);
         }
 
-        error_log("Validación pasada. Verificando disponibilidad...");
-
         // Verificar disponibilidad
         if (!Cita::isAvailable($data['especialista_id'], $data['fecha'], $data['hora'])) {
-            error_log("Horario NO disponible para especialista_id: {$data['especialista_id']}, fecha: {$data['fecha']}, hora: {$data['hora']}");
             return Response::error('El horario no está disponible', 409);
         }
 
-        error_log("Horario disponible. Creando cita...");
-
         // Crear cita
         $result = Cita::create($data);
-        error_log("Resultado de Cita::create(): " . json_encode($result));
 
         if ($result) {
-            error_log("=== CITA CREADA EXITOSAMENTE ===");
-            error_log("ID de cita creada: " . ($result['id'] ?? 'N/A'));
-
             try {
                 // Sincronizar con Google Calendar (si está configurado)
                 $calendarEventId = $this->calendarService->createEvent([
@@ -393,7 +364,6 @@ class CitasController
                 }
             } catch (\Exception $e) {
                 // Si falla Google Calendar, continuar sin error
-                error_log('Google Calendar sync failed: ' . $e->getMessage());
             }
 
             try {
@@ -401,28 +371,21 @@ class CitasController
                 $this->emailService->sendCitaConfirmacion($result);
             } catch (\Exception $e) {
                 // Si falla el email, continuar sin error
-                error_log('Email notification failed: ' . $e->getMessage());
             }
 
             // Sincronizar con Outlook Calendar del especialista (si tiene cuenta conectada)
             $outlookEventId = null;
             try {
                 $outlookEventId = $this->syncCitaToOutlook($data['especialista_id'], $result['id']);
-                if ($outlookEventId) {
-                    error_log("Cita sincronizada con Outlook: $outlookEventId");
-                }
             } catch (\Exception $e) {
                 // Si falla Outlook, continuar sin error
-                error_log('Outlook Calendar sync failed: ' . $e->getMessage());
             }
 
-            error_log("=== FIN agendarCita - ÉXITO ===");
             $result['outlook_synced'] = !empty($outlookEventId);
             $result['outlook_event_id'] = $outlookEventId;
             return Response::success($result, 'Cita agendada exitosamente', 201);
         }
 
-        error_log("=== FIN agendarCita - ERROR: result vacío ===");
         return Response::error('Error al agendar cita', 500);
     }
 

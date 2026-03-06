@@ -136,8 +136,8 @@
 }
 
 @keyframes pulse-voice {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.5); }
-  50% { box-shadow: 0 0 0 8px rgba(0, 191, 165, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.5); }
+  50% { box-shadow: 0 0 0 8px rgba(46, 125, 50, 0); }
 }
 
 .header-user {
@@ -245,7 +245,7 @@
 }
 
 .nav-item.active {
-  background: rgba(0, 191, 165, 0.15);
+  background: rgba(46, 125, 50, 0.1);
   color: var(--color-primary);
   font-weight: 600;
 }
@@ -584,7 +584,7 @@
 }
 
 .layout-admin .nav-item.active {
-  background: rgba(244, 67, 54, 0.15);
+  background: rgba(198, 40, 40, 0.1);
   color: var(--color-medicina);
 }
 
@@ -598,7 +598,7 @@
 }
 
 .layout-especialista .nav-item.active {
-  background: rgba(156, 39, 176, 0.15);
+  background: rgba(106, 27, 154, 0.1);
   color: var(--color-neuropsicologia);
 }
 
@@ -711,4 +711,189 @@
 [data-reduced-motion="true"] .header-btn.voice-btn.speaking {
   animation: none;
   box-shadow: 0 0 0 4px var(--color-primary);
+}
+
+/* =============================================
+   MODULE LAYOUT - Para páginas de módulos
+   ============================================= */
+
+.module-layout {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.module-content {
+  padding-bottom: 70px; /* Espacio para la barra de navegación inferior */
+}
+
+/* Botón flotante de volver */
+.module-back-fab {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  color: var(--text-primary, #1A1A1A);
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.module-back-fab:hover {
+  background: rgba(240, 242, 237, 0.98);
+  transform: scale(1.05);
+}
+
+/* Barra de navegación inferior del módulo */
+.module-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--surface-primary, #FFFFFF);
+  border-top: 1px solid var(--border-color, #E0E0E0);
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0;
+  padding-bottom: calc(6px + env(safe-area-inset-bottom));
+  z-index: 998;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.06);
+}
+
+.module-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  color: var(--text-secondary, #6B6B6B);
+  text-decoration: none;
+  transition: color 0.2s ease;
+  min-width: 60px;
+}
+
+.module-nav-item:hover {
+  color: var(--text-primary, #1A1A1A);
+}
+
+.module-nav-item.active {
+  color: var(--color-primary, #0097A7);
+}
+
+.module-nav-icon {
+  font-size: 22px;
+}
+
+.module-nav-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+/* Ajuste: que no se choque con la accesibilidad FAB */
+.module-layout .accessibility-fab {
+  bottom: 80px;
+}
+
+/* Desktop: limitar ancho del navbar y centrarlo */
+@media (min-width: 1024px) {
+  .module-bottom-nav {
+    max-width: 600px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 16px 16px 0 0;
+    border: 1px solid var(--border-color, #E0E0E0);
+    border-bottom: none;
+  }
+
+  .module-back-fab {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+@media (max-width: 480px) {
+  .module-back-fab {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+    top: 12px;
+    left: 12px;
+  }
+
+  .module-nav-item {
+    padding: 4px 8px;
+    min-width: 50px;
+  }
+
+  .module-nav-icon {
+    font-size: 20px;
+  }
+
+  .module-nav-label {
+    font-size: 10px;
+  }
+}
+
+/* ===== MODO CLARO ===== */
+[data-theme="light"] .header-btn {
+  background: white;
+  border-color: #CCC;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme="light"] .header-btn:hover {
+  background: #F5F5F5;
+  border-color: #999;
+  color: #111;
+}
+
+[data-theme="light"] .module-back-fab {
+  background: white;
+  border-color: #CCC;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .module-back-fab {
+  background: rgba(22, 27, 34, 0.92);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .module-back-fab:hover {
+  background: rgba(33, 38, 45, 0.98);
+}
+
+[data-theme="dark"] .module-bottom-nav {
+  background: var(--surface-primary);
+  border-top-color: var(--border-color);
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+}
+
+[data-theme="dark"] .module-nav-item {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .module-nav-item:hover {
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  [data-theme="dark"] .module-bottom-nav {
+    border-color: var(--border-color);
+  }
 }

@@ -1,0 +1,223 @@
+.calc-calorica-container {
+  --calc-color: #4CAF50;
+  --calc-color-dark: #388E3C;
+  --calc-color-rgb: 76, 175, 80;
+  padding: var(--spacing-md);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.calc-calorica-header {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px);
+  color: white;
+}
+
+.calc-calorica-header-top {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+}
+
+.calc-calorica-back-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+  color: white;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.calc-calorica-back-btn:hover { background: rgba(255,255,255,0.25); }
+
+.calc-calorica-header-title {
+  display: flex; align-items: center; gap: 8px;
+}
+.calc-calorica-header-title h2 {
+  font-size: 1.4rem; font-weight: 700; margin: 0; color: white;
+}
+
+.calc-calorica-section-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 1.15rem; font-weight: 600;
+  color: var(--text-primary, #1A1A1A);
+  margin: 0 0 16px;
+}
+
+.calc-calorica-form-card {
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.calc-calorica-sexo-group {
+  display: flex; gap: 12px; margin-bottom: 16px;
+}
+.calc-calorica-radio-label {
+  flex: 1; cursor: pointer;
+}
+.calc-calorica-radio-label input { display: none; }
+.calc-calorica-radio-custom {
+  display: flex; align-items: center; justify-content: center;
+  padding: 12px; min-height: 48px;
+  border: 2px solid var(--border-color, #E0E0E0);
+  border-radius: var(--radius-md, 12px);
+  font-size: 1rem; font-weight: 600;
+  color: var(--text-secondary, #666);
+  transition: all 0.2s;
+}
+.calc-calorica-radio-label input:checked + .calc-calorica-radio-custom {
+  border-color: var(--calc-color);
+  background: rgba(var(--calc-color-rgb), 0.15);
+  color: var(--calc-color);
+}
+
+.calc-calorica-form-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-bottom: 16px;
+}
+
+.calc-calorica-form-group { display: flex; flex-direction: column; gap: 4px; }
+.calc-calorica-form-group.full-width { margin-bottom: 16px; }
+
+.calc-calorica-form-group label {
+  font-size: 0.9rem; font-weight: 600; color: var(--text-primary, #1A1A1A);
+}
+
+.calc-calorica-form-group input,
+.calc-calorica-form-group select {
+  padding: 10px 14px; min-height: 48px;
+  border: 2px solid var(--border-color, #E0E0E0);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-primary, #FFFFFF);
+  color: var(--text-primary, #1A1A1A);
+  font-size: 1rem; font-family: inherit;
+  width: 100%; box-sizing: border-box;
+}
+.calc-calorica-form-group input:focus,
+.calc-calorica-form-group select:focus {
+  outline: none; border-color: var(--calc-color);
+  box-shadow: 0 0 0 3px rgba(var(--calc-color-rgb), 0.15);
+}
+
+.calc-calorica-btn-calcular {
+  width: 100%; padding: 14px; min-height: 52px;
+  background: var(--calc-color);
+  color: white; border: none;
+  border-radius: var(--radius-md, 12px);
+  font-size: 1.1rem; font-weight: 700;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background 0.2s;
+}
+.calc-calorica-btn-calcular:hover { background: var(--calc-color-dark); }
+
+/* RESULTS */
+.calc-calorica-resultados { margin-top: 8px; }
+
+.calc-calorica-cards-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 12px; margin-bottom: 16px;
+}
+
+.calc-calorica-result-card {
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px; position: relative;
+  border: 2px solid var(--border-color, #E0E0E0);
+}
+.calc-calorica-result-card.recomendado {
+  border-color: var(--calc-color);
+  background: rgba(var(--calc-color-rgb), 0.08);
+}
+
+.calc-calorica-card-badge {
+  position: absolute; top: -10px; right: 12px;
+  background: var(--calc-color); color: white;
+  padding: 2px 10px; border-radius: 10px;
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+}
+
+.calc-calorica-card-title {
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--text-primary, #1A1A1A);
+  margin: 0 0 12px;
+}
+
+.calc-calorica-card-values { display: flex; flex-direction: column; gap: 8px; }
+
+.calc-calorica-value-row {
+  display: flex; align-items: center; gap: 6px;
+}
+.calc-calorica-value-row.highlight {
+  background: rgba(var(--calc-color-rgb), 0.1);
+  padding: 6px 10px; border-radius: 8px;
+}
+.calc-calorica-value-label {
+  font-size: 0.8rem; font-weight: 600;
+  color: var(--text-secondary, #666);
+  min-width: 32px;
+}
+.calc-calorica-value-num {
+  font-size: 1.2rem; font-weight: 700;
+  color: var(--text-primary, #1A1A1A);
+}
+.calc-calorica-value-unit {
+  font-size: 0.75rem; color: var(--text-muted, #9E9E9E);
+}
+
+/* SUMMARY */
+.calc-calorica-summary {
+  background: linear-gradient(135deg, rgba(var(--calc-color-rgb), 0.15), rgba(var(--calc-color-rgb), 0.05));
+  border: 2px solid rgba(var(--calc-color-rgb), 0.3);
+  border-radius: var(--radius-lg, 16px);
+  padding: 20px; display: flex; align-items: center; gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-calorica-summary-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--calc-color); color: white;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.calc-calorica-summary-info { display: flex; flex-direction: column; gap: 2px; }
+.calc-calorica-summary-label {
+  font-size: 0.85rem; color: var(--text-secondary, #666); font-weight: 600;
+}
+.calc-calorica-summary-value {
+  font-size: 1.5rem; font-weight: 800; color: var(--calc-color);
+}
+.calc-calorica-summary-note {
+  font-size: 0.8rem; color: var(--text-muted, #9E9E9E);
+}
+
+/* INFO BOX */
+.calc-calorica-info-box {
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-md, 12px);
+  padding: 14px 16px;
+  display: flex; gap: 10px; align-items: flex-start;
+  font-size: 0.9rem; color: var(--text-secondary, #666);
+  line-height: 1.5;
+}
+.calc-calorica-info-box strong { color: var(--text-primary, #1A1A1A); }
+
+/* LIGHT THEME */
+[data-theme="light"] .calc-calorica-form-card,
+[data-theme="light"] .calc-calorica-result-card,
+[data-theme="light"] .calc-calorica-info-box {
+  background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .calc-calorica-result-card.recomendado {
+  background: rgba(76,175,80,0.06);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .calc-calorica-form-grid { grid-template-columns: 1fr; }
+  .calc-calorica-cards-grid { grid-template-columns: 1fr; }
+  .calc-calorica-summary { flex-direction: column; text-align: center; }
+}

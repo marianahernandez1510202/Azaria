@@ -38,7 +38,7 @@
 
 /* Header del Plan */
 .plan-header-card {
-  background: linear-gradient(135deg, #4CAF50, #2E7D32);
+  background: linear-gradient(135deg, #2E7D32, #1B5E20);
   border-radius: var(--border-radius-lg);
   padding: var(--spacing-lg);
   color: white;
@@ -118,7 +118,7 @@
 .progreso-porcentaje {
   font-size: var(--font-size-xl);
   font-weight: 700;
-  color: #4CAF50;
+  color: #2E7D32;
 }
 
 .progreso-bar {
@@ -131,7 +131,7 @@
 
 .progreso-fill {
   height: 100%;
-  background: linear-gradient(90deg, #4CAF50, #8BC34A);
+  background: linear-gradient(90deg, #2E7D32, #66BB6A);
   border-radius: 6px;
   transition: width 0.5s ease;
 }
@@ -179,8 +179,8 @@
 }
 
 .comida-card.completada {
-  border-color: #4CAF50;
-  background: rgba(76, 175, 80, 0.05);
+  border-color: #2E7D32;
+  background: rgba(46, 125, 50, 0.05);
 }
 
 .comida-card.completada .comida-nombre {
@@ -211,12 +211,12 @@
 }
 
 .check-btn:hover {
-  border-color: #4CAF50;
+  border-color: #2E7D32;
 }
 
 .check-btn.checked {
-  background: #4CAF50;
-  border-color: #4CAF50;
+  background: #2E7D32;
+  border-color: #2E7D32;
 }
 
 .comida-main {
@@ -236,7 +236,7 @@
 
 .comida-tipo-label {
   font-weight: 600;
-  color: #4CAF50;
+  color: #2E7D32;
   font-size: var(--font-size-sm);
 }
 
@@ -294,7 +294,7 @@
 }
 
 .plan-section.restricciones {
-  border-left: 4px solid #FF9800;
+  border-left: 4px solid #F57F17;
 }
 
 .plan-section.recomendaciones {
@@ -340,7 +340,7 @@
 }
 
 .dia-resumen.dia-actual {
-  border: 2px solid #4CAF50;
+  border: 2px solid #2E7D32;
 }
 
 .dia-resumen h4 {
@@ -355,7 +355,7 @@
 
 .badge-hoy {
   padding: 2px 8px;
-  background: #4CAF50;
+  background: #2E7D32;
   color: white;
   font-size: var(--font-size-xs);
   border-radius: var(--border-radius-sm);
@@ -431,7 +431,7 @@
 }
 
 [data-theme="light"] .comida-card.completada {
-  background: rgba(76, 175, 80, 0.08);
+  background: rgba(46, 125, 50, 0.08);
 }
 
 [data-theme="light"] .dia-resumen {
@@ -440,4 +440,36 @@
 
 [data-theme="light"] .check-btn {
   border-color: #ccc;
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .comida-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .comida-card.completada {
+  background: rgba(46, 125, 50, 0.08);
+  border-color: #2E7D32;
+}
+
+[data-theme="dark"] .check-btn {
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .dia-resumen {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .plan-header-card {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .progreso-bar {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .no-comidas-hoy {
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
 }

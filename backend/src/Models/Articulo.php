@@ -17,9 +17,9 @@ class Articulo {
         )->fetch();
 
         if ($articulo) {
-            // Obtener likes de la tabla articulo_likes
+            // Obtener likes de la tabla likes_articulo
             $likes = $db->query(
-                "SELECT COUNT(*) as total FROM articulo_likes WHERE articulo_id = ?",
+                "SELECT COUNT(*) as total FROM likes_articulo WHERE articulo_id = ?",
                 [$id]
             )->fetch();
             $articulo['like_count'] = $likes['total'] ?? 0;
@@ -32,7 +32,7 @@ class Articulo {
         $db = DatabaseService::getInstance();
 
         $query = "SELECT a.*, u.nombre_completo as autor_nombre, am.nombre as categoria,
-                         (SELECT COUNT(*) FROM articulo_likes WHERE articulo_id = a.id) as like_count
+                         (SELECT COUNT(*) FROM likes_articulo WHERE articulo_id = a.id) as like_count
                   FROM " . self::$table . " a
                   LEFT JOIN usuarios u ON a.autor_id = u.id
                   LEFT JOIN areas_medicas am ON a.area_medica_id = am.id
@@ -163,14 +163,14 @@ class Articulo {
 
         // Verificar si ya existe el like
         $existing = $db->query(
-            "SELECT id FROM articulo_likes WHERE articulo_id = ? AND usuario_id = ?",
+            "SELECT id FROM likes_articulo WHERE articulo_id = ? AND usuario_id = ?",
             [$articuloId, $usuarioId]
         )->fetch();
 
         if ($existing) {
             // Quitar like
             $db->query(
-                "DELETE FROM articulo_likes WHERE articulo_id = ? AND usuario_id = ?",
+                "DELETE FROM likes_articulo WHERE articulo_id = ? AND usuario_id = ?",
                 [$articuloId, $usuarioId]
             );
             // Actualizar contador en tabla articulos
@@ -182,7 +182,7 @@ class Articulo {
         } else {
             // Agregar like
             $db->query(
-                "INSERT INTO articulo_likes (articulo_id, usuario_id, created_at) VALUES (?, ?, NOW())",
+                "INSERT INTO likes_articulo (articulo_id, usuario_id, created_at) VALUES (?, ?, NOW())",
                 [$articuloId, $usuarioId]
             );
             // Actualizar contador en tabla articulos
@@ -198,7 +198,7 @@ class Articulo {
         $db = DatabaseService::getInstance();
 
         $result = $db->query(
-            "SELECT COUNT(*) as total FROM articulo_likes WHERE articulo_id = ?",
+            "SELECT COUNT(*) as total FROM likes_articulo WHERE articulo_id = ?",
             [$articuloId]
         )->fetch();
 
@@ -209,7 +209,7 @@ class Articulo {
         $db = DatabaseService::getInstance();
 
         $result = $db->query(
-            "SELECT id FROM articulo_likes WHERE articulo_id = ? AND usuario_id = ?",
+            "SELECT id FROM likes_articulo WHERE articulo_id = ? AND usuario_id = ?",
             [$articuloId, $usuarioId]
         )->fetch();
 

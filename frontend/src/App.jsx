@@ -11,6 +11,9 @@ import { VoiceProvider } from './components/VoiceHelper';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 import { AdminRoute, EspecialistaRoute } from './components/shared/RoleBasedRoute';
 
+// Layout
+import ModuleLayout from './components/layouts/ModuleLayout';
+
 // Pages - Auth
 import Login from './pages/Login';
 
@@ -38,6 +41,13 @@ import FAQs from './pages/FAQs';
 import Blog from './pages/Blog';
 import Comunidad from './pages/Comunidad';
 import Configuracion from './pages/Configuracion';
+import Fases from './pages/Fases';
+import Expediente from './pages/Expediente';
+import ExpedienteCompartido from './pages/ExpedienteCompartido';
+import Solicitud from './pages/Solicitud';
+import SubirDocumentos from './pages/SubirDocumentos';
+import RecuperarPassword from './pages/RecuperarPassword';
+import EstatusAdmision from './pages/EstatusAdmision';
 import NotFound from './pages/NotFound';
 
 // Styles
@@ -110,6 +120,7 @@ function App() {
                 <Routes>
                   {/* ===== RUTAS PÚBLICAS ===== */}
                   <Route path="/login" element={<Login />} />
+                  <Route path="/recuperar-password" element={<RecuperarPassword />} />
 
                   {/* ===== DASHBOARD PRINCIPAL (redirige según rol) ===== */}
                   <Route path="/" element={<DashboardRedirect />} />
@@ -153,87 +164,107 @@ function App() {
                   {/* ===== RUTAS COMPARTIDAS (todos los roles autenticados) ===== */}
                   <Route path="/perfil" element={
                     <ProtectedRoute>
-                      <Perfil />
+                      <ModuleLayout><Perfil /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/nutricion" element={
                     <ProtectedRoute>
-                      <Nutricion />
+                      <ModuleLayout><Nutricion /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/medicina" element={
                     <ProtectedRoute>
-                      <Medicina />
+                      <ModuleLayout><Medicina /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/fisioterapia" element={
                     <ProtectedRoute>
-                      <Fisioterapia />
+                      <ModuleLayout><Fisioterapia /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/neuropsicologia" element={
                     <ProtectedRoute>
-                      <Neuropsicologia />
+                      <ModuleLayout><Neuropsicologia /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/ortesis" element={
                     <ProtectedRoute>
-                      <Ortesis />
+                      <ModuleLayout><Ortesis /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/citas" element={
                     <ProtectedRoute>
-                      <Citas />
+                      <ModuleLayout><Citas /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/chat" element={
                     <ProtectedRoute>
-                      <Chat />
+                      <ModuleLayout><Chat /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/chat/:conversacionId" element={
                     <ProtectedRoute>
-                      <Chat />
+                      <ModuleLayout><Chat /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/recordatorios" element={
                     <ProtectedRoute>
-                      <Recordatorios />
+                      <ModuleLayout><Recordatorios /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/faqs" element={
                     <ProtectedRoute>
-                      <FAQs />
+                      <ModuleLayout><FAQs /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/blog" element={
                     <ProtectedRoute>
-                      <Blog />
+                      <ModuleLayout><Blog /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/comunidad" element={
                     <ProtectedRoute>
-                      <Comunidad />
+                      <ModuleLayout><Comunidad /></ModuleLayout>
                     </ProtectedRoute>
                   } />
 
                   <Route path="/configuracion" element={
                     <ProtectedRoute>
-                      <Configuracion />
+                      <ModuleLayout><Configuracion /></ModuleLayout>
                     </ProtectedRoute>
                   } />
+
+                  <Route path="/fases" element={
+                    <ProtectedRoute>
+                      <ModuleLayout><Fases /></ModuleLayout>
+                    </ProtectedRoute>
+                  } />
+
+                  <Route path="/expediente" element={
+                    <ProtectedRoute>
+                      <ModuleLayout><Expediente /></ModuleLayout>
+                    </ProtectedRoute>
+                  } />
+
+                  {/* Vista pública de expediente compartido (sin auth) */}
+                  <Route path="/expediente/compartido/:token" element={<ExpedienteCompartido />} />
+
+                  {/* ===== RUTAS PÚBLICAS DE ADMISIONES ===== */}
+                  <Route path="/solicitud" element={<Solicitud />} />
+                  <Route path="/admisiones/estatus" element={<EstatusAdmision />} />
+                  <Route path="/admisiones/documentos/:token" element={<SubirDocumentos />} />
 
                   {/* ===== 404 ===== */}
                   <Route path="*" element={<NotFound />} />

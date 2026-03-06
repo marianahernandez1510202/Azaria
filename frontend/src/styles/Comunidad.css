@@ -307,3 +307,124 @@
   color: var(--gray-500);
   padding: var(--spacing-lg);
 }
+
+/* ===== RESPONSIVE ===== */
+
+@media (min-width: 768px) {
+  .comunidad-page {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .crear-post-card {
+    margin: 0 var(--spacing-md) var(--spacing-md);
+  }
+
+  .normas-banner {
+    margin: 0 var(--spacing-md) var(--spacing-lg);
+  }
+
+  .feed {
+    padding: 0 var(--spacing-md);
+  }
+
+  .modal-publicacion {
+    max-width: 95vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .publicacion-card {
+    padding: var(--spacing-md);
+  }
+
+  .publicacion-acciones {
+    gap: var(--spacing-sm);
+  }
+
+  .btn-accion {
+    font-size: var(--font-size-xs, 14px);
+    padding: var(--spacing-xs);
+  }
+
+  .comentario-form {
+    flex-direction: column;
+  }
+
+  .publicacion-completa {
+    max-height: 80vh;
+  }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .comunidad-page {
+  background: var(--background-primary);
+}
+
+[data-theme="dark"] .crear-post-card {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .crear-post-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .crear-post-input {
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .normas-banner {
+  background: rgba(21, 101, 192, 0.15);
+  color: #64B5F6;
+}
+
+[data-theme="dark"] .publicacion-card {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .publicacion-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .publicacion-contenido p {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .publicacion-stats {
+  border-top-color: var(--border-color);
+  border-bottom-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-accion {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-accion:hover {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .comentario {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .comentario-texto {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .comentarios-section {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .comentario-form input {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .modal-publicacion {
+  background: var(--surface-primary);
+}

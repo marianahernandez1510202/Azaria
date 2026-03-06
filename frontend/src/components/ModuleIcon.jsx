@@ -1,155 +1,140 @@
-import React from 'react';
+import {
+  Home, Salad, Dumbbell, Pill, Brain, Accessibility,
+  Users, Calendar, AlarmClock, BookOpen, User,
+  GlassWater, Scale, TrendingUp, HeartPulse, MessageCircle,
+  CircleHelp, Settings, Bell, CircleCheck, CircleX
+} from 'lucide-react';
 import '../styles/ModuleIcon.css';
 
 /**
  * ModuleIcon - Iconos visuales grandes para cada módulo
  * Diseñado para adultos mayores con iconos claros y descriptivos
- *
- * Usa Flaticon UIcons o emojis como fallback
- * Para usar Flaticon UIcons, agregar en index.html:
- * <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+ * Usa Lucide React (tree-shakeable, sin CDN externo)
  */
 
-// Mapeo de módulos a iconos
+// Mapeo de módulos a iconos Lucide
 const MODULE_ICONS = {
   dashboard: {
-    flaticon: 'fi-rr-home',
-    emoji: '🏠',
+    icon: Home,
     label: 'Inicio',
-    color: '#2196F3'
+    color: '#1976D2'
   },
   nutricion: {
-    flaticon: 'fi-rr-salad',
-    emoji: '🥗',
+    icon: Salad,
     label: 'Nutrición',
-    color: '#4CAF50'
+    color: '#2E7D32'
   },
   fisioterapia: {
-    flaticon: 'fi-rr-gym',
-    emoji: '🏃',
+    icon: Dumbbell,
     label: 'Ejercicios',
-    color: '#FF9800'
+    color: '#E65100'
   },
   medicina: {
-    flaticon: 'fi-rr-medicine',
-    emoji: '💊',
+    icon: Pill,
     label: 'Medicina',
-    color: '#F44336'
+    color: '#C62828'
   },
   neuropsicologia: {
-    flaticon: 'fi-rr-brain',
-    emoji: '🧠',
+    icon: Brain,
     label: 'Mente',
-    color: '#9C27B0'
+    color: '#6A1B9A'
   },
   ortesis: {
-    flaticon: 'fi-rr-band-aid',
-    emoji: '🦿',
+    icon: Accessibility,
     label: 'Prótesis',
-    color: '#00BCD4'
+    color: '#1565C0'
   },
   comunidad: {
-    flaticon: 'fi-rr-users',
-    emoji: '👥',
+    icon: Users,
     label: 'Comunidad',
-    color: '#E91E63'
+    color: '#AD1457'
   },
   citas: {
-    flaticon: 'fi-rr-calendar',
-    emoji: '📅',
+    icon: Calendar,
     label: 'Citas',
-    color: '#009688'
+    color: '#1B5E20'
   },
   recordatorios: {
-    flaticon: 'fi-rr-alarm-clock',
-    emoji: '⏰',
+    icon: AlarmClock,
     label: 'Recordatorios',
-    color: '#FFC107'
+    color: '#F57F17'
   },
   blog: {
-    flaticon: 'fi-rr-book-open-cover',
-    emoji: '📚',
+    icon: BookOpen,
     label: 'Artículos',
-    color: '#3F51B5'
+    color: '#283593'
   },
   perfil: {
-    flaticon: 'fi-rr-user',
-    emoji: '👤',
+    icon: User,
     label: 'Perfil',
-    color: '#607D8B'
+    color: '#455A64'
   },
   agua: {
-    flaticon: 'fi-rr-glass',
-    emoji: '💧',
+    icon: GlassWater,
     label: 'Agua',
-    color: '#03A9F4'
+    color: '#0277BD'
   },
   peso: {
-    flaticon: 'fi-rr-scale',
-    emoji: '⚖️',
+    icon: Scale,
     label: 'Peso',
-    color: '#795548'
+    color: '#5D4037'
   },
   glucosa: {
-    flaticon: 'fi-rr-chart-line-up',
-    emoji: '📊',
+    icon: TrendingUp,
     label: 'Glucosa',
-    color: '#F44336'
+    color: '#C62828'
   },
   presion: {
-    flaticon: 'fi-rr-heart',
-    emoji: '❤️',
+    icon: HeartPulse,
     label: 'Presión',
-    color: '#E91E63'
+    color: '#AD1457'
   },
   chat: {
-    flaticon: 'fi-rr-comment',
-    emoji: '💬',
+    icon: MessageCircle,
     label: 'Chat',
-    color: '#00BCD4'
+    color: '#00838F'
   },
   ayuda: {
-    flaticon: 'fi-rr-interrogation',
-    emoji: '❓',
+    icon: CircleHelp,
     label: 'Ayuda',
-    color: '#FF9800'
+    color: '#E65100'
   },
   config: {
-    flaticon: 'fi-rr-settings',
-    emoji: '⚙️',
+    icon: Settings,
     label: 'Ajustes',
-    color: '#607D8B'
+    color: '#455A64'
   },
   notificacion: {
-    flaticon: 'fi-rr-bell',
-    emoji: '🔔',
+    icon: Bell,
     label: 'Alertas',
-    color: '#FFC107'
+    color: '#F57F17'
   },
   exito: {
-    flaticon: 'fi-rr-check-circle',
-    emoji: '✅',
+    icon: CircleCheck,
     label: 'Éxito',
-    color: '#4CAF50'
+    color: '#2E7D32'
   },
   error: {
-    flaticon: 'fi-rr-cross-circle',
-    emoji: '❌',
+    icon: CircleX,
     label: 'Error',
-    color: '#F44336'
+    color: '#C62828'
   }
 };
+
+// Tamaños de icono en px
+const ICON_SIZES = { sm: 20, md: 28, lg: 36, xl: 48 };
 
 const ModuleIcon = ({
   module,
   size = 'md',
   showLabel = false,
-  useEmoji = false,
   onClick,
   className = '',
   style = {}
 }) => {
   const iconData = MODULE_ICONS[module] || MODULE_ICONS.dashboard;
+  const IconComponent = iconData.icon;
+  const iconSize = ICON_SIZES[size] || ICON_SIZES.md;
 
   const sizeClasses = {
     sm: 'icon-sm',
@@ -176,14 +161,11 @@ const ModuleIcon = ({
       tabIndex={onClick ? 0 : -1}
     >
       <div className="module-icon-circle">
-        {useEmoji ? (
-          <span className="module-icon-emoji">{iconData.emoji}</span>
-        ) : (
-          <>
-            <i className={`fi ${iconData.flaticon} module-icon-flaticon`}></i>
-            <span className="module-icon-emoji-fallback">{iconData.emoji}</span>
-          </>
-        )}
+        <IconComponent
+          size={iconSize}
+          className="module-icon-lucide"
+          strokeWidth={1.8}
+        />
       </div>
       {showLabel && (
         <span className="module-icon-label">{iconData.label}</span>

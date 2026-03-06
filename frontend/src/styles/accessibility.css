@@ -113,7 +113,7 @@
   --focus-ring: #FFFF00;
 
   /* Colores con máximo contraste */
-  --color-primary: #00FFD1;
+  --color-primary: #00E5FF;
   --color-success: #00FF00;
   --color-warning: #FFFF00;
   --color-error: #FF4444;
@@ -151,7 +151,7 @@
   --focus-ring: #0000FF;
 
   /* Colores oscuros para contraste */
-  --color-primary: #006B5A;
+  --color-primary: #006064;
   --color-success: #006600;
   --color-warning: #996600;
   --color-error: #CC0000;
@@ -288,7 +288,7 @@
 .focus-visible-enhanced:focus-visible {
   outline: 4px solid var(--focus-ring);
   outline-offset: 4px;
-  box-shadow: 0 0 0 8px rgba(var(--focus-ring-rgb, 88, 166, 255), 0.3);
+  box-shadow: 0 0 0 8px rgba(var(--focus-ring-rgb, 46, 125, 50), 0.3);
 }
 
 /* ===== COMPONENTES ACCESIBLES ===== */
@@ -385,7 +385,7 @@
 /* Estado de error */
 .has-error .input-accessible {
   border-color: var(--color-error);
-  background-color: rgba(244, 67, 54, 0.1);
+  background-color: rgba(198, 40, 40, 0.1);
 }
 
 .error-message {
@@ -677,15 +677,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) {
-    --bg-dark: #0D1117;
-    --text-primary: #E6EDF3;
+    --bg-dark: #F5F7F2;
+    --text-primary: #1A1A1A;
   }
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme]) {
-    --bg-dark: #F8F9FA;
-    --text-primary: #1C1E21;
+    --bg-dark: #F5F7F2;
+    --text-primary: #1A1A1A;
   }
 }
 
@@ -693,7 +693,7 @@
 
 /* Niños (10-15 años) - Colores más vibrantes, elementos más grandes */
 [data-age-mode="child"] {
-  --color-primary: #00E676;
+  --color-primary: #18FFFF;
   --color-dashboard: #448AFF;
   --color-nutricion: #76FF03;
   --color-fisioterapia: #FFAB40;
@@ -724,4 +724,26 @@
   --line-height: 1.8;
   --spacing-md: 20px;
   --spacing-lg: 28px;
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .accessibility-panel {
+  background: var(--surface-primary);
+  border-left-color: var(--border-color);
+}
+
+[data-theme="dark"] .accessibility-panel-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+[data-theme="dark"] .accessibility-section {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .has-error .input-accessible {
+  background-color: rgba(198, 40, 40, 0.15);
+}
+
+[data-theme="dark"] .focus-visible-enhanced:focus-visible {
+  box-shadow: 0 0 0 8px rgba(46, 125, 50, 0.3);
 }

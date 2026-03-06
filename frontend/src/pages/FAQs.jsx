@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/FAQs.css';
 
 const FAQs = () => {
@@ -13,13 +14,13 @@ const FAQs = () => {
   const [faqExpandida, setFaqExpandida] = useState(null);
 
   const areas = [
-    { id: 'todas', nombre: 'Todas las áreas', icon: '📋' },
-    { id: 'general', nombre: 'General', icon: '❓' },
-    { id: 'fisioterapia', nombre: 'Fisioterapia', icon: '🏃' },
-    { id: 'nutricion', nombre: 'Nutrición', icon: '🥗' },
-    { id: 'medicina', nombre: 'Medicina', icon: '💊' },
-    { id: 'neuropsicologia', nombre: 'Neuropsicología', icon: '🧠' },
-    { id: 'ortesis', nombre: 'Órtesis/Prótesis', icon: '🦿' }
+    { id: 'todas', nombre: 'Todas las areas', icon: 'clipboard' },
+    { id: 'general', nombre: 'General', icon: 'circle-help' },
+    { id: 'fisioterapia', nombre: 'Fisioterapia', icon: 'dumbbell' },
+    { id: 'nutricion', nombre: 'Nutricion', icon: 'salad' },
+    { id: 'medicina', nombre: 'Medicina', icon: 'pill' },
+    { id: 'neuropsicologia', nombre: 'Neuropsicologia', icon: 'brain' },
+    { id: 'ortesis', nombre: 'Ortesis/Protesis', icon: 'accessibility' }
   ];
 
   useEffect(() => {
@@ -180,7 +181,7 @@ const FAQs = () => {
             className={`area-btn ${areaSeleccionada === area.id ? 'active' : ''}`}
             onClick={() => setAreaSeleccionada(area.id)}
           >
-            <span className="area-icon">{area.icon}</span>
+            <span className="area-icon"><LucideIcon name={area.icon} size={18} /></span>
             <span className="area-nombre">{area.nombre}</span>
           </button>
         ))}
@@ -200,7 +201,7 @@ const FAQs = () => {
               return (
                 <div key={area} className="faq-section">
                   <h2 className="section-title">
-                    <span className="section-icon">{areaInfo?.icon || '❓'}</span>
+                    <span className="section-icon"><LucideIcon name={areaInfo?.icon || 'circle-help'} size={20} /></span>
                     {areaInfo?.nombre || area}
                   </h2>
                   <div className="faqs-list">

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import LucideIcon from '../LucideIcon';
+import VistaPlan from './VistaPlan';
 import './MiPlanNutricional.css';
 
 const MiPlanNutricional = ({ pacienteId }) => {
@@ -56,12 +58,12 @@ const MiPlanNutricional = ({ pacienteId }) => {
   };
 
   const tiposComidaConfig = {
-    desayuno: { label: 'Desayuno', icon: '🌅', hora: '7:00 - 9:00' },
-    media_manana: { label: 'Media Mañana', icon: '🍎', hora: '10:00 - 11:00' },
-    almuerzo: { label: 'Almuerzo', icon: '🍽️', hora: '13:00 - 14:00' },
-    merienda: { label: 'Merienda', icon: '🍪', hora: '16:00 - 17:00' },
-    cena: { label: 'Cena', icon: '🌙', hora: '19:00 - 21:00' },
-    snack: { label: 'Snack', icon: '🥜', hora: 'Cualquier hora' }
+    desayuno: { label: 'Desayuno', icon: 'sunrise', hora: '7:00 - 9:00' },
+    media_manana: { label: 'Media Mañana', icon: 'apple', hora: '10:00 - 11:00' },
+    almuerzo: { label: 'Almuerzo', icon: 'utensils', hora: '13:00 - 14:00' },
+    merienda: { label: 'Merienda', icon: 'cookie', hora: '16:00 - 17:00' },
+    cena: { label: 'Cena', icon: 'moon', hora: '19:00 - 21:00' },
+    snack: { label: 'Snack', icon: 'cookie', hora: 'Cualquier hora' }
   };
 
   const tiposOrden = ['desayuno', 'media_manana', 'almuerzo', 'merienda', 'cena', 'snack'];
@@ -78,7 +80,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
   if (!plan || !plan.tiene_plan) {
     return (
       <div className="mi-plan-empty">
-        <span className="empty-icon">🥗</span>
+        <span className="empty-icon"><LucideIcon name="salad" size={40} /></span>
         <h3>Sin Plan Asignado</h3>
         <p>Aún no tienes un plan nutricional asignado.</p>
         <p>Tu especialista en nutrición te asignará uno pronto.</p>
@@ -108,22 +110,22 @@ const MiPlanNutricional = ({ pacienteId }) => {
 
         <div className="plan-macros">
           <div className="macro-item">
-            <span className="macro-icon">🔥</span>
+            <span className="macro-icon"><LucideIcon name="flame" size={18} /></span>
             <span className="macro-value">{plan.calorias_diarias || 0}</span>
             <span className="macro-label">kcal/día</span>
           </div>
           <div className="macro-item">
-            <span className="macro-icon">🥩</span>
+            <span className="macro-icon"><LucideIcon name="beef" size={18} /></span>
             <span className="macro-value">{plan.proteinas_g || 0}g</span>
             <span className="macro-label">Proteínas</span>
           </div>
           <div className="macro-item">
-            <span className="macro-icon">🍞</span>
+            <span className="macro-icon"><LucideIcon name="wheat" size={18} /></span>
             <span className="macro-value">{plan.carbohidratos_g || 0}g</span>
             <span className="macro-label">Carbos</span>
           </div>
           <div className="macro-item">
-            <span className="macro-icon">🥑</span>
+            <span className="macro-icon"><LucideIcon name="droplet" size={18} /></span>
             <span className="macro-value">{plan.grasas_g || 0}g</span>
             <span className="macro-label">Grasas</span>
           </div>
@@ -133,7 +135,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
       {/* Progreso del día */}
       <div className="progreso-dia">
         <div className="progreso-header">
-          <h3>📅 Progreso de Hoy - {diaActual.charAt(0).toUpperCase() + diaActual.slice(1)}</h3>
+          <h3><LucideIcon name="calendar" size={20} /> Progreso de Hoy - {diaActual.charAt(0).toUpperCase() + diaActual.slice(1)}</h3>
           <span className="progreso-porcentaje">{progresoPorcentaje}%</span>
         </div>
         <div className="progreso-bar">
@@ -149,7 +151,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
 
       {/* Comidas del día */}
       <div className="comidas-hoy">
-        <h3>🍽️ Tu Menú de Hoy</h3>
+        <h3><LucideIcon name="utensils" size={20} /> Tu Menu de Hoy</h3>
 
         {comidasHoy.length === 0 ? (
           <div className="no-comidas-hoy">
@@ -182,7 +184,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
 
                   <div className="comida-main">
                     <div className="comida-tipo-header">
-                      <span className="comida-icon">{config.icon}</span>
+                      <span className="comida-icon"><LucideIcon name={config.icon} size={20} /></span>
                       <span className="comida-tipo-label">{config.label}</span>
                       <span className="comida-hora">{config.hora}</span>
                     </div>
@@ -195,10 +197,10 @@ const MiPlanNutricional = ({ pacienteId }) => {
 
                     {comida.calorias > 0 && (
                       <div className="comida-macros-mini">
-                        <span>🔥 {comida.calorias} kcal</span>
-                        {comida.proteinas_g > 0 && <span>🥩 {comida.proteinas_g}g</span>}
-                        {comida.carbohidratos_g > 0 && <span>🍞 {comida.carbohidratos_g}g</span>}
-                        {comida.grasas_g > 0 && <span>🥑 {comida.grasas_g}g</span>}
+                        <span><LucideIcon name="flame" size={14} /> {comida.calorias} kcal</span>
+                        {comida.proteinas_g > 0 && <span><LucideIcon name="beef" size={14} /> {comida.proteinas_g}g</span>}
+                        {comida.carbohidratos_g > 0 && <span><LucideIcon name="wheat" size={14} /> {comida.carbohidratos_g}g</span>}
+                        {comida.grasas_g > 0 && <span><LucideIcon name="droplet" size={14} /> {comida.grasas_g}g</span>}
                       </div>
                     )}
                   </div>
@@ -212,7 +214,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
       {/* Contenido adicional del plan */}
       {plan.contenido?.recomendaciones?.length > 0 && (
         <div className="plan-section recomendaciones">
-          <h3>💡 Recomendaciones</h3>
+          <h3><LucideIcon name="lightbulb" size={20} /> Recomendaciones</h3>
           <ul>
             {plan.contenido.recomendaciones.map((rec, idx) => (
               <li key={idx}>{rec}</li>
@@ -223,7 +225,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
 
       {plan.contenido?.restricciones?.length > 0 && (
         <div className="plan-section restricciones">
-          <h3>⚠️ Alimentos a Evitar</h3>
+          <h3><LucideIcon name="alert-triangle" size={20} /> Alimentos a Evitar</h3>
           <ul>
             {plan.contenido.restricciones.map((res, idx) => (
               <li key={idx}>{res}</li>
@@ -235,14 +237,24 @@ const MiPlanNutricional = ({ pacienteId }) => {
       {/* Notas personalizadas del especialista */}
       {plan.notas_personalizadas && (
         <div className="plan-section notas">
-          <h3>📝 Notas de tu Nutricionista</h3>
+          <h3><LucideIcon name="pen-line" size={20} /> Notas de tu Nutricionista</h3>
           <p>{plan.notas_personalizadas}</p>
         </div>
       )}
 
+      {/* Vista completa tipo documento si es plan generado */}
+      {plan.contenido?.generado_con_catalogo && (
+        <details className="plan-semana-completo">
+          <summary><LucideIcon name="eye" size={18} /> Ver plan completo (vista detallada)</summary>
+          <div className="semana-content" style={{ padding: 0 }}>
+            <VistaPlan plan={plan} contenido={plan.contenido} compact />
+          </div>
+        </details>
+      )}
+
       {/* Ver plan completo de la semana */}
       <details className="plan-semana-completo">
-        <summary>📅 Ver plan completo de la semana</summary>
+        <summary><LucideIcon name="calendar" size={18} /> Ver plan completo de la semana</summary>
         <div className="semana-content">
           {['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'].map(dia => {
             const comidasDia = (plan.comidas || []).filter(c => c.dia_semana === dia);
@@ -258,7 +270,7 @@ const MiPlanNutricional = ({ pacienteId }) => {
                   {comidasDia.map((comida, idx) => (
                     <div key={idx} className="comida-mini">
                       <span className="comida-mini-tipo">
-                        {tiposComidaConfig[comida.tipo_comida]?.icon} {tiposComidaConfig[comida.tipo_comida]?.label}
+                        <LucideIcon name={tiposComidaConfig[comida.tipo_comida]?.icon} size={16} /> {tiposComidaConfig[comida.tipo_comida]?.label}
                       </span>
                       <span className="comida-mini-nombre">{comida.nombre_plato}</span>
                     </div>

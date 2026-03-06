@@ -1,22 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
+import { useAccessibility } from '../context/AccessibilityContext';
 import api from '../services/api';
-import VoiceHelper from '../components/VoiceHelper';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Configuracion.css';
 
 const Configuracion = () => {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const { settings: accSettings, updateSetting: updateAccSetting } = useAccessibility();
   const [activeSection, setActiveSection] = useState('notificaciones');
   const [loading, setLoading] = useState(false);
   const [mensaje, setMensaje] = useState({ tipo: '', texto: '' });
 
-  // Configuración de tema y accesibilidad
-  const [tema, setTema] = useState(() => localStorage.getItem('vitalia-theme') || 'dark');
+  // Tema sincronizado con AccessibilityContext
+  const tema = accSettings.theme;
+  const setTema = (value) => updateAccSetting('theme', value);
   const [tamanoTexto, setTamanoTexto] = useState(() => localStorage.getItem('vitalia-font-size') || 'normal');
-  const [altoContraste, setAltoContraste] = useState(() => localStorage.getItem('vitalia-high-contrast') === 'true');
   const [vozActiva, setVozActiva] = useState(() => localStorage.getItem('vitalia-voice') !== 'false');
 
-  // Configuración de notificaciones
+  // Configuración de notificaciones (BD)
   const [notificaciones, setNotificaciones] = useState({
     recordatorios_medicamentos: true,
     recordatorios_ejercicios: true,
@@ -28,7 +30,7 @@ const Configuracion = () => {
     vibracion: true
   });
 
-  // Configuración de privacidad
+  // Configuración de privacidad (BD)
   const [privacidad, setPrivacidad] = useState({
     perfil_visible_comunidad: true,
     mostrar_nombre_real: true,
@@ -38,105 +40,169 @@ const Configuracion = () => {
   // Dispositivos de confianza
   const [dispositivos, setDispositivos] = useState([]);
 
-  // Aplicar tema guardado al cargar
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('vitalia-theme') || 'dark';
-    const savedFontSize = localStorage.getItem('vitalia-font-size') || 'normal';
+  // Seguridad - cambiar password
+  const [passwordForm, setPasswordForm] = useState({
+    password_actual: '',
+    password_nueva: '',
+    password_confirmar: ''
+  });
+  const [savingPassword, setSavingPassword] = useState(false);
 
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    if (savedFontSize === 'large') {
-      document.documentElement.setAttribute('data-font-size', 'large');
-    }
+  // Seguridad - cambiar PIN
+  const [pinForm, setPinForm] = useState({ pin_nuevo: '', pin_confirmar: '' });
+  const [savingPin, setSavingPin] = useState(false);
+
+  // Cargar configuracion al montar
+  useEffect(() => {
+    cargarConfigDesdeDB();
   }, []);
 
+  // Cargar dispositivos cuando se selecciona esa seccion
   useEffect(() => {
-    cargarConfiguracion();
+    if (activeSection === 'dispositivos') {
+      cargarDispositivos();
+    }
   }, [activeSection]);
 
-  const cargarConfiguracion = async () => {
-    setLoading(true);
+  const cargarConfigDesdeDB = async () => {
     try {
-      if (activeSection === 'dispositivos') {
-        const response = await api.get('/auth/devices');
-        setDispositivos(response.data || []);
+      const response = await api.get('/configuracion');
+      if (response?.data) {
+        if (response.data.notificaciones) {
+          setNotificaciones(response.data.notificaciones);
+        }
+        if (response.data.privacidad) {
+          setPrivacidad(response.data.privacidad);
+        }
       }
     } catch (err) {
-      console.error('Error al cargar configuración:', err);
+      console.error('Error cargando configuracion:', err);
+    }
+  };
+
+  const cargarDispositivos = async () => {
+    setLoading(true);
+    try {
+      const response = await api.get('/auth/devices');
+      setDispositivos(response.data || []);
+    } catch (err) {
+      console.error('Error al cargar dispositivos:', err);
     } finally {
       setLoading(false);
     }
   };
 
+  const showMsg = (tipo, texto) => {
+    setMensaje({ tipo, texto });
+    setTimeout(() => setMensaje({ tipo: '', texto: '' }), 4000);
+  };
+
   const guardarNotificaciones = async () => {
     try {
       await api.put('/configuracion/notificaciones', notificaciones);
-      setMensaje({ tipo: 'success', texto: 'Preferencias de notificaciones guardadas' });
-      setTimeout(() => setMensaje({ tipo: '', texto: '' }), 3000);
+      showMsg('success', 'Preferencias de notificaciones guardadas');
     } catch (err) {
-      setMensaje({ tipo: 'error', texto: 'Error al guardar preferencias' });
+      showMsg('error', 'Error al guardar preferencias');
     }
   };
 
   const guardarPrivacidad = async () => {
     try {
       await api.put('/configuracion/privacidad', privacidad);
-      setMensaje({ tipo: 'success', texto: 'Preferencias de privacidad guardadas' });
-      setTimeout(() => setMensaje({ tipo: '', texto: '' }), 3000);
+      showMsg('success', 'Preferencias de privacidad guardadas');
     } catch (err) {
-      setMensaje({ tipo: 'error', texto: 'Error al guardar preferencias' });
+      showMsg('error', 'Error al guardar preferencias');
+    }
+  };
+
+  const handleCambiarPassword = async (e) => {
+    e.preventDefault();
+    if (passwordForm.password_nueva !== passwordForm.password_confirmar) {
+      showMsg('error', 'Las contraseñas no coinciden');
+      return;
+    }
+    if (passwordForm.password_nueva.length < 6) {
+      showMsg('error', 'La contraseña debe tener al menos 6 caracteres');
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      await api.put('/auth/cambiar-password', {
+        password_actual: passwordForm.password_actual,
+        password_nueva: passwordForm.password_nueva
+      });
+      showMsg('success', 'Contraseña actualizada correctamente');
+      setPasswordForm({ password_actual: '', password_nueva: '', password_confirmar: '' });
+    } catch (err) {
+      showMsg('error', err?.message || 'Error al cambiar contraseña');
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  const handleCambiarPIN = async (e) => {
+    e.preventDefault();
+    if (pinForm.pin_nuevo !== pinForm.pin_confirmar) {
+      showMsg('error', 'Los PIN no coinciden');
+      return;
+    }
+    if (!/^\d{4,6}$/.test(pinForm.pin_nuevo)) {
+      showMsg('error', 'El PIN debe ser de 4 a 6 digitos');
+      return;
+    }
+    setSavingPin(true);
+    try {
+      await api.put('/auth/cambiar-pin', { pin_nuevo: pinForm.pin_nuevo });
+      showMsg('success', 'PIN actualizado correctamente');
+      setPinForm({ pin_nuevo: '', pin_confirmar: '' });
+    } catch (err) {
+      showMsg('error', err?.message || 'Error al cambiar PIN');
+    } finally {
+      setSavingPin(false);
     }
   };
 
   const cerrarSesionDispositivo = async (dispositivoId) => {
-    if (!window.confirm('¿Cerrar sesión en este dispositivo?')) return;
-
+    if (!window.confirm('¿Cerrar sesion en este dispositivo?')) return;
     try {
       await api.delete(`/auth/devices/${dispositivoId}`);
       setDispositivos(prev => prev.filter(d => d.id !== dispositivoId));
-      setMensaje({ tipo: 'success', texto: 'Sesión cerrada en el dispositivo' });
+      showMsg('success', 'Sesion cerrada en el dispositivo');
     } catch (err) {
-      setMensaje({ tipo: 'error', texto: 'Error al cerrar sesión' });
+      showMsg('error', 'Error al cerrar sesion');
     }
   };
 
   const cerrarTodasLasSesiones = async () => {
-    if (!window.confirm('¿Cerrar sesión en todos los dispositivos excepto este?')) return;
-
+    if (!window.confirm('¿Cerrar sesion en todos los dispositivos excepto este?')) return;
     try {
       await api.post('/auth/logout-all');
-      setDispositivos(prev => prev.filter(d => d.actual));
-      setMensaje({ tipo: 'success', texto: 'Sesiones cerradas en todos los dispositivos' });
+      await cargarDispositivos();
+      showMsg('success', 'Sesiones cerradas en todos los dispositivos');
     } catch (err) {
-      setMensaje({ tipo: 'error', texto: 'Error al cerrar sesiones' });
+      showMsg('error', 'Error al cerrar sesiones');
     }
   };
 
   const formatearFechaDispositivo = (fecha) => {
+    if (!fecha) return 'N/A';
     return new Date(fecha).toLocaleDateString('es-MX', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit'
     });
   };
 
-  const getIconoDispositivo = (tipo) => {
-    const iconos = {
-      'mobile': '📱',
-      'tablet': '📱',
-      'desktop': '💻',
-      'unknown': '🖥️'
-    };
-    return iconos[tipo] || iconos['unknown'];
+  const getIconoDispositivo = (nombre) => {
+    const lower = (nombre || '').toLowerCase();
+    if (lower.includes('mobile') || lower.includes('android') || lower.includes('iphone')) return 'smartphone';
+    if (lower.includes('tablet') || lower.includes('ipad')) return 'smartphone';
+    return 'laptop';
   };
 
   return (
     <div className="configuracion-page">
-      {vozActiva && <VoiceHelper currentModule="config" />}
-
       <header className="page-header">
-        <h1>⚙️ Configuración</h1>
+        <h1>Configuracion</h1>
         <p>Personaliza tu experiencia en Azaria</p>
       </header>
 
@@ -147,31 +213,31 @@ const Configuracion = () => {
       )}
 
       <div className="config-container">
-        {/* Menú lateral */}
+        {/* Menu lateral */}
         <nav className="config-nav">
           <button
             className={`nav-item ${activeSection === 'notificaciones' ? 'active' : ''}`}
             onClick={() => setActiveSection('notificaciones')}
           >
-            🔔 Notificaciones
+            <LucideIcon name="bell" size={18} /> Notificaciones
           </button>
           <button
             className={`nav-item ${activeSection === 'privacidad' ? 'active' : ''}`}
             onClick={() => setActiveSection('privacidad')}
           >
-            🔒 Privacidad
+            <LucideIcon name="lock" size={18} /> Privacidad
           </button>
           <button
             className={`nav-item ${activeSection === 'dispositivos' ? 'active' : ''}`}
             onClick={() => setActiveSection('dispositivos')}
           >
-            📱 Dispositivos
+            <LucideIcon name="smartphone" size={18} /> Dispositivos
           </button>
           <button
             className={`nav-item ${activeSection === 'seguridad' ? 'active' : ''}`}
             onClick={() => setActiveSection('seguridad')}
           >
-            🛡️ Seguridad
+            <LucideIcon name="shield" size={18} /> Seguridad
           </button>
           <button
             className={`nav-item ${activeSection === 'accesibilidad' ? 'active' : ''}`}
@@ -183,75 +249,59 @@ const Configuracion = () => {
             className={`nav-item ${activeSection === 'acerca' ? 'active' : ''}`}
             onClick={() => setActiveSection('acerca')}
           >
-            ℹ️ Acerca de
+            <LucideIcon name="info" size={18} /> Acerca de
           </button>
         </nav>
 
         {/* Contenido */}
         <div className="config-content">
+
+          {/* NOTIFICACIONES */}
           {activeSection === 'notificaciones' && (
             <div className="config-section">
               <h2>Notificaciones</h2>
-              <p className="section-desc">Controla qué notificaciones deseas recibir</p>
+              <p className="section-desc">Controla que notificaciones deseas recibir</p>
 
               <div className="config-group">
                 <h3>Recordatorios</h3>
                 <label className="config-toggle">
                   <span>Medicamentos</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.recordatorios_medicamentos}
-                    onChange={e => setNotificaciones({...notificaciones, recordatorios_medicamentos: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={notificaciones.recordatorios_medicamentos}
+                    onChange={e => setNotificaciones({...notificaciones, recordatorios_medicamentos: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
                 <label className="config-toggle">
                   <span>Ejercicios</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.recordatorios_ejercicios}
-                    onChange={e => setNotificaciones({...notificaciones, recordatorios_ejercicios: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={notificaciones.recordatorios_ejercicios}
+                    onChange={e => setNotificaciones({...notificaciones, recordatorios_ejercicios: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
                 <label className="config-toggle">
-                  <span>Citas médicas</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.recordatorios_citas}
-                    onChange={e => setNotificaciones({...notificaciones, recordatorios_citas: e.target.checked})}
-                  />
+                  <span>Citas medicas</span>
+                  <input type="checkbox" checked={notificaciones.recordatorios_citas}
+                    onChange={e => setNotificaciones({...notificaciones, recordatorios_citas: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
               </div>
 
               <div className="config-group">
-                <h3>Comunicación</h3>
+                <h3>Comunicacion</h3>
                 <label className="config-toggle">
                   <span>Mensajes del chat</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.mensajes_chat}
-                    onChange={e => setNotificaciones({...notificaciones, mensajes_chat: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={notificaciones.mensajes_chat}
+                    onChange={e => setNotificaciones({...notificaciones, mensajes_chat: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
                 <label className="config-toggle">
                   <span>Actualizaciones del blog</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.actualizaciones_blog}
-                    onChange={e => setNotificaciones({...notificaciones, actualizaciones_blog: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={notificaciones.actualizaciones_blog}
+                    onChange={e => setNotificaciones({...notificaciones, actualizaciones_blog: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
                 <label className="config-toggle">
                   <span>Actividad en comunidad</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.comunidad}
-                    onChange={e => setNotificaciones({...notificaciones, comunidad: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={notificaciones.comunidad}
+                    onChange={e => setNotificaciones({...notificaciones, comunidad: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
               </div>
@@ -260,20 +310,14 @@ const Configuracion = () => {
                 <h3>Preferencias</h3>
                 <label className="config-toggle">
                   <span>Sonido</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.sonido}
-                    onChange={e => setNotificaciones({...notificaciones, sonido: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={notificaciones.sonido}
+                    onChange={e => setNotificaciones({...notificaciones, sonido: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
                 <label className="config-toggle">
-                  <span>Vibración</span>
-                  <input
-                    type="checkbox"
-                    checked={notificaciones.vibracion}
-                    onChange={e => setNotificaciones({...notificaciones, vibracion: e.target.checked})}
-                  />
+                  <span>Vibracion</span>
+                  <input type="checkbox" checked={notificaciones.vibracion}
+                    onChange={e => setNotificaciones({...notificaciones, vibracion: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
               </div>
@@ -284,29 +328,30 @@ const Configuracion = () => {
             </div>
           )}
 
+          {/* PRIVACIDAD */}
           {activeSection === 'privacidad' && (
             <div className="config-section">
               <h2>Privacidad</h2>
-              <p className="section-desc">Controla quién puede ver tu información</p>
+              <p className="section-desc">Controla quien puede ver tu informacion</p>
 
               <div className="config-group">
                 <h3>Comunidad</h3>
                 <label className="config-toggle">
                   <span>Perfil visible en comunidad</span>
-                  <input
-                    type="checkbox"
-                    checked={privacidad.perfil_visible_comunidad}
-                    onChange={e => setPrivacidad({...privacidad, perfil_visible_comunidad: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={privacidad.perfil_visible_comunidad}
+                    onChange={e => setPrivacidad({...privacidad, perfil_visible_comunidad: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
                 <label className="config-toggle">
                   <span>Mostrar nombre real</span>
-                  <input
-                    type="checkbox"
-                    checked={privacidad.mostrar_nombre_real}
-                    onChange={e => setPrivacidad({...privacidad, mostrar_nombre_real: e.target.checked})}
-                  />
+                  <input type="checkbox" checked={privacidad.mostrar_nombre_real}
+                    onChange={e => setPrivacidad({...privacidad, mostrar_nombre_real: e.target.checked})} />
+                  <span className="toggle-slider"></span>
+                </label>
+                <label className="config-toggle">
+                  <span>Permitir mensajes de otros pacientes</span>
+                  <input type="checkbox" checked={privacidad.permitir_mensajes_pacientes}
+                    onChange={e => setPrivacidad({...privacidad, permitir_mensajes_pacientes: e.target.checked})} />
                   <span className="toggle-slider"></span>
                 </label>
               </div>
@@ -317,50 +362,46 @@ const Configuracion = () => {
             </div>
           )}
 
+          {/* DISPOSITIVOS */}
           {activeSection === 'dispositivos' && (
             <div className="config-section">
               <h2>Dispositivos de Confianza</h2>
-              <p className="section-desc">Administra los dispositivos donde has iniciado sesión</p>
+              <p className="section-desc">Administra los dispositivos donde has iniciado sesion</p>
 
               {loading ? (
-                <div className="loading-small">
-                  <div className="spinner-small"></div>
-                </div>
+                <div className="loading-small"><div className="spinner-small"></div></div>
               ) : (
                 <>
                   <div className="dispositivos-list">
                     {dispositivos.length > 0 ? dispositivos.map(dispositivo => (
-                      <div key={dispositivo.id} className={`dispositivo-item ${dispositivo.actual ? 'actual' : ''}`}>
-                        <span className="dispositivo-icon">{getIconoDispositivo(dispositivo.tipo)}</span>
+                      <div key={dispositivo.id} className="dispositivo-item">
+                        <span className="dispositivo-icon"><LucideIcon name={getIconoDispositivo(dispositivo.dispositivo)} size={20} /></span>
                         <div className="dispositivo-info">
                           <span className="dispositivo-nombre">
-                            {dispositivo.nombre}
-                            {dispositivo.actual && <span className="badge-actual">Este dispositivo</span>}
+                            {dispositivo.dispositivo || 'Navegador Web'}
                           </span>
                           <span className="dispositivo-detalles">
-                            {dispositivo.navegador} • {dispositivo.ubicacion}
+                            IP: {dispositivo.ip_address}
                           </span>
                           <span className="dispositivo-fecha">
-                            Último acceso: {formatearFechaDispositivo(dispositivo.ultimo_acceso)}
+                            Ultimo acceso: {formatearFechaDispositivo(dispositivo.ultimo_acceso)}
                           </span>
                         </div>
-                        {!dispositivo.actual && (
-                          <button
-                            className="btn btn-outline btn-sm"
-                            onClick={() => cerrarSesionDispositivo(dispositivo.id)}
-                          >
-                            Cerrar sesión
-                          </button>
-                        )}
+                        <button
+                          className="btn btn-outline btn-sm"
+                          onClick={() => cerrarSesionDispositivo(dispositivo.id)}
+                        >
+                          Cerrar
+                        </button>
                       </div>
                     )) : (
-                      <p className="no-dispositivos">No hay otros dispositivos conectados</p>
+                      <p className="no-dispositivos">No hay dispositivos conectados</p>
                     )}
                   </div>
 
                   {dispositivos.length > 1 && (
                     <button className="btn btn-danger" onClick={cerrarTodasLasSesiones}>
-                      Cerrar sesión en todos los dispositivos
+                      Cerrar sesion en todos los dispositivos
                     </button>
                   )}
                 </>
@@ -368,83 +409,128 @@ const Configuracion = () => {
             </div>
           )}
 
+          {/* SEGURIDAD */}
           {activeSection === 'seguridad' && (
             <div className="config-section">
               <h2>Seguridad</h2>
               <p className="section-desc">Administra la seguridad de tu cuenta</p>
 
-              <div className="seguridad-opciones">
-                <a href="/cambiar-pin" className="seguridad-btn">
-                  <span className="icon">🔢</span>
-                  <div>
-                    <h4>Cambiar PIN</h4>
-                    <p>Actualiza tu PIN de acceso rápido</p>
+              {/* Cambiar Contraseña */}
+              <div className="config-group">
+                <h3><LucideIcon name="key" size={18} /> Cambiar Contrasena</h3>
+                <form onSubmit={handleCambiarPassword} className="security-form">
+                  <div className="form-group">
+                    <label>Contraseña actual</label>
+                    <input
+                      type="password"
+                      value={passwordForm.password_actual}
+                      onChange={e => setPasswordForm({...passwordForm, password_actual: e.target.value})}
+                      placeholder="Tu contraseña actual"
+                      required
+                    />
                   </div>
-                </a>
+                  <div className="form-group">
+                    <label>Nueva contraseña</label>
+                    <input
+                      type="password"
+                      value={passwordForm.password_nueva}
+                      onChange={e => setPasswordForm({...passwordForm, password_nueva: e.target.value})}
+                      placeholder="Minimo 6 caracteres"
+                      minLength={6}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Confirmar nueva contraseña</label>
+                    <input
+                      type="password"
+                      value={passwordForm.password_confirmar}
+                      onChange={e => setPasswordForm({...passwordForm, password_confirmar: e.target.value})}
+                      placeholder="Repite la nueva contraseña"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary" disabled={savingPassword}>
+                    {savingPassword ? 'Guardando...' : 'Cambiar Contraseña'}
+                  </button>
+                </form>
+              </div>
 
-                <a href="/cambiar-password" className="seguridad-btn">
-                  <span className="icon">🔑</span>
-                  <div>
-                    <h4>Cambiar Contraseña</h4>
-                    <p>Actualiza tu contraseña de acceso</p>
+              {/* Cambiar PIN */}
+              <div className="config-group">
+                <h3><LucideIcon name="hash" size={20} /> Cambiar PIN</h3>
+                <form onSubmit={handleCambiarPIN} className="security-form">
+                  <div className="form-group">
+                    <label>Nuevo PIN</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={pinForm.pin_nuevo}
+                      onChange={e => setPinForm({...pinForm, pin_nuevo: e.target.value.replace(/\D/g, '')})}
+                      placeholder="4 a 6 digitos"
+                      required
+                    />
                   </div>
-                </a>
+                  <div className="form-group">
+                    <label>Confirmar PIN</label>
+                    <input
+                      type="password"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={pinForm.pin_confirmar}
+                      onChange={e => setPinForm({...pinForm, pin_confirmar: e.target.value.replace(/\D/g, '')})}
+                      placeholder="Repite el PIN"
+                      required
+                    />
+                  </div>
+                  <button type="submit" className="btn btn-primary" disabled={savingPin}>
+                    {savingPin ? 'Guardando...' : 'Cambiar PIN'}
+                  </button>
+                </form>
               </div>
             </div>
           )}
 
+          {/* ACCESIBILIDAD */}
           {activeSection === 'accesibilidad' && (
             <div className="config-section">
               <h2>Accesibilidad</h2>
               <p className="section-desc">Opciones para mejorar tu experiencia visual y auditiva</p>
 
-              {/* Selector de Tema */}
               <div className="config-group">
-                <h3>🎨 Tema de Colores</h3>
-                <p className="group-desc">Elige el modo que prefieras para ver la aplicación</p>
+                <h3><LucideIcon name="palette" size={18} /> Tema de Colores</h3>
+                <p className="group-desc">Elige el modo que prefieras para ver la aplicacion</p>
                 <div className="theme-options">
                   <button
                     className={`theme-btn ${tema === 'dark' ? 'active' : ''}`}
-                    onClick={() => {
-                      setTema('dark');
-                      document.documentElement.setAttribute('data-theme', 'dark');
-                      localStorage.setItem('vitalia-theme', 'dark');
-                    }}
+                    onClick={() => setTema('dark')}
                   >
-                    <span className="theme-icon">🌙</span>
+                    <span className="theme-icon"><LucideIcon name="moon" size={20} /></span>
                     <span className="theme-name">Oscuro</span>
                     <span className="theme-desc">Ideal para la noche</span>
                   </button>
                   <button
                     className={`theme-btn ${tema === 'light' ? 'active' : ''}`}
-                    onClick={() => {
-                      setTema('light');
-                      document.documentElement.setAttribute('data-theme', 'light');
-                      localStorage.setItem('vitalia-theme', 'light');
-                    }}
+                    onClick={() => setTema('light')}
                   >
-                    <span className="theme-icon">☀️</span>
+                    <span className="theme-icon"><LucideIcon name="sunrise" size={20} /></span>
                     <span className="theme-name">Claro</span>
-                    <span className="theme-desc">Ideal para el día</span>
+                    <span className="theme-desc">Ideal para el dia</span>
                   </button>
                   <button
                     className={`theme-btn ${tema === 'high-contrast' ? 'active' : ''}`}
-                    onClick={() => {
-                      setTema('high-contrast');
-                      document.documentElement.setAttribute('data-theme', 'high-contrast');
-                      localStorage.setItem('vitalia-theme', 'high-contrast');
-                    }}
+                    onClick={() => setTema('high-contrast')}
                   >
-                    <span className="theme-icon">👁️</span>
+                    <span className="theme-icon"><LucideIcon name="eye" size={20} /></span>
                     <span className="theme-name">Alto Contraste</span>
-                    <span className="theme-desc">Máxima visibilidad</span>
+                    <span className="theme-desc">Maxima visibilidad</span>
                   </button>
                 </div>
               </div>
 
-              {/* Tamaño de texto */}
               <div className="config-group">
-                <h3>🔤 Tamaño de Texto</h3>
+                <h3><LucideIcon name="type" size={20} /> Tamaño de Texto</h3>
                 <p className="group-desc">Ajusta el tamaño de las letras</p>
                 <div className="font-size-options">
                   <button
@@ -483,12 +569,11 @@ const Configuracion = () => {
                 </div>
               </div>
 
-              {/* Ayuda por Voz */}
               <div className="config-group">
-                <h3>🔊 Ayuda por Voz</h3>
+                <h3><LucideIcon name="volume" size={18} /> Ayuda por Voz</h3>
                 <p className="group-desc">Activa o desactiva las explicaciones de audio</p>
                 <label className="config-toggle">
-                  <span>Mostrar botón de voz</span>
+                  <span>Mostrar boton de voz</span>
                   <input
                     type="checkbox"
                     checked={vozActiva}
@@ -500,21 +585,21 @@ const Configuracion = () => {
                   <span className="toggle-slider"></span>
                 </label>
                 <p className="toggle-help">
-                  Cuando está activo, verás un botón 🔊 en cada pantalla para escuchar explicaciones
+                  Cuando esta activo, veras un boton de voz en cada pantalla para escuchar explicaciones
                 </p>
               </div>
 
-              {/* Preview */}
               <div className="accessibility-preview">
                 <h4>Vista previa</h4>
                 <div className="preview-card">
-                  <p>Este es un ejemplo de cómo se ve el texto con tus configuraciones actuales.</p>
-                  <button className="btn btn-primary">Botón de Ejemplo</button>
+                  <p>Este es un ejemplo de como se ve el texto con tus configuraciones actuales.</p>
+                  <button className="btn btn-primary">Boton de Ejemplo</button>
                 </div>
               </div>
             </div>
           )}
 
+          {/* ACERCA DE */}
           {activeSection === 'acerca' && (
             <div className="config-section">
               <h2>Acerca de Azaria</h2>
@@ -522,25 +607,17 @@ const Configuracion = () => {
               <div className="acerca-info">
                 <div className="app-version">
                   <h3>Azaria 2.0</h3>
-                  <p>Sistema de Adherencia Terapéutica</p>
-                  <p className="version">Versión 2.0.0</p>
+                  <p>Sistema de Adherencia Terapeutica</p>
+                  <p className="version">Version 2.0.0</p>
                 </div>
 
                 <div className="contacto-info">
                   <h4>Contacto</h4>
-                  <p>📞 442-XXX-XXXX</p>
-                  <p>✉️ soporte@azaria.app</p>
-                  <p>🏥 ENES Juriquilla, UNAM</p>
-                </div>
-
-                <div className="legal-links">
-                  <a href="/terminos">Términos y Condiciones</a>
-                  <a href="/privacidad">Política de Privacidad</a>
-                  <a href="/aviso-medico">Aviso Médico</a>
+                  <p><LucideIcon name="hospital" size={16} /> UTEQ - Universidad Tecnologica de Queretaro</p>
                 </div>
 
                 <p className="copyright">
-                  © 2024 UIOyP - ENES Juriquilla, UNAM. Todos los derechos reservados.
+                  © 2026 Azaria. Todos los derechos reservados.
                 </p>
               </div>
             </div>
@@ -550,7 +627,7 @@ const Configuracion = () => {
 
       <div className="logout-section">
         <button className="btn btn-danger btn-lg" onClick={logout}>
-          Cerrar Sesión
+          Cerrar Sesion
         </button>
       </div>
     </div>

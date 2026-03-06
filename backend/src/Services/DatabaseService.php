@@ -41,9 +41,13 @@ class DatabaseService
             return $stmt;
         } catch (PDOException $e) {
             error_log("Query error: " . $e->getMessage());
-            // DEBUG: Mostrar error real (quitar en producción)
-            throw new \Exception("DB Error: " . $e->getMessage());
+            throw new \Exception("Error al procesar la solicitud");
         }
+    }
+
+    public function getConnection()
+    {
+        return $this->connection;
     }
 
     public function lastInsertId()

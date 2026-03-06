@@ -1,5 +1,6 @@
 import React from 'react';
 import BaseLayout from './BaseLayout';
+import LucideIcon from '../LucideIcon';
 
 /**
  * AdminLayout - Layout para el rol Administrador
@@ -7,16 +8,16 @@ import BaseLayout from './BaseLayout';
  */
 
 const ADMIN_NAV_ITEMS = [
-  { path: '/admin', icon: '📊', label: 'Panel Admin' },
-  { path: '/admin/usuarios', icon: '👥', label: 'Usuarios' },
-  { path: '/admin/especialistas', icon: '👨‍⚕️', label: 'Especialistas' },
-  { path: '/admin/pacientes', icon: '🏥', label: 'Pacientes' },
-  { path: '/admin/reportes', icon: '📈', label: 'Reportes' },
-  { path: '/admin/citas', icon: '📅', label: 'Citas' },
-  { path: '/admin/contenido', icon: '📝', label: 'Contenido' },
-  { path: '/admin/notificaciones', icon: '🔔', label: 'Notificaciones' },
-  { path: '/admin/configuracion', icon: '⚙️', label: 'Configuración' },
-  { path: '/admin/logs', icon: '📋', label: 'Registros' },
+  { path: '/admin', icon: 'bar-chart', label: 'Panel Admin' },
+  { path: '/admin/usuarios', icon: 'users', label: 'Usuarios' },
+  { path: '/admin/especialistas', icon: 'stethoscope', label: 'Especialistas' },
+  { path: '/admin/pacientes', icon: 'hospital', label: 'Pacientes' },
+  { path: '/admin/reportes', icon: 'trending-up', label: 'Reportes' },
+  { path: '/admin/citas', icon: 'calendar', label: 'Citas' },
+  { path: '/admin/contenido', icon: 'pen-line', label: 'Contenido' },
+  { path: '/admin/notificaciones', icon: 'bell', label: 'Notificaciones' },
+  { path: '/admin/configuracion', icon: 'settings', label: 'Configuración' },
+  { path: '/admin/logs', icon: 'clipboard', label: 'Registros' },
 ];
 
 const AdminLayout = ({

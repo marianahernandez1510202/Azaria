@@ -4,24 +4,24 @@
   align-items: center;
   gap: 12px;
   padding: 16px;
-  background: var(--bg-secondary, #1e293b);
+  background: var(--bg-secondary, #FFFFFF);
   border-radius: 12px;
-  border: 1px solid var(--border-color, #334155);
+  border: 1px solid var(--border-color, #E0E0E0);
   transition: all 0.3s ease;
 }
 
 .outlook-connect:hover {
-  border-color: var(--primary-color, #10b981);
+  border-color: var(--primary-color, #2E7D32);
 }
 
 .outlook-connect.connected {
-  border-color: #10b981;
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), transparent);
+  border-color: #2E7D32;
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.1), transparent);
 }
 
 .outlook-connect.loading {
   justify-content: center;
-  color: var(--text-secondary, #94a3b8);
+  color: var(--text-secondary, #6B6B6B);
 }
 
 .outlook-connect.disabled {
@@ -55,11 +55,11 @@
 .outlook-title {
   font-weight: 600;
   color: var(--text-primary, #f1f5f9);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .outlook-status {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-secondary, #94a3b8);
 }
 
@@ -82,16 +82,27 @@
 
 .outlook-actions {
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.outlook-hint {
+  font-size: 10px;
+  color: var(--text-muted, #64748b);
+  font-style: italic;
 }
 
 .btn-outlook {
-  padding: 8px 16px;
+  padding: 12px 20px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   border: none;
+  min-height: 44px;
 }
 
 .btn-outlook.connect {
@@ -225,4 +236,69 @@
   .btn-outlook {
     width: 100%;
   }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .outlook-connect {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .outlook-connect.connected {
+  background: linear-gradient(135deg, rgba(46, 125, 50, 0.15), transparent);
+}
+
+[data-theme="dark"] .outlook-connect.loading {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .outlook-title {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .outlook-status {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .outlook-email {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .outlook-hint {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .btn-outlook.disconnect {
+  color: var(--text-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .btn-outlook.disconnect:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="dark"] .outlook-error {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="dark"] .outlook-sync-btn {
+  border-color: #0078d4;
+  color: #58a6ff;
+}
+
+[data-theme="dark"] .outlook-sync-btn:hover {
+  background: #0078d4;
+  color: white;
+}
+
+[data-theme="dark"] .outlook-sync-btn.synced {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+[data-theme="dark"] .outlook-sync-btn.synced:hover {
+  background: rgba(239, 68, 68, 0.15);
+}
+
+[data-theme="dark"] .spinner-small {
+  border-color: var(--border-color);
 }

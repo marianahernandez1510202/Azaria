@@ -1,19 +1,19 @@
 /* ========================================
-   Neuropsicología Page Styles
-   Azaria 2.0 - Dark Theme con color del módulo
+   Neuropsicologia Page Styles
+   Azaria 2.0 - Light Theme con color del modulo
    ======================================== */
 
 .neuropsicologia-page {
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--background-primary, #0D1117);
+  background: var(--background-primary, #F5F7F2);
   padding-bottom: calc(100px + env(safe-area-inset-bottom));
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
 }
 
-/* Header del módulo */
+/* Header del modulo */
 .neuropsicologia-page .page-header {
-  background: linear-gradient(135deg, var(--color-neuropsicologia, #9C27B0) 0%, #6A1B9A 100%);
+  background: linear-gradient(135deg, var(--color-neuropsicologia, #6A1B9A) 0%, #4A148C 100%);
   padding: var(--spacing-lg, 24px);
   padding-top: calc(var(--spacing-lg, 24px) + env(safe-area-inset-top));
   color: white;
@@ -21,7 +21,8 @@
 }
 
 .neuropsicologia-page .page-header h1 {
-  color: white;
+  font-family: 'Open Sans', sans-serif;
+  color: var(--inst-title, #0c71c3);
   font-size: var(--font-size-2xl, 28px);
   margin-bottom: var(--spacing-xs, 4px);
 }
@@ -32,7 +33,7 @@
 }
 
 /* Tabs */
-.neuropsicologia-page .tabs-nav {
+.neuropsicologia-page .tabs {
   display: flex;
   gap: var(--spacing-sm, 8px);
   padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
@@ -40,74 +41,76 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.neuropsicologia-page .tab-btn {
+.neuropsicologia-page .tab {
   padding: var(--spacing-sm, 8px) var(--spacing-lg, 24px);
   border-radius: var(--radius-full, 50px);
   border: none;
-  background: var(--surface-primary, #161B22);
-  color: var(--text-secondary, #8B949E);
+  background: var(--surface-primary, #FFFFFF);
+  color: var(--text-secondary, #6B6B6B);
   font-size: var(--font-size-base, 18px);
   font-weight: 600;
   white-space: nowrap;
   transition: all 0.2s;
   min-height: var(--touch-target-min, 48px);
-}
-
-.neuropsicologia-page .tab-btn:hover {
-  background: var(--surface-secondary, #21262D);
-}
-
-.neuropsicologia-page .tab-btn.active {
-  background: var(--color-neuropsicologia, #9C27B0);
-  color: white;
-}
-
-/* CTA Principal */
-.neuropsicologia-page .cta-animo {
-  margin: 0 var(--spacing-lg, 24px) var(--spacing-lg, 24px);
-  padding: var(--spacing-lg, 24px);
-  background: linear-gradient(135deg, var(--color-primary, #00BFA5) 0%, #00897B 100%);
-  border-radius: var(--radius-lg, 16px);
-  text-align: center;
-  color: white;
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  min-height: var(--touch-target-comfortable, 56px);
 }
 
-.neuropsicologia-page .cta-animo:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 191, 165, 0.3);
+.neuropsicologia-page .tab:hover {
+  background: var(--surface-secondary, #F0F2ED);
 }
 
-.neuropsicologia-page .cta-animo h2 {
+.neuropsicologia-page .tab.active {
+  background: var(--color-neuropsicologia, #6A1B9A);
   color: white;
-  font-size: var(--font-size-xl, 24px);
 }
 
 /* Content Area */
-.neuropsicologia-page .page-content {
+.neuropsicologia-page .tab-content {
   padding: 0 var(--spacing-lg, 24px);
 }
 
+/* Loading */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl, 32px);
+  gap: var(--spacing-md, 16px);
+  color: var(--text-muted, #6B6B6B);
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border-color, #E0E0E0);
+  border-top-color: var(--color-neuropsicologia, #6A1B9A);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ========================================
-   Ánimo Section
+   Animo Section
    ======================================== */
 .animo-section {
   padding-bottom: var(--spacing-lg, 24px);
 }
 
 .stats-animo {
-  background: var(--surface-primary, #161B22);
+  background: var(--surface-primary, #FFFFFF);
   padding: var(--spacing-lg, 24px);
   border-radius: var(--radius-lg, 16px);
   margin: var(--spacing-lg, 24px) 0;
-  border: 1px solid var(--border-color, #30363D);
+  border: 1px solid var(--border-color, #E0E0E0);
 }
 
 .stats-animo h3 {
   margin-bottom: var(--spacing-md, 16px);
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-lg, 20px);
 }
 
@@ -120,27 +123,51 @@
 .stat-card {
   text-align: center;
   padding: var(--spacing-md, 16px);
-  background: var(--surface-secondary, #21262D);
+  background: var(--surface-secondary, #F0F2ED);
   border-radius: var(--radius-md, 12px);
-  border: 1px solid var(--border-color, #30363D);
+  border: 1px solid var(--border-color, #E0E0E0);
 }
 
-.stat-emoji {
-  font-size: 2.5rem;
-}
+.stat-emoji { font-size: 2.5rem; }
 
 .stat-card .stat-label {
-  color: var(--text-muted, #8B949E);
+  color: var(--text-muted, #6B6B6B);
   font-size: var(--font-size-sm, 16px);
 }
 
 .stat-card .stat-value {
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-xl, 24px);
   font-weight: 700;
 }
 
-/* Historial Ánimo */
+/* Gráficas de Ánimo */
+.animo-charts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+  margin: var(--spacing-lg, 24px) 0;
+}
+
+.animo-chart-card {
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  border: 1px solid var(--border-color, #E0E0E0);
+}
+
+.animo-chart-card h3 {
+  margin: 0 0 var(--spacing-md, 16px);
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 18px);
+}
+
+.animo-chart-wrapper {
+  position: relative;
+  height: 220px;
+}
+
+/* Historial Animo */
 .historial-animo {
   display: flex;
   flex-direction: column;
@@ -149,17 +176,16 @@
 
 .historial-animo h3 {
   margin-bottom: var(--spacing-md, 16px);
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-lg, 20px);
 }
 
 .estado-card {
-  background: var(--surface-primary, #161B22);
+  background: var(--surface-primary, #FFFFFF);
   padding: var(--spacing-md, 16px);
   border-radius: var(--radius-md, 12px);
-  border-left: 4px solid var(--color-neuropsicologia, #9C27B0);
-  border: 1px solid var(--border-color, #30363D);
-  border-left: 4px solid var(--estado-color, #9C27B0);
+  border: 1px solid var(--border-color, #E0E0E0);
+  border-left: 4px solid var(--estado-color, #6A1B9A);
 }
 
 .estado-header {
@@ -168,112 +194,248 @@
   gap: var(--spacing-sm, 8px);
 }
 
-.estado-emoji {
-  font-size: 1.75rem;
-}
+.estado-emoji { font-size: 1.75rem; }
 
 .estado-nombre {
   font-weight: 600;
   flex: 1;
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-base, 18px);
 }
 
 .estado-fecha {
   font-size: var(--font-size-sm, 16px);
-  color: var(--text-muted, #8B949E);
+  color: var(--text-muted, #6B6B6B);
 }
 
 .estado-notas {
   margin-top: var(--spacing-sm, 8px);
   font-size: var(--font-size-base, 18px);
-  color: var(--text-secondary, #8B949E);
+  color: var(--text-secondary, #6B6B6B);
   line-height: 1.5;
 }
 
 .empty-state {
   text-align: center;
   padding: var(--spacing-xl, 32px);
-  color: var(--text-muted, #8B949E);
+  color: var(--text-muted, #6B6B6B);
 }
 
-.empty-state p {
-  font-size: var(--font-size-base, 18px);
-}
+.empty-state p { font-size: var(--font-size-base, 18px); }
 
 /* ========================================
-   Ejercicios Neuropsicología
+   Herramientas ACT - Categorias Grid
    ======================================== */
 .intro-text {
-  color: var(--text-secondary, #8B949E);
+  color: var(--text-secondary, #6B6B6B);
   margin-bottom: var(--spacing-lg, 24px);
   font-size: var(--font-size-base, 18px);
 }
 
-.ejercicios-grid {
+.act-categorias-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-md, 16px);
 }
 
-.ejercicio-card-np {
-  background: var(--surface-primary, #161B22);
+.act-categoria-card {
+  background: var(--surface-primary, #FFFFFF);
   padding: var(--spacing-lg, 24px);
   border-radius: var(--radius-lg, 16px);
-  text-align: center;
-  border: 1px solid var(--border-color, #30363D);
-  transition: transform 0.2s, box-shadow 0.2s;
+  border: 1px solid var(--border-color, #E0E0E0);
   cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  text-align: center;
 }
 
-.ejercicio-card-np:hover {
+.act-categoria-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-  border-color: var(--color-neuropsicologia, #9C27B0);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  border-color: var(--cat-color, #6A1B9A);
 }
 
-.ejercicio-icon {
-  font-size: 3rem;
-  margin-bottom: var(--spacing-md, 16px);
-}
-
-.ejercicio-card-np h3 {
-  margin-bottom: var(--spacing-xs, 4px);
-  font-size: var(--font-size-lg, 20px);
-  color: var(--text-primary, #E6EDF3);
-}
-
-.ejercicio-card-np .ejercicio-descripcion {
-  font-size: var(--font-size-base, 18px);
-  color: var(--text-muted, #8B949E);
-  margin-bottom: var(--spacing-md, 16px);
-}
-
-.ejercicio-duracion {
+.act-categoria-card .act-cat-emoji {
+  font-size: 2.5rem;
   display: block;
-  font-size: var(--font-size-sm, 16px);
-  color: var(--color-neuropsicologia, #9C27B0);
-  margin-bottom: var(--spacing-md, 16px);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.act-categoria-card h3 {
+  color: var(--cat-color, #6A1B9A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.act-categoria-card p {
+  color: var(--text-muted, #6B6B6B);
+  font-size: var(--font-size-sm, 14px);
+  margin-bottom: var(--spacing-sm, 8px);
+  line-height: 1.4;
+}
+
+.act-cat-count {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--cat-color, #6A1B9A);
   font-weight: 600;
 }
 
-.ejercicio-card-np .btn-primary {
-  width: 100%;
-  background: var(--color-neuropsicologia, #9C27B0);
+/* Btn volver */
+.btn-back {
+  background: none;
+  border: none;
+  color: var(--text-secondary, #6B6B6B);
+  font-size: var(--font-size-base, 18px);
+  cursor: pointer;
+  padding: var(--spacing-sm, 8px) 0;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.btn-back:hover {
+  color: var(--text-primary, #1A1A1A);
+}
+
+/* Categoria header */
+.act-categoria-header {
+  text-align: center;
+  padding: var(--spacing-lg, 24px);
+  background: linear-gradient(135deg, rgba(106, 27, 154, 0.08), transparent);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: var(--spacing-lg, 24px);
+  border: 1px solid var(--cat-color, #6A1B9A);
+}
+
+.act-cat-emoji-lg {
+  font-size: 3.5rem;
+  display: block;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.act-categoria-header h2 {
+  color: var(--cat-color, #6A1B9A);
+  font-size: var(--font-size-xl, 24px);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.act-categoria-header p {
+  color: var(--text-secondary, #6B6B6B);
+  font-size: var(--font-size-base, 16px);
+}
+
+/* Herramientas list */
+.act-herramientas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+}
+
+.act-herramienta-card {
+  background: var(--surface-primary, #FFFFFF);
+  padding: var(--spacing-lg, 24px);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  transition: border-color 0.2s;
+}
+
+.act-herramienta-card:hover {
+  border-color: var(--cat-color, #6A1B9A);
+}
+
+.act-h-info {
+  flex: 1;
+}
+
+.act-h-info h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.act-h-info p {
+  color: var(--text-muted, #6B6B6B);
+  font-size: var(--font-size-sm, 14px);
+  margin-bottom: var(--spacing-sm, 8px);
+  line-height: 1.4;
+}
+
+.act-h-meta {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  align-items: center;
+}
+
+.act-h-duracion {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--cat-color, #6A1B9A);
+  font-weight: 600;
+}
+
+.act-h-tag {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(106, 27, 154, 0.08);
+  color: var(--cat-color, #6A1B9A);
+}
+
+/* Historial ACT */
+.historial-act {
+  margin-top: var(--spacing-xl, 32px);
+  padding-top: var(--spacing-lg, 24px);
+  border-top: 1px solid var(--border-color, #E0E0E0);
+}
+
+.historial-act h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.act-sesion-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-md, 12px);
+  margin-bottom: var(--spacing-sm, 8px);
+  border: 1px solid var(--border-color, #E0E0E0);
+}
+
+.act-sesion-emoji { font-size: 1.5rem; }
+
+.act-sesion-info {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.act-sesion-nombre {
+  font-weight: 600;
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 16px);
+}
+
+.act-sesion-fecha {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-muted, #6B6B6B);
 }
 
 /* Recursos Adicionales */
 .recursos-adicionales {
-  background: rgba(156, 39, 176, 0.1);
+  background: rgba(106, 27, 154, 0.05);
   padding: var(--spacing-lg, 24px);
   border-radius: var(--radius-lg, 16px);
   margin-top: var(--spacing-lg, 24px);
-  border: 1px solid rgba(156, 39, 176, 0.3);
+  border: 1px solid rgba(106, 27, 154, 0.2);
 }
 
 .recursos-adicionales h3 {
   margin-bottom: var(--spacing-md, 16px);
-  color: var(--color-neuropsicologia-light, #E1BEE7);
+  color: var(--color-neuropsicologia-light, #6A1B9A);
   font-size: var(--font-size-lg, 20px);
 }
 
@@ -291,13 +453,13 @@
 }
 
 .recurso-link {
-  color: var(--color-neuropsicologia, #9C27B0);
+  color: var(--color-neuropsicologia, #6A1B9A);
   font-weight: 600;
   font-size: var(--font-size-base, 18px);
 }
 
 .recurso-text {
-  color: var(--text-secondary, #8B949E);
+  color: var(--text-secondary, #6B6B6B);
   font-size: var(--font-size-base, 18px);
 }
 
@@ -311,40 +473,53 @@
 }
 
 .cuestionario-card {
-  background: var(--surface-primary, #161B22);
+  background: var(--surface-primary, #FFFFFF);
   padding: var(--spacing-lg, 24px);
   border-radius: var(--radius-lg, 16px);
-  border: 1px solid var(--border-color, #30363D);
+  border: 1px solid var(--border-color, #E0E0E0);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .cuestionario-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cuestionario-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xs, 4px);
 }
 
 .cuestionario-card h3 {
-  margin-bottom: var(--spacing-xs, 4px);
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-lg, 20px);
 }
 
-.cuestionario-card p {
-  color: var(--text-muted, #8B949E);
+.cuestionario-nombre-completo {
+  color: var(--color-neuropsicologia, #6A1B9A);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
   margin-bottom: var(--spacing-sm, 8px);
-  font-size: var(--font-size-base, 18px);
+}
+
+.cuestionario-card p {
+  color: var(--text-muted, #6B6B6B);
+  margin-bottom: var(--spacing-sm, 8px);
+  font-size: var(--font-size-base, 16px);
 }
 
 .cuestionario-tiempo {
-  display: block;
-  font-size: var(--font-size-sm, 16px);
-  color: var(--color-neuropsicologia, #9C27B0);
-  margin-bottom: var(--spacing-md, 16px);
+  font-size: var(--font-size-sm, 14px);
+  color: var(--color-neuropsicologia, #6A1B9A);
   font-weight: 600;
+  white-space: nowrap;
 }
 
 .cuestionario-card .btn-primary {
-  background: var(--color-neuropsicologia, #9C27B0);
+  background: var(--color-neuropsicologia, #6A1B9A);
+  margin-top: var(--spacing-sm, 8px);
 }
 
 .historial-cuestionarios {
@@ -353,7 +528,7 @@
 
 .historial-cuestionarios h3 {
   margin-bottom: var(--spacing-md, 16px);
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-lg, 20px);
 }
 
@@ -362,31 +537,31 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-md, 16px);
-  background: var(--surface-primary, #161B22);
+  background: var(--surface-primary, #FFFFFF);
   border-radius: var(--radius-md, 12px);
   margin-bottom: var(--spacing-sm, 8px);
-  border: 1px solid var(--border-color, #30363D);
+  border: 1px solid var(--border-color, #E0E0E0);
 }
 
 .cuestionario-nombre {
   font-weight: 600;
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-base, 18px);
 }
 
 .cuestionario-fecha {
   font-size: var(--font-size-sm, 16px);
-  color: var(--text-muted, #8B949E);
+  color: var(--text-muted, #6B6B6B);
 }
 
 .cuestionario-resultado {
   font-size: var(--font-size-base, 18px);
-  color: var(--color-neuropsicologia, #9C27B0);
+  color: var(--color-neuropsicologia, #6A1B9A);
   font-weight: 700;
 }
 
 /* ========================================
-   Modal Emociones
+   Modal Base
    ======================================== */
 .modal-overlay {
   position: fixed;
@@ -394,7 +569,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -403,24 +578,18 @@
 }
 
 .modal-content {
-  background: var(--surface-primary, #161B22);
+  background: var(--surface-primary, #FFFFFF);
   border-radius: var(--radius-xl, 24px);
   padding: var(--spacing-xl, 32px);
   width: 100%;
   max-width: 480px;
   max-height: 90vh;
   overflow-y: auto;
-  border: 1px solid var(--border-color, #30363D);
-}
-
-.modal-title {
-  font-size: var(--font-size-xl, 24px);
-  color: var(--text-primary, #E6EDF3);
-  margin-bottom: var(--spacing-xs, 4px);
+  border: 1px solid var(--border-color, #E0E0E0);
 }
 
 .modal-subtitle {
-  color: var(--text-muted, #8B949E);
+  color: var(--text-muted, #6B6B6B);
   margin-bottom: var(--spacing-lg, 24px);
   font-size: var(--font-size-base, 18px);
 }
@@ -437,8 +606,8 @@
   flex-direction: column;
   align-items: center;
   padding: var(--spacing-md, 16px) var(--spacing-sm, 8px);
-  background: var(--surface-secondary, #21262D);
-  border: 2px solid var(--border-color, #30363D);
+  background: var(--surface-secondary, #F0F2ED);
+  border: 2px solid var(--border-color, #E0E0E0);
   border-radius: var(--radius-md, 12px);
   cursor: pointer;
   transition: all 0.2s;
@@ -447,12 +616,12 @@
 
 .emocion-btn:hover {
   border-color: var(--emocion-color, var(--color-neuropsicologia));
-  background: rgba(156, 39, 176, 0.1);
+  background: rgba(106, 27, 154, 0.05);
 }
 
 .emocion-btn.selected {
-  background: rgba(156, 39, 176, 0.2);
-  border-color: var(--color-neuropsicologia, #9C27B0);
+  background: rgba(106, 27, 154, 0.1);
+  border-color: var(--color-neuropsicologia, #6A1B9A);
 }
 
 .emocion-emoji {
@@ -462,43 +631,42 @@
 
 .emocion-nombre {
   font-size: var(--font-size-sm, 16px);
-  color: var(--text-secondary, #8B949E);
+  color: var(--text-secondary, #6B6B6B);
   font-weight: 500;
 }
 
 .emocion-btn.selected .emocion-nombre {
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
 }
 
-/* Notas Textarea */
-.notas-section {
+/* Form */
+.form-group {
   margin-bottom: var(--spacing-lg, 24px);
 }
 
-.notas-section label {
+.form-group label {
   display: block;
   margin-bottom: var(--spacing-sm, 8px);
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-weight: 600;
   font-size: var(--font-size-base, 18px);
 }
 
-.notas-section textarea {
+.form-control {
   width: 100%;
-  min-height: 120px;
   padding: var(--spacing-md, 16px);
-  background: var(--surface-secondary, #21262D);
-  border: 2px solid var(--border-color, #30363D);
+  background: var(--surface-secondary, #F0F2ED);
+  border: 2px solid var(--border-color, #E0E0E0);
   border-radius: var(--radius-md, 12px);
-  color: var(--text-primary, #E6EDF3);
+  color: var(--text-primary, #1A1A1A);
   font-size: var(--font-size-base, 18px);
   font-family: inherit;
   resize: vertical;
 }
 
-.notas-section textarea:focus {
+.form-control:focus {
   outline: none;
-  border-color: var(--color-neuropsicologia, #9C27B0);
+  border-color: var(--color-neuropsicologia, #6A1B9A);
 }
 
 /* Modal Actions */
@@ -513,15 +681,487 @@
   font-size: var(--font-size-lg, 20px);
 }
 
+/* Buttons */
+.btn {
+  padding: var(--spacing-sm, 8px) var(--spacing-lg, 24px);
+  border-radius: var(--radius-md, 12px);
+  border: none;
+  font-size: var(--font-size-base, 18px);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: var(--touch-target-min, 48px);
+}
+
 .btn-secondary {
-  background: var(--surface-secondary, #21262D);
-  color: var(--text-primary, #E6EDF3);
-  border: 1px solid var(--border-color, #30363D);
+  background: var(--surface-secondary, #F0F2ED);
+  color: var(--text-primary, #1A1A1A);
+  border: 1px solid var(--border-color, #E0E0E0);
 }
 
 .btn-primary {
-  background: var(--color-neuropsicologia, #9C27B0);
+  background: var(--color-neuropsicologia, #6A1B9A);
   color: white;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-block {
+  width: 100%;
+  display: block;
+}
+
+.btn-lg {
+  padding: var(--spacing-md, 16px);
+  font-size: var(--font-size-lg, 20px);
+}
+
+/* ========================================
+   Cuestionario Activo Modal
+   ======================================== */
+.cuestionario-activo-modal {
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-xl, 24px);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #E0E0E0);
+  display: flex;
+  flex-direction: column;
+}
+
+.ca-header {
+  padding: var(--spacing-lg, 24px);
+  text-align: center;
+  position: relative;
+}
+
+.ca-header h2 {
+  color: var(--color-neuropsicologia, #6A1B9A);
+  font-size: var(--font-size-xl, 24px);
+}
+
+.ca-fase-label {
+  display: inline-block;
+  margin-top: var(--spacing-xs, 4px);
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: rgba(106, 27, 154, 0.08);
+  color: var(--color-neuropsicologia, #6A1B9A);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
+}
+
+.ca-close {
+  position: absolute;
+  top: var(--spacing-md, 16px);
+  right: var(--spacing-md, 16px);
+  background: var(--surface-secondary, #F0F2ED);
+  border: none;
+  color: var(--text-secondary, #6B6B6B);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ca-close:hover {
+  background: var(--border-color, #E0E0E0);
+  color: var(--text-primary, #1A1A1A);
+}
+
+/* Barra de progreso */
+.ca-progreso {
+  padding: 0 var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.ca-progreso-bar {
+  height: 4px;
+  background: var(--color-neuropsicologia, #6A1B9A);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.ca-progreso-text {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-muted, #6B6B6B);
+}
+
+/* Pregunta */
+.ca-pregunta {
+  padding: 0 var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.ca-pregunta-texto {
+  font-size: var(--font-size-lg, 20px);
+  color: var(--text-primary, #1A1A1A);
+  line-height: 1.5;
+  white-space: pre-line;
+}
+
+.ca-instrucciones {
+  margin-top: var(--spacing-sm, 8px);
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-muted, #6B6B6B);
+  font-style: italic;
+}
+
+/* Escala Likert */
+.ca-escala {
+  padding: 0 var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.ca-escala-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm, 8px);
+  font-size: var(--font-size-sm, 13px);
+  color: var(--text-muted, #6B6B6B);
+}
+
+.ca-escala-botones {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ca-escala-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color, #E0E0E0);
+  background: var(--surface-secondary, #F0F2ED);
+  color: var(--text-secondary, #6B6B6B);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ca-escala-btn:hover {
+  border-color: var(--color-neuropsicologia, #6A1B9A);
+  color: var(--text-primary, #1A1A1A);
+}
+
+.ca-escala-btn.selected {
+  background: var(--color-neuropsicologia, #6A1B9A);
+  border-color: var(--color-neuropsicologia, #6A1B9A);
+  color: white;
+  transform: scale(1.1);
+}
+
+.ca-escala-descripcion {
+  text-align: center;
+  margin-top: var(--spacing-sm, 8px);
+  font-size: var(--font-size-sm, 14px);
+  color: var(--color-neuropsicologia, #6A1B9A);
+  font-weight: 600;
+}
+
+/* Navegacion */
+.ca-nav {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-lg, 24px);
+}
+
+.ca-nav .btn {
+  flex: 1;
+  min-height: var(--touch-target-comfortable, 52px);
+}
+
+/* ========================================
+   Resultado Modal
+   ======================================== */
+.resultado-modal {
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-xl, 24px);
+  padding: var(--spacing-xl, 32px);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #E0E0E0);
+  text-align: center;
+  position: relative;
+}
+
+.resultado-modal h2 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-xl, 24px);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.resultado-nombre-completo {
+  color: var(--text-muted, #6B6B6B);
+  font-size: var(--font-size-sm, 14px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.resultado-score {
+  margin: var(--spacing-lg, 24px) auto;
+}
+
+.score-circulo {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 4px solid var(--score-color, #6A1B9A);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  background: rgba(106, 27, 154, 0.05);
+}
+
+.score-numero {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--score-color, #6A1B9A);
+  line-height: 1;
+}
+
+.score-label {
+  font-size: 11px;
+  color: var(--text-muted, #6B6B6B);
+  margin-top: 2px;
+}
+
+.resultado-nivel {
+  font-size: var(--font-size-lg, 20px);
+  font-weight: 700;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.resultado-interpretacion {
+  background: var(--surface-secondary, #F0F2ED);
+  padding: var(--spacing-md, 16px);
+  border-radius: var(--radius-md, 12px);
+  margin-bottom: var(--spacing-md, 16px);
+  text-align: left;
+}
+
+.resultado-interpretacion p {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 16px);
+  line-height: 1.5;
+}
+
+.resultado-nota {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: rgba(106, 27, 154, 0.05);
+  border-radius: var(--radius-md, 12px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.resultado-nota p {
+  color: var(--text-muted, #6B6B6B);
+  font-size: var(--font-size-sm, 14px);
+  font-style: italic;
+  text-align: left;
+}
+
+/* VLQ Desglose */
+.vlq-desglose {
+  text-align: left;
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.vlq-desglose h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.vlq-tabla {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.vlq-tabla-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px);
+  background: var(--surface-secondary, #F0F2ED);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-muted, #6B6B6B);
+  text-transform: uppercase;
+}
+
+.vlq-tabla-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px);
+  border-bottom: 1px solid var(--border-color, #E0E0E0);
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-primary, #1A1A1A);
+  align-items: center;
+}
+
+.vlq-tabla-row.problema {
+  background: rgba(198, 40, 40, 0.05);
+  border-left: 3px solid #C62828;
+}
+
+.vlq-area-nombre {
+  font-weight: 600;
+}
+
+.vlq-compuesta {
+  font-weight: 700;
+  color: var(--color-neuropsicologia, #6A1B9A);
+}
+
+.vlq-problemas {
+  margin-top: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: rgba(198, 40, 40, 0.05);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid rgba(198, 40, 40, 0.2);
+}
+
+.vlq-problemas h4 {
+  color: #C62828;
+  font-size: var(--font-size-base, 16px);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.vlq-problemas p {
+  color: var(--text-muted, #6B6B6B);
+  font-size: var(--font-size-sm, 14px);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.vlq-problemas ul {
+  list-style: none;
+  padding: 0;
+}
+
+.vlq-problemas li {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-sm, 14px);
+  padding: 4px 0;
+}
+
+/* ========================================
+   ACT Ejercicio Modal
+   ======================================== */
+.act-ejercicio-modal {
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-xl, 24px);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border-color, #E0E0E0);
+  display: flex;
+  flex-direction: column;
+}
+
+.act-header {
+  padding: var(--spacing-lg, 24px);
+  text-align: center;
+  position: relative;
+  background: linear-gradient(135deg, rgba(106, 27, 154, 0.06), transparent);
+  border-radius: var(--radius-xl, 24px) var(--radius-xl, 24px) 0 0;
+}
+
+.act-header .act-cat-emoji {
+  font-size: 2.5rem;
+  display: block;
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.act-header h2 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-xl, 24px);
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.act-cat-nombre {
+  color: var(--cat-color, #6A1B9A);
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
+}
+
+.act-paso-contenido {
+  padding: var(--spacing-lg, 24px);
+  flex: 1;
+}
+
+.act-paso-texto {
+  font-size: var(--font-size-lg, 20px);
+  color: var(--text-primary, #1A1A1A);
+  line-height: 1.6;
+  white-space: pre-line;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.act-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-secondary, #F0F2ED);
+  border: 2px solid var(--border-color, #E0E0E0);
+  border-radius: var(--radius-md, 12px);
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 16px);
+  font-family: inherit;
+  resize: vertical;
+}
+
+.act-textarea:focus {
+  outline: none;
+  border-color: var(--cat-color, #6A1B9A);
+}
+
+.act-input {
+  width: 100%;
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-secondary, #F0F2ED);
+  border: 2px solid var(--border-color, #E0E0E0);
+  border-radius: var(--radius-md, 12px);
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 16px);
+  font-family: inherit;
+}
+
+.act-input:focus {
+  outline: none;
+  border-color: var(--cat-color, #6A1B9A);
+}
+
+.act-tres-campos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
 }
 
 /* ========================================
@@ -532,12 +1172,81 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .ejercicios-grid {
+  .act-categorias-grid {
     grid-template-columns: 1fr;
   }
 
   .stats-grid {
     grid-template-columns: 1fr;
+  }
+
+  .act-herramienta-card {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .act-h-meta {
+    justify-content: center;
+  }
+
+  .ca-escala-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 14px;
+  }
+
+  .vlq-tabla-header,
+  .vlq-tabla-row {
+    font-size: 11px;
+    gap: 4px;
+  }
+
+  /* Modales fullscreen en movil */
+  .cuestionario-activo-modal,
+  .resultado-modal,
+  .act-ejercicio-modal {
+    max-width: 100%;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .modal-overlay {
+    padding: 0;
+  }
+
+  .ca-pregunta-texto {
+    font-size: var(--font-size-base, 16px);
+  }
+
+  .act-paso-texto {
+    font-size: var(--font-size-base, 16px);
+  }
+
+  .ca-nav {
+    padding: var(--spacing-md, 16px);
+  }
+
+  .score-circulo {
+    width: 100px;
+    height: 100px;
+  }
+
+  .score-numero {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 380px) {
+  .ca-escala-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .ca-escala-botones {
+    gap: 4px;
   }
 }
 
@@ -547,16 +1256,826 @@
     margin: 0 auto;
   }
 
-  .ejercicios-grid {
+  .act-categorias-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
 
+/* ========================================
+   Perfil Neuropsicologico (Semaforo)
+   ======================================== */
+.perfil-section {
+  padding-bottom: var(--spacing-lg, 24px);
+}
+
+/* Leyenda del semaforo */
+.semaforo-leyenda {
+  display: flex;
+  gap: var(--spacing-lg, 24px);
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  margin-bottom: var(--spacing-lg, 24px);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.leyenda-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+}
+
+.leyenda-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.leyenda-texto {
+  font-size: var(--font-size-sm, 16px);
+  color: var(--text-secondary, #6B6B6B);
+  font-weight: 500;
+}
+
+/* Info de evaluacion */
+.eval-info-card {
+  background: var(--surface-primary, #FFFFFF);
+  padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.eval-info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--spacing-sm, 8px) 0;
+  gap: var(--spacing-md, 16px);
+}
+
+.eval-info-row + .eval-info-row {
+  border-top: 1px solid var(--border-color, #E0E0E0);
+}
+
+.eval-info-label {
+  font-size: var(--font-size-sm, 16px);
+  color: var(--text-muted, #6B6B6B);
+  white-space: nowrap;
+}
+
+.eval-info-value {
+  font-size: var(--font-size-base, 18px);
+  color: var(--text-primary, #1A1A1A);
+  font-weight: 600;
+  text-align: right;
+}
+
+/* Chart container */
+.perfil-chart-container {
+  background: var(--surface-primary, #FFFFFF);
+  padding: var(--spacing-lg, 24px);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.perfil-chart-container h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.perfil-chart-wrapper {
+  height: 500px;
+  min-height: 400px;
+}
+
+/* Tabla de detalle */
+.perfil-tabla-container {
+  background: var(--surface-primary, #FFFFFF);
+  padding: var(--spacing-lg, 24px);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.perfil-tabla-container h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.perfil-tabla-header {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-secondary, #F0F2ED);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-muted, #6B6B6B);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.perfil-tabla-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color, #E0E0E0);
+  align-items: center;
+}
+
+.perfil-func-nombre {
+  font-size: var(--font-size-base, 16px);
+  color: var(--text-primary, #1A1A1A);
+  font-weight: 500;
+}
+
+.perfil-func-puntaje {
+  font-size: var(--font-size-lg, 20px);
+  font-weight: 700;
+  text-align: center;
+}
+
+.perfil-func-nivel {
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* Resumen por categoria */
+.perfil-resumen {
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.perfil-resumen h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.perfil-resumen-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--spacing-md, 16px);
+}
+
+.perfil-resumen-card {
+  background: var(--surface-primary, #FFFFFF);
+  padding: var(--spacing-lg, 24px) var(--spacing-md, 16px);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  text-align: center;
+  border-top: 3px solid var(--nivel-color, #6A1B9A);
+}
+
+.resumen-count {
+  display: block;
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary, #1A1A1A);
+  line-height: 1;
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.resumen-nivel {
+  font-size: var(--font-size-sm, 16px);
+  font-weight: 600;
+}
+
+/* Empty state icon */
+.empty-state .empty-icon {
+  font-size: 4rem;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+/* Historial evaluaciones */
+.historial-evaluaciones {
+  margin-top: var(--spacing-lg, 24px);
+}
+
+.historial-evaluaciones h3 {
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-lg, 20px);
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.eval-historial-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.eval-hist-fecha {
+  font-weight: 600;
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 16px);
+}
+
+.eval-hist-especialista {
+  color: var(--text-muted, #6B6B6B);
+  font-size: var(--font-size-sm, 14px);
+}
+
+/* Boton nueva evaluacion */
+.eval-nueva-btn {
+  margin-top: var(--spacing-lg, 24px);
+}
+
+/* Modal de evaluacion */
+.eval-modal {
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.eval-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  margin-bottom: var(--spacing-lg, 24px);
+}
+
+.eval-form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eval-form-item label {
+  font-size: var(--font-size-sm, 14px);
+  color: var(--text-secondary, #6B6B6B);
+  font-weight: 500;
+}
+
+.eval-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.eval-input {
+  width: 100%;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  padding-right: 32px;
+  background: var(--surface-secondary, #F0F2ED);
+  border: 2px solid var(--border-color, #E0E0E0);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text-primary, #1A1A1A);
+  font-size: var(--font-size-base, 18px);
+  font-family: inherit;
+  min-height: var(--touch-target-min, 48px);
+  -moz-appearance: textfield;
+}
+
+.eval-input::-webkit-inner-spin-button,
+.eval-input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.eval-input:focus {
+  outline: none;
+  border-color: var(--color-neuropsicologia, #6A1B9A);
+}
+
+.eval-input-indicator {
+  position: absolute;
+  right: 10px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Responsive para perfil */
+@media (max-width: 600px) {
+  .perfil-chart-wrapper {
+    height: 450px;
+  }
+
+  .semaforo-leyenda {
+    gap: var(--spacing-md, 16px);
+  }
+
+  .perfil-resumen-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-sm, 8px);
+  }
+
+  .resumen-count {
+    font-size: 2rem;
+  }
+
+  .perfil-tabla-header,
+  .perfil-tabla-row {
+    font-size: 13px;
+    gap: 4px;
+    padding: var(--spacing-sm, 8px);
+  }
+
+  .eval-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .eval-modal {
+    max-width: 100%;
+    border-radius: 0;
+  }
+}
+
+/* ========================================
+   MODO OSCURO
+   ======================================== */
+[data-theme="dark"] .neuropsicologia-page {
+  background: var(--background-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .neuropsicologia-page .tab {
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .neuropsicologia-page .tab:hover {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .neuropsicologia-page .tab.active {
+  color: white;
+}
+
+[data-theme="dark"] .stats-animo {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .stats-animo h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .stat-card {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .stat-card .stat-label {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .stat-card .stat-value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .animo-chart-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .animo-chart-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .historial-animo h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .estado-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .estado-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .estado-fecha {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .estado-notas {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .intro-text {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .act-categoria-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .act-categoria-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .act-categoria-card p {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .btn-back {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-back:hover {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-categoria-header {
+  background: linear-gradient(135deg, rgba(106, 27, 154, 0.15), transparent);
+}
+
+[data-theme="dark"] .act-categoria-header p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .act-herramienta-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .act-h-info h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-h-info p {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .act-h-tag {
+  background: rgba(106, 27, 154, 0.15);
+}
+
+[data-theme="dark"] .historial-act {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .historial-act h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-sesion-item {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .act-sesion-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-sesion-fecha {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .recursos-adicionales {
+  background: rgba(106, 27, 154, 0.1);
+  border-color: rgba(106, 27, 154, 0.3);
+}
+
+[data-theme="dark"] .recurso-text {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .cuestionario-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .cuestionario-card:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .cuestionario-card h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .cuestionario-card p {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .historial-cuestionarios h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .cuestionario-completado {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .cuestionario-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .cuestionario-fecha {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .modal-content {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .modal-subtitle {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .emocion-btn {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .emocion-btn:hover {
+  background: rgba(106, 27, 154, 0.1);
+}
+
+[data-theme="dark"] .emocion-btn.selected {
+  background: rgba(106, 27, 154, 0.2);
+}
+
+[data-theme="dark"] .emocion-nombre {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .emocion-btn.selected .emocion-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-group label {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .form-control {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .btn-secondary {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .cuestionario-activo-modal {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .ca-close {
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .ca-close:hover {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ca-progreso-text {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .ca-pregunta-texto {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ca-instrucciones {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .ca-escala-labels {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .ca-escala-btn {
+  border-color: var(--border-color);
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .ca-escala-btn:hover {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .ca-escala-btn.selected {
+  color: white;
+}
+
+[data-theme="dark"] .resultado-modal {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .resultado-modal h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .resultado-nombre-completo {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .score-circulo {
+  background: rgba(106, 27, 154, 0.1);
+}
+
+[data-theme="dark"] .score-label {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .resultado-interpretacion {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .resultado-interpretacion p {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .resultado-nota {
+  background: rgba(106, 27, 154, 0.1);
+}
+
+[data-theme="dark"] .resultado-nota p {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .vlq-desglose h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .vlq-tabla-header {
+  background: var(--surface-secondary);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .vlq-tabla-row {
+  border-bottom-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .vlq-tabla-row.problema {
+  background: rgba(198, 40, 40, 0.1);
+}
+
+[data-theme="dark"] .vlq-problemas {
+  background: rgba(198, 40, 40, 0.1);
+  border-color: rgba(198, 40, 40, 0.3);
+}
+
+[data-theme="dark"] .vlq-problemas p {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .vlq-problemas li {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-ejercicio-modal {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .act-header {
+  background: linear-gradient(135deg, rgba(106, 27, 154, 0.12), transparent);
+}
+
+[data-theme="dark"] .act-header h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-paso-texto {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-textarea {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .act-input {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Perfil Neuropsicologico - Dark */
+[data-theme="dark"] .semaforo-leyenda {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .leyenda-texto {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .eval-info-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .eval-info-row + .eval-info-row {
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .eval-info-label {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .eval-info-value {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .perfil-chart-container {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .perfil-chart-container h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .perfil-tabla-container {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .perfil-tabla-container h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .perfil-tabla-header {
+  background: var(--surface-secondary);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .perfil-tabla-row {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .perfil-func-nombre {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .perfil-resumen h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .perfil-resumen-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .resumen-count {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .historial-evaluaciones h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .eval-historial-item {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .eval-hist-fecha {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .eval-hist-especialista {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .eval-input {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .eval-form-item label {
+  color: var(--text-secondary);
+}
+
 /* Preferencia de movimiento reducido */
 @media (prefers-reduced-motion: reduce) {
-  .ejercicio-card-np,
+  .act-categoria-card,
   .cuestionario-card,
-  .emocion-btn {
+  .emocion-btn,
+  .ca-escala-btn,
+  .ca-progreso-bar {
     transition: none;
   }
 }

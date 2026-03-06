@@ -1,0 +1,373 @@
+/* ========================================
+   VistaPlan - Vista tipo documento PDF
+   ======================================== */
+
+.vista-plan {
+  max-width: 900px;
+  margin: 0 auto;
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #E0E0E0);
+  overflow: hidden;
+}
+
+/* ========================================
+   Header
+   ======================================== */
+.vp-header {
+  background: linear-gradient(135deg, #2E7D32 0%, #4CAF50 50%, #66BB6A 100%);
+  color: white;
+  padding: var(--spacing-xl, 32px);
+}
+
+.vp-titulo {
+  margin: 0 0 var(--spacing-xs, 4px);
+  font-size: var(--font-size-2xl, 28px);
+  font-weight: 700;
+}
+
+.vp-descripcion {
+  margin: 0 0 var(--spacing-sm, 8px);
+  opacity: 0.9;
+  font-size: var(--font-size-base, 18px);
+  line-height: 1.4;
+}
+
+.vp-especialista,
+.vp-fecha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 4px 0 0;
+  opacity: 0.85;
+  font-size: var(--font-size-sm, 14px);
+}
+
+/* Macros totales */
+.vp-macros-totales {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-sm, 8px);
+  margin-top: var(--spacing-lg, 24px);
+}
+
+.vp-macro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--spacing-sm, 8px) var(--spacing-xs, 4px);
+  border-radius: var(--radius-md, 12px);
+  background: rgba(255, 255, 255, 0.15);
+  text-align: center;
+}
+
+.vp-macro-value {
+  font-size: var(--font-size-xl, 24px);
+  font-weight: 700;
+}
+
+.vp-macro-label {
+  font-size: 12px;
+  opacity: 0.85;
+}
+
+/* ========================================
+   Indicaciones Generales
+   ======================================== */
+.vp-indicaciones {
+  padding: var(--spacing-lg, 24px);
+  background: #E8F5E9;
+  border-bottom: 1px solid var(--border-color, #E0E0E0);
+}
+
+[data-theme="dark"] .vp-indicaciones {
+  background: rgba(46, 125, 50, 0.1);
+}
+
+.vp-indicaciones-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  color: #2E7D32;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+[data-theme="dark"] .vp-indicaciones-header {
+  color: #66BB6A;
+}
+
+.vp-indicaciones-header h3 {
+  margin: 0;
+  font-size: var(--font-size-lg, 20px);
+}
+
+.vp-indicaciones-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.vp-indicaciones-list li {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  padding: 6px 0;
+  font-size: var(--font-size-base, 18px);
+  color: var(--text-primary, #1A1A1A);
+  line-height: 1.4;
+}
+
+.vp-bullet {
+  color: #4CAF50;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ========================================
+   Secciones de comidas
+   ======================================== */
+.vp-comidas {
+  padding: var(--spacing-lg, 24px);
+}
+
+.vp-comida-section {
+  margin-bottom: var(--spacing-xl, 32px);
+  border-radius: var(--radius-lg, 16px);
+  overflow: hidden;
+  border: 1px solid var(--border-color, #E0E0E0);
+}
+
+.vp-comida-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Header de tipo de comida con color */
+.vp-comida-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
+  color: white;
+  font-weight: 600;
+}
+
+.vp-comida-header h3 {
+  margin: 0;
+  flex: 1;
+  font-size: var(--font-size-lg, 20px);
+}
+
+.vp-opciones-count {
+  font-size: var(--font-size-sm, 14px);
+  opacity: 0.8;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: var(--radius-full, 50px);
+}
+
+/* ========================================
+   Tarjeta de receta
+   ======================================== */
+.vp-opciones {
+  padding: var(--spacing-md, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+  background: var(--surface-primary, #FFFFFF);
+}
+
+.vp-receta-card {
+  position: relative;
+  background: var(--surface-secondary, #F0F2ED);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+}
+
+[data-theme="dark"] .vp-receta-card {
+  background: var(--surface-tertiary, #30363D);
+}
+
+.vp-opcion-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 0 0 var(--radius-sm, 8px) 0;
+}
+
+.vp-receta-content {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+}
+
+/* Imagen de la receta */
+.vp-receta-img {
+  flex-shrink: 0;
+  width: 140px;
+  height: 140px;
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+}
+
+.vp-receta-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Info de la receta */
+.vp-receta-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vp-receta-nombre {
+  margin: 0 0 var(--spacing-xs, 4px);
+  font-size: var(--font-size-lg, 20px);
+  color: var(--text-primary, #1A1A1A);
+  font-weight: 600;
+}
+
+.vp-receta-desc {
+  margin: 0 0 var(--spacing-sm, 8px);
+  font-size: var(--font-size-base, 18px);
+  color: var(--text-secondary, #666);
+  line-height: 1.4;
+}
+
+/* Macros de la receta */
+.vp-receta-macros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.vp-macro-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 10px;
+  border-radius: var(--radius-full, 50px);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.vp-macro-badge.cal { background: #FFF3E0; color: #E65100; }
+.vp-macro-badge.prot { background: #FCE4EC; color: #C62828; }
+.vp-macro-badge.carb { background: #FFF8E1; color: #F57F17; }
+.vp-macro-badge.fat { background: #E3F2FD; color: #1565C0; }
+
+[data-theme="dark"] .vp-macro-badge.cal { background: rgba(230, 81, 0, 0.15); }
+[data-theme="dark"] .vp-macro-badge.prot { background: rgba(198, 40, 40, 0.15); }
+[data-theme="dark"] .vp-macro-badge.carb { background: rgba(245, 127, 23, 0.15); }
+[data-theme="dark"] .vp-macro-badge.fat { background: rgba(21, 101, 192, 0.15); }
+
+/* Ingredientes e instrucciones toggle */
+.vp-ingredientes-toggle,
+.vp-instrucciones-toggle {
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.vp-ingredientes-toggle summary,
+.vp-instrucciones-toggle summary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  font-size: var(--font-size-sm, 14px);
+  font-weight: 600;
+  color: #4CAF50;
+  padding: 6px 0;
+}
+
+.vp-ingredientes-toggle summary:hover,
+.vp-instrucciones-toggle summary:hover {
+  color: #2E7D32;
+}
+
+.vp-ingredientes-list {
+  list-style: disc;
+  padding-left: 20px;
+  margin: var(--spacing-sm, 8px) 0 0;
+}
+
+.vp-ingredientes-list li {
+  padding: 3px 0;
+  font-size: var(--font-size-base, 18px);
+  color: var(--text-primary, #1A1A1A);
+}
+
+.vp-instrucciones-list {
+  padding-left: 20px;
+  margin: var(--spacing-sm, 8px) 0 0;
+}
+
+.vp-instrucciones-list li {
+  padding: 4px 0;
+  font-size: var(--font-size-base, 18px);
+  color: var(--text-primary, #1A1A1A);
+  line-height: 1.5;
+}
+
+/* ========================================
+   Empty state
+   ======================================== */
+.vp-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted, #9E9E9E);
+}
+
+.vp-empty p {
+  margin-top: var(--spacing-md, 16px);
+  font-size: var(--font-size-base, 18px);
+}
+
+/* ========================================
+   Compact mode (for wizard preview)
+   ======================================== */
+.vista-plan--compact .vp-header {
+  padding: var(--spacing-md, 16px);
+}
+
+.vista-plan--compact .vp-titulo {
+  font-size: var(--font-size-xl, 24px);
+}
+
+.vista-plan--compact .vp-comidas {
+  padding: var(--spacing-md, 16px);
+}
+
+.vista-plan--compact .vp-receta-img {
+  width: 100px;
+  height: 100px;
+}
+
+/* ========================================
+   Responsive
+   ======================================== */
+@media (max-width: 600px) {
+  .vp-header {
+    padding: var(--spacing-lg, 24px) var(--spacing-md, 16px);
+  }
+
+  .vp-macros-totales {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vp-receta-content {
+    flex-direction: column;
+  }
+
+  .vp-receta-img {
+    width: 100%;
+    height: 180px;
+  }
+
+  .vp-comidas {
+    padding: var(--spacing-md, 16px);
+  }
+}

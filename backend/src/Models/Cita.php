@@ -97,41 +97,45 @@ class Cita {
     }
 
     public static function create($data) {
-        error_log("=== INICIO Cita::create() ===");
-        error_log("Datos recibidos en modelo: " . json_encode($data));
-
         $db = DatabaseService::getInstance();
 
         // Obtener paciente_id desde usuario_id si es necesario
         $pacienteId = $data['paciente_id'];
-        error_log("paciente_id inicial: $pacienteId");
 
-        // Verificar si es usuario_id y necesitamos convertir a paciente_id
         $paciente = $db->query(
             "SELECT id FROM pacientes WHERE usuario_id = ?",
             [$pacienteId]
         )->fetch();
 
         if ($paciente) {
-            error_log("Encontrado paciente con id: {$paciente['id']} para usuario_id: $pacienteId");
             $pacienteId = $paciente['id'];
-        } else {
-            error_log("No se encontró paciente para usuario_id: $pacienteId, usando valor original");
         }
 
         $horaInicio = $data['hora'] ?? $data['hora_inicio'];
         $horaFin = date('H:i:s', strtotime($horaInicio . ' +1 hour'));
 
-        error_log("Hora inicio: $horaInicio, Hora fin: $horaFin");
-        error_log("Datos para INSERT: paciente_id=$pacienteId, especialista_id={$data['especialista_id']}, fecha={$data['fecha']}, hora_inicio=$horaInicio, hora_fin=$horaFin, motivo=" . ($data['motivo'] ?? 'null'));
+        // Obtener area_medica_id del especialista
+        $areaMedicaId = $data['area_medica_id'] ?? null;
+        if (!$areaMedicaId) {
+            $esp = $db->query(
+                "SELECT area_medica_id FROM usuarios WHERE id = ?",
+                [$data['especialista_id']]
+            )->fetch();
+            $areaMedicaId = $esp['area_medica_id'] ?? 1;
+        }
+
+        // Resolver tipo_cita_id (default: seguimiento = 2)
+        $tipoCitaId = $data['tipo_cita_id'] ?? 2;
 
         try {
             $db->query(
-                "INSERT INTO citas (paciente_id, especialista_id, fecha, hora_inicio, hora_fin, motivo, estado, created_at)
-                 VALUES (?, ?, ?, ?, ?, ?, 'programada', NOW())",
+                "INSERT INTO citas (paciente_id, especialista_id, area_medica_id, tipo_cita_id, fecha, hora_inicio, hora_fin, motivo, estado, created_at)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'programada', NOW())",
                 [
                     $pacienteId,
                     $data['especialista_id'],
+                    $areaMedicaId,
+                    $tipoCitaId,
                     $data['fecha'],
                     $horaInicio,
                     $horaFin,
@@ -139,15 +143,11 @@ class Cita {
                 ]
             );
 
-            $lastId = $db->lastInsertId();
-            error_log("=== CITA INSERTADA EN BD con ID: $lastId ===");
-
             return [
-                'id' => $lastId
+                'id' => $db->lastInsertId()
             ];
         } catch (\Exception $e) {
-            error_log("=== ERROR al insertar cita en BD ===");
-            error_log("Error: " . $e->getMessage());
+            error_log("Error al insertar cita: " . $e->getMessage());
             throw $e;
         }
     }

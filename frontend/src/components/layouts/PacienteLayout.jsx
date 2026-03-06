@@ -1,5 +1,6 @@
 import React from 'react';
 import BaseLayout from './BaseLayout';
+import LucideIcon from '../LucideIcon';
 import VoiceHelper from '../VoiceHelper';
 
 /**
@@ -8,27 +9,27 @@ import VoiceHelper from '../VoiceHelper';
  */
 
 const PACIENTE_NAV_ITEMS = [
-  { path: '/', icon: '🏠', label: 'Inicio' },
-  { path: '/citas', icon: '📅', label: 'Citas' },
-  { path: '/recordatorios', icon: '⏰', label: 'Recordatorios' },
-  { path: '/chat', icon: '💬', label: 'Mensajes' },
-  { path: '/perfil', icon: '👤', label: 'Mi Perfil' },
+  { path: '/', icon: 'home', label: 'Inicio' },
+  { path: '/citas', icon: 'calendar', label: 'Citas' },
+  { path: '/recordatorios', icon: 'alarm-clock', label: 'Recordatorios' },
+  { path: '/chat', icon: 'message', label: 'Mensajes' },
+  { path: '/perfil', icon: 'user', label: 'Mi Perfil' },
 ];
 
 // Módulos de salud para navegación expandida
 const HEALTH_MODULES = [
-  { path: '/nutricion', icon: '🥗', label: 'Nutrición', color: 'var(--color-nutricion)' },
-  { path: '/medicina', icon: '💊', label: 'Medicina', color: 'var(--color-medicina)' },
-  { path: '/fisioterapia', icon: '🏃', label: 'Fisioterapia', color: 'var(--color-fisioterapia)' },
-  { path: '/neuropsicologia', icon: '🧠', label: 'Neuropsicología', color: 'var(--color-neuropsicologia)' },
-  { path: '/ortesis', icon: '🦿', label: 'Prótesis', color: 'var(--color-ortesis)' },
+  { path: '/nutricion', icon: 'salad', label: 'Nutrición', color: 'var(--color-nutricion)' },
+  { path: '/medicina', icon: 'pill', label: 'Medicina', color: 'var(--color-medicina)' },
+  { path: '/fisioterapia', icon: 'dumbbell', label: 'Fisioterapia', color: 'var(--color-fisioterapia)' },
+  { path: '/neuropsicologia', icon: 'brain', label: 'Neuropsicología', color: 'var(--color-neuropsicologia)' },
+  { path: '/ortesis', icon: 'accessibility', label: 'Prótesis', color: 'var(--color-ortesis)' },
 ];
 
 const SECONDARY_NAV = [
-  { path: '/comunidad', icon: '👥', label: 'Comunidad' },
-  { path: '/blog', icon: '📚', label: 'Artículos' },
-  { path: '/faqs', icon: '❓', label: 'Ayuda' },
-  { path: '/configuracion', icon: '⚙️', label: 'Ajustes' },
+  { path: '/comunidad', icon: 'users', label: 'Comunidad' },
+  { path: '/blog', icon: 'book-open', label: 'Artículos' },
+  { path: '/faqs', icon: 'circle-help', label: 'Ayuda' },
+  { path: '/configuracion', icon: 'settings', label: 'Ajustes' },
 ];
 
 const PacienteLayout = ({
@@ -73,7 +74,7 @@ const PacienteLayout = ({
                 className="health-module-link"
                 style={{ '--module-color': module.color }}
               >
-                <span className="module-icon" aria-hidden="true">{module.icon}</span>
+                <span className="module-icon" aria-hidden="true"><LucideIcon name={module.icon} size={20} /></span>
                 <span className="module-label">{module.label}</span>
               </a>
             ))}
@@ -87,7 +88,7 @@ const PacienteLayout = ({
         <nav aria-label="Opciones adicionales">
           {SECONDARY_NAV.map((item, index) => (
             <a key={item.path || index} href={item.path} className="secondary-nav-link">
-              <span className="nav-icon" aria-hidden="true">{item.icon}</span>
+              <span className="nav-icon" aria-hidden="true"><LucideIcon name={item.icon} size={20} /></span>
               <span className="nav-label">{item.label}</span>
             </a>
           ))}

@@ -1,34 +1,53 @@
 <?php
 
-// Autoload manual (sin Composer)
-spl_autoload_register(function ($class) {
-    // Convertir namespace a ruta de archivo
-    $prefix = 'App\\';
-    $baseDir = __DIR__ . '/../src/';
+// Detectar directorio base del proyecto
+// En desarrollo: index.php esta en backend/public/, src/ y config/ estan en backend/
+// En produccion: index.php, src/ y config/ estan todos en ~/public_html/api/
+if (is_dir(__DIR__ . '/../src') && file_exists(__DIR__ . '/../config/constants.php')) {
+    $projectRoot = realpath(__DIR__ . '/..');
+} else {
+    $projectRoot = __DIR__;
+}
 
-    $len = strlen($prefix);
-    if (strncmp($prefix, $class, $len) !== 0) {
-        return;
-    }
+// Autoload: Composer si existe, sino manual
+$composerAutoload = $projectRoot . '/vendor/autoload.php';
+if (file_exists($composerAutoload)) {
+    require_once $composerAutoload;
+} else {
+    // Autoload manual (fallback sin Composer)
+    spl_autoload_register(function ($class) use ($projectRoot) {
+        $prefix = 'App\\';
+        $baseDir = $projectRoot . '/src/';
 
-    $relativeClass = substr($class, $len);
-    $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
+        $len = strlen($prefix);
+        if (strncmp($prefix, $class, $len) !== 0) {
+            return;
+        }
 
-    if (file_exists($file)) {
-        require $file;
-    }
-});
+        $relativeClass = substr($class, $len);
+        $file = $baseDir . str_replace('\\', '/', $relativeClass) . '.php';
 
-// Cargar configuración
-require_once __DIR__ . '/../config/constants.php';
+        if (file_exists($file)) {
+            require $file;
+        }
+    });
+}
+
+// Cargar configuracion
+require_once $projectRoot . '/config/constants.php';
 
 // Configurar logging a archivo personalizado
 ini_set('log_errors', 1);
-ini_set('error_log', __DIR__ . '/../storage/logs/error.log');
+$logDir = $projectRoot . '/storage/logs';
+if (!is_dir($logDir)) {
+    @mkdir($logDir, 0755, true);
+}
+ini_set('error_log', $logDir . '/error.log');
 
 // Cargar variables de entorno manualmente
-if (file_exists(__DIR__ . '/../.env')) {
-    $lines = file(__DIR__ . '/../.env', FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+$envFile = $projectRoot . '/.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         if (strpos($line, '#') === 0) continue;
         if (strpos($line, '=') !== false) {
@@ -39,26 +58,58 @@ if (file_exists(__DIR__ . '/../.env')) {
     }
 }
 
-// Configurar headers CORS
-header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+// Configurar headers CORS (whitelist de origenes permitidos)
+\App\Middleware\CorsMiddleware::handle();
 
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+// Proteccion CSRF para requests mutantes (POST/PUT/DELETE)
+\App\Middleware\CsrfMiddleware::handle();
+
+// Servir archivos estaticos de uploads/
+$requestUri = $_SERVER['REQUEST_URI'];
+$cleanUri = strtok($requestUri, '?');
+
+// Remover base path si existe (ej: /~azaria/api/)
+$basePaths = ['/~azaria/api', '/api'];
+$normalizedUri = $cleanUri;
+foreach ($basePaths as $bp) {
+    if (strpos($cleanUri, $bp) === 0) {
+        $normalizedUri = substr($cleanUri, strlen($bp));
+        break;
+    }
+}
+
+// Si la URI quedo vacia, usar /
+if ($normalizedUri === '' || $normalizedUri === false) {
+    $normalizedUri = '/';
+}
+
+if (preg_match('#^/uploads/.+\.(jpg|jpeg|png|gif|bmp|pdf|webp)$#i', $normalizedUri)) {
+    $filePath = $projectRoot . '/' . ltrim($normalizedUri, '/');
+    if (file_exists($filePath)) {
+        $ext = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+        $mimeTypes = [
+            'jpg' => 'image/jpeg', 'jpeg' => 'image/jpeg', 'png' => 'image/png',
+            'gif' => 'image/gif', 'bmp' => 'image/bmp', 'webp' => 'image/webp', 'pdf' => 'application/pdf'
+        ];
+        header('Content-Type: ' . ($mimeTypes[$ext] ?? 'application/octet-stream'));
+        header('Content-Length: ' . filesize($filePath));
+        header('Cache-Control: public, max-age=86400');
+        readfile($filePath);
+        exit;
+    }
 }
 
 // Router simple
-$requestUri = $_SERVER['REQUEST_URI'];
 $requestMethod = $_SERVER['REQUEST_METHOD'];
 
-// Remover query string
-$requestUri = strtok($requestUri, '?');
+// Usar la URI normalizada (sin prefijo /~azaria) para el routing
+// Las rutas en api.php usan /api/... asi que re-agregar /api
+$requestUri = '/api' . $normalizedUri;
 
 // Cargar rutas
-require_once __DIR__ . '/../src/Routes/api.php';
+require_once $projectRoot . '/src/Routes/api.php';
 
-// Si no se encontró ruta, 404
+// Si no se encontro ruta, 404
 http_response_code(404);
+header('Content-Type: application/json');
 echo json_encode(['success' => false, 'message' => 'Ruta no encontrada']);

@@ -1,0 +1,452 @@
+.evaluaciones-fisicas .module-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.evaluaciones-fisicas .module-header .btn-primary {
+  margin-left: auto;
+}
+
+/* Lista de evaluaciones */
+.evaluaciones-fisicas .eval-lista {
+  padding: var(--spacing-md, 16px);
+}
+
+.evaluaciones-fisicas .eval-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .eval-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--spacing-md, 16px);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.evaluaciones-fisicas .eval-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.evaluaciones-fisicas .eval-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .eval-fecha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .eval-card-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.evaluaciones-fisicas .icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.evaluaciones-fisicas .icon-btn:hover {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .icon-btn.danger:hover {
+  background: rgba(244, 67, 54, 0.1);
+  color: #F44336;
+}
+
+.evaluaciones-fisicas .eval-card-body {
+  display: flex;
+  gap: var(--spacing-lg, 24px);
+  flex-wrap: wrap;
+}
+
+.evaluaciones-fisicas .eval-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.evaluaciones-fisicas .eval-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.evaluaciones-fisicas .eval-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .eval-obs {
+  margin: var(--spacing-sm, 8px) 0 0;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Formulario */
+.evaluaciones-fisicas .eval-form {
+  padding: var(--spacing-md, 16px);
+  max-width: 800px;
+}
+
+.evaluaciones-fisicas .form-section-title {
+  margin: 0 0 var(--spacing-md, 16px);
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .form-section {
+  margin-bottom: var(--spacing-lg, 24px);
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+}
+
+.evaluaciones-fisicas .section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--spacing-md, 16px);
+  font-size: 16px;
+  color: var(--color-fisioterapia, #FF9800);
+}
+
+.evaluaciones-fisicas .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--spacing-md, 16px);
+}
+
+.evaluaciones-fisicas .form-group {
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.evaluaciones-fisicas .form-group .unit {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.evaluaciones-fisicas .form-group input[type="number"],
+.evaluaciones-fisicas .form-group input[type="date"],
+.evaluaciones-fisicas .form-group input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  min-height: var(--touch-target-min, 48px);
+  box-sizing: border-box;
+}
+
+.evaluaciones-fisicas .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  resize: vertical;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+/* Fuerza selector */
+.evaluaciones-fisicas .fuerza-selector {
+  display: flex;
+  gap: 4px;
+}
+
+.evaluaciones-fisicas .fuerza-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.evaluaciones-fisicas .fuerza-btn.active {
+  background: var(--color-fisioterapia, #FF9800);
+  color: #fff;
+  border-color: var(--color-fisioterapia, #FF9800);
+}
+
+.evaluaciones-fisicas .fuerza-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Dolor slider */
+.evaluaciones-fisicas .dolor-slider-wrapper {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .dolor-slider {
+  flex: 1;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(to right, #4CAF50, #FF9800, #F44336);
+  outline: none;
+}
+
+.evaluaciones-fisicas .dolor-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--color-fisioterapia, #FF9800);
+  cursor: pointer;
+}
+
+.evaluaciones-fisicas .dolor-value {
+  font-size: 18px;
+  font-weight: 700;
+  min-width: 45px;
+  text-align: right;
+}
+
+/* Form actions */
+.evaluaciones-fisicas .form-actions {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  justify-content: flex-end;
+  padding-top: var(--spacing-md, 16px);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Detalle */
+.evaluaciones-fisicas .eval-detalle {
+  padding: var(--spacing-md, 16px);
+}
+
+.evaluaciones-fisicas .detalle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .detalle-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .detalle-actions {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .detalle-section {
+  margin-bottom: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+}
+
+.evaluaciones-fisicas .detalle-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--spacing-md, 16px);
+  font-size: 16px;
+  color: var(--color-fisioterapia, #FF9800);
+}
+
+.evaluaciones-fisicas .detalle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md, 16px);
+}
+
+.evaluaciones-fisicas .detalle-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.evaluaciones-fisicas .detalle-label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.evaluaciones-fisicas .detalle-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .rom-bar {
+  height: 6px;
+  background: var(--surface-secondary);
+  border-radius: 3px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.evaluaciones-fisicas .rom-fill {
+  height: 100%;
+  background: var(--color-fisioterapia, #FF9800);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.evaluaciones-fisicas .detalle-nota {
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.evaluaciones-fisicas .detalle-nota strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin-bottom: 2px;
+}
+
+.evaluaciones-fisicas .detalle-nota p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+/* Empty / Loading */
+.evaluaciones-fisicas .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl, 32px);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.evaluaciones-fisicas .empty-state h3 {
+  margin: var(--spacing-md, 16px) 0 var(--spacing-xs, 4px);
+  color: var(--text-primary);
+}
+
+.evaluaciones-fisicas .empty-state p {
+  margin: 0 0 var(--spacing-md, 16px);
+}
+
+.evaluaciones-fisicas .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl, 32px);
+  gap: var(--spacing-md, 16px);
+}
+
+/* Shared buttons */
+.evaluaciones-fisicas .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--color-fisioterapia, #FF9800);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
+  transition: opacity 0.2s;
+}
+
+.evaluaciones-fisicas .btn-primary:hover { opacity: 0.85; }
+.evaluaciones-fisicas .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.evaluaciones-fisicas .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
+}
+
+.evaluaciones-fisicas .btn-secondary:hover { background: var(--surface-secondary); }
+
+.evaluaciones-fisicas .btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: transparent;
+  color: #F44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
+}
+
+.evaluaciones-fisicas .btn-danger:hover { background: rgba(244, 67, 54, 0.1); }

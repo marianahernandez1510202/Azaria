@@ -1,0 +1,312 @@
+/* =============================================
+   LINEAMIENTOS INSTITUCIONALES DGTIC UNAM
+   Cabeza: #00589c | Menu: #004179
+   Titulos: #0c71c3 | Texto: #666666
+   Pie 1: #00589c | Pie 2: #004179
+   Fuentes: Open Sans (titulos/parrafos), Roboto (servicio)
+   ============================================= */
+
+/* ===== HEADER INSTITUCIONAL ===== */
+
+.institutional-header {
+  width: 100%;
+  z-index: 1000;
+  flex-shrink: 0;
+}
+
+/* Barra superior - Cabeza */
+.institutional-bar {
+  background-color: #00589c;
+  padding: 10px 16px;
+}
+
+.institutional-bar-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.institutional-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.institutional-logo-enes {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.institutional-logo-azaria {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+}
+
+.institutional-divider {
+  width: 1px;
+  height: 30px;
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.institutional-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.institutional-service-name {
+  font-family: 'Roboto', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+}
+
+.institutional-service-desc {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.2;
+}
+
+/* Barra de menu */
+.institutional-menu-bar {
+  background-color: #004179;
+  padding: 8px 16px;
+}
+
+.institutional-menu-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.institutional-menu-text {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* ===== FOOTER INSTITUCIONAL ===== */
+
+.institutional-footer {
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: auto;
+  padding-bottom: 70px; /* Espacio para la barra de navegacion inferior fija */
+  overflow: hidden;
+}
+
+/* Pie 1 */
+.institutional-footer-1 {
+  background-color: #00589c;
+  padding: 20px 16px;
+}
+
+.institutional-footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.institutional-footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.institutional-footer-logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+}
+
+.institutional-footer-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.institutional-footer-name {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.institutional-footer-address {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.institutional-footer-contact {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 2px 0 0 0;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+}
+
+.institutional-footer-contact a {
+  color: #fff;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.institutional-footer-contact a:hover {
+  text-decoration: underline;
+}
+
+/* Pie 2 */
+.institutional-footer-2 {
+  background-color: #004179;
+  padding: 12px 16px;
+}
+
+.institutional-footer-copy {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  margin: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 480px) {
+  .institutional-bar {
+    padding: 8px 12px;
+  }
+
+  .institutional-logo-enes {
+    height: 30px;
+  }
+
+  .institutional-logo-azaria {
+    height: 28px;
+  }
+
+  .institutional-divider {
+    height: 24px;
+  }
+
+  .institutional-service-name {
+    font-size: 18px;
+  }
+
+  .institutional-service-desc {
+    font-size: 11px;
+  }
+
+  .institutional-menu-bar {
+    padding: 6px 12px;
+  }
+
+  .institutional-menu-text {
+    font-size: 12px;
+  }
+
+  .institutional-footer-1 {
+    padding: 14px 12px;
+  }
+
+  .institutional-footer-content {
+    flex-wrap: wrap;
+  }
+
+  .institutional-footer-logo {
+    height: 26px;
+  }
+
+  .institutional-footer-name {
+    font-size: 12px;
+    line-height: 1.3;
+  }
+
+  .institutional-footer-address {
+    font-size: 11px;
+  }
+
+  .institutional-footer-contact {
+    font-size: 11px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .institutional-footer-contact .contact-separator {
+    display: none;
+  }
+
+  .institutional-footer-2 {
+    padding: 10px 12px;
+  }
+
+  .institutional-footer-copy {
+    font-size: 11px;
+  }
+}
+
+@media (min-width: 768px) {
+  .institutional-bar {
+    padding: 12px 24px;
+  }
+
+  .institutional-logo-enes {
+    height: 48px;
+  }
+
+  .institutional-logo-azaria {
+    height: 42px;
+  }
+
+  .institutional-service-name {
+    font-size: 24px;
+  }
+
+  .institutional-service-desc {
+    font-size: 14px;
+  }
+
+  .institutional-menu-bar {
+    padding: 10px 24px;
+  }
+
+  .institutional-menu-text {
+    font-size: 15px;
+  }
+
+  .institutional-footer-1 {
+    padding: 24px;
+  }
+
+  .institutional-footer-logo {
+    height: 38px;
+  }
+
+  .institutional-footer-name {
+    font-size: 16px;
+  }
+
+  .institutional-footer-address {
+    font-size: 13px;
+  }
+}

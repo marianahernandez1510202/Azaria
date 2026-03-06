@@ -18,8 +18,8 @@ class Paciente
     {
         $db = DatabaseService::getInstance();
         return $db->query("SELECT p.*, u.* FROM " . self::$table . " p
-                          JOIN users u ON p.user_id = u.id
-                          WHERE p.user_id = ?", [$userId])->fetch();
+                          JOIN usuarios u ON p.usuario_id = u.id
+                          WHERE p.usuario_id = ?", [$userId])->fetch();
     }
 
     public static function create($data)
@@ -71,7 +71,7 @@ class Paciente
         $db = DatabaseService::getInstance();
         return $db->query("SELECT p.*, u.nombre_completo, u.email
                           FROM " . self::$table . " p
-                          JOIN users u ON p.user_id = u.id
+                          JOIN usuarios u ON p.usuario_id = u.id
                           ORDER BY p.created_at DESC")->fetchAll();
     }
 
@@ -79,11 +79,11 @@ class Paciente
     {
         $db = DatabaseService::getInstance();
         return $db->query(
-            "SELECT e.*, u.nombre_completo, u.email, pe.especialidad
-             FROM paciente_especialista pe
-             JOIN especialistas e ON pe.especialista_id = e.id
-             JOIN users u ON e.user_id = u.id
-             WHERE pe.paciente_id = ?",
+            "SELECT u.nombre_completo, u.email, am.nombre as especialidad
+             FROM asignaciones_especialista ae
+             JOIN usuarios u ON ae.especialista_id = u.id
+             LEFT JOIN areas_medicas am ON ae.area_medica_id = am.id
+             WHERE ae.paciente_id = ?",
             [$pacienteId]
         )->fetchAll();
     }
@@ -92,7 +92,7 @@ class Paciente
     {
         $db = DatabaseService::getInstance();
         return $db->query(
-            "INSERT INTO paciente_especialista (paciente_id, especialista_id, especialidad, created_at)
+            "INSERT INTO asignaciones_especialista (paciente_id, especialista_id, especialidad, created_at)
              VALUES (?, ?, ?, NOW())
              ON DUPLICATE KEY UPDATE updated_at = NOW()",
             [$pacienteId, $especialistaId, $especialidad]
@@ -103,7 +103,7 @@ class Paciente
     {
         $db = DatabaseService::getInstance();
         return $db->query(
-            "DELETE FROM paciente_especialista WHERE paciente_id = ? AND especialista_id = ?",
+            "DELETE FROM asignaciones_especialista WHERE paciente_id = ? AND especialista_id = ?",
             [$pacienteId, $especialistaId]
         );
     }

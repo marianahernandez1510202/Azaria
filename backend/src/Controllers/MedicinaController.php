@@ -194,11 +194,75 @@ class MedicinaController
             [$pacienteId]
         )->fetch();
 
+        // Última HbA1c
+        $hba1c = null;
+        try {
+            $hba1c = $this->db->query(
+                "SELECT valor, fecha FROM bitacora_hba1c
+                 WHERE paciente_id = ? ORDER BY fecha DESC LIMIT 1",
+                [$pacienteId]
+            )->fetch();
+        } catch (\Exception $e) {}
+
         return Response::success([
             'glucosa' => $glucosa ?: ['ultimo' => null],
             'presion' => $presion ?: ['ultima_sistolica' => null, 'ultima_diastolica' => null],
-            'dolor' => ['promedio' => $dolor['promedio'] ?? null]
+            'dolor' => ['promedio' => $dolor['promedio'] ?? null],
+            'hba1c' => $hba1c ?: ['valor' => null, 'fecha' => null]
         ]);
+    }
+
+    // BITÁCORA DE HbA1c (Hemoglobina Glicosilada)
+    public function getHba1c($pacienteId)
+    {
+        $registros = $this->db->query(
+            "SELECT * FROM bitacora_hba1c
+             WHERE paciente_id = ?
+             ORDER BY fecha DESC
+             LIMIT 50",
+            [$pacienteId]
+        )->fetchAll();
+
+        $formateados = array_map(function($r) {
+            return [
+                'id' => $r['id'],
+                'valor' => (float)$r['valor'],
+                'fecha' => $r['fecha'],
+                'notas' => $r['notas'],
+                'created_at' => $r['created_at']
+            ];
+        }, $registros);
+
+        return Response::success($formateados);
+    }
+
+    public function registrarHba1c($data)
+    {
+        $valor = $data['valor'] ?? null;
+
+        if (empty($data['paciente_id']) || $valor === null || $valor === '') {
+            return Response::error('paciente_id y valor son requeridos', 422);
+        }
+
+        $valor = (float)$valor;
+        if ($valor < 3.0 || $valor > 20.0) {
+            return Response::error('El valor de HbA1c debe estar entre 3.0% y 20.0%', 422);
+        }
+
+        $fecha = $data['fecha'] ?? date('Y-m-d');
+
+        $this->db->query(
+            "INSERT INTO bitacora_hba1c (paciente_id, valor, notas, fecha)
+             VALUES (?, ?, ?, ?)",
+            [
+                $data['paciente_id'],
+                $valor,
+                $data['notas'] ?? null,
+                $fecha
+            ]
+        );
+
+        return Response::success(null, 'Hemoglobina glicosilada registrada', 201);
     }
 
     private function getMomentoId($momento)
@@ -242,5 +306,143 @@ class MedicinaController
             'calambres' => 6, 'fantasma' => 5
         ];
         return $tipos[strtolower($tipo)] ?? 1;
+    }
+
+    // ============ RECETAS MÉDICAS (MEDICAMENTOS) ============
+
+    /**
+     * Listar medicamentos de un paciente
+     */
+    public function getMedicamentos($pacienteId)
+    {
+        $medicamentos = $this->db->query(
+            "SELECT mp.*, u.nombre_completo as prescrito_por_nombre
+             FROM medicamentos_paciente mp
+             LEFT JOIN usuarios u ON mp.creado_por = u.id
+             WHERE mp.paciente_id = ?
+             ORDER BY mp.activo DESC, mp.created_at DESC",
+            [$pacienteId]
+        )->fetchAll();
+
+        return Response::success($medicamentos);
+    }
+
+    /**
+     * Crear nuevo medicamento (receta médica)
+     */
+    public function crearMedicamento($data)
+    {
+        $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+
+        // Soporta un solo medicamento o un array de medicamentos
+        $medicamentos = isset($data['medicamentos']) ? $data['medicamentos'] : [$data];
+        $pacienteId = $data['paciente_id'] ?? null;
+
+        if (!$pacienteId) {
+            return Response::error('paciente_id es requerido', 422);
+        }
+
+        $ids = [];
+        foreach ($medicamentos as $med) {
+            $nombreComercial = trim($med['nombre_comercial'] ?? '');
+            $dosis = trim($med['dosis'] ?? '');
+            $frecuencia = trim($med['frecuencia'] ?? '');
+            $fechaInicio = trim($med['fecha_inicio'] ?? '');
+
+            if (empty($nombreComercial) || empty($dosis) || empty($frecuencia) || empty($fechaInicio)) {
+                continue;
+            }
+
+            $this->db->query(
+                "INSERT INTO medicamentos_paciente
+                 (paciente_id, nombre_comercial, nombre_generico, dosis, frecuencia,
+                  via_administracion, instrucciones_especiales, fecha_inicio, fecha_fin,
+                  activo, creado_por, notas_medico)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 1, ?, ?)",
+                [
+                    $pacienteId,
+                    $nombreComercial,
+                    !empty($med['nombre_generico']) ? $med['nombre_generico'] : null,
+                    $dosis,
+                    $frecuencia,
+                    !empty($med['via_administracion']) ? $med['via_administracion'] : 'oral',
+                    !empty($med['instrucciones_especiales']) ? $med['instrucciones_especiales'] : null,
+                    $fechaInicio,
+                    !empty($med['fecha_fin']) ? $med['fecha_fin'] : null,
+                    $user['id'],
+                    !empty($med['notas_medico']) ? $med['notas_medico'] : null
+                ]
+            );
+            $ids[] = $this->db->lastInsertId();
+        }
+
+        if (empty($ids)) {
+            return Response::error('Al menos un medicamento con nombre, dosis, frecuencia y fecha es requerido', 422);
+        }
+
+        return Response::success(['ids' => $ids], 'Medicamento(s) prescrito(s) correctamente', 201);
+    }
+
+    /**
+     * Actualizar medicamento
+     */
+    public function actualizarMedicamento($id)
+    {
+        $data = json_decode(file_get_contents('php://input'), true) ?: [];
+
+        $medicamento = $this->db->query(
+            "SELECT * FROM medicamentos_paciente WHERE id = ?",
+            [(int)$id]
+        )->fetch();
+
+        if (!$medicamento) {
+            return Response::error('Medicamento no encontrado', 404);
+        }
+
+        $this->db->query(
+            "UPDATE medicamentos_paciente SET
+             nombre_comercial = ?, nombre_generico = ?, dosis = ?, frecuencia = ?,
+             via_administracion = ?, instrucciones_especiales = ?, fecha_inicio = ?,
+             fecha_fin = ?, activo = ?, notas_medico = ?
+             WHERE id = ?",
+            [
+                $data['nombre_comercial'] ?? $medicamento['nombre_comercial'],
+                $data['nombre_generico'] ?? $medicamento['nombre_generico'],
+                $data['dosis'] ?? $medicamento['dosis'],
+                $data['frecuencia'] ?? $medicamento['frecuencia'],
+                $data['via_administracion'] ?? $medicamento['via_administracion'],
+                $data['instrucciones_especiales'] ?? $medicamento['instrucciones_especiales'],
+                $data['fecha_inicio'] ?? $medicamento['fecha_inicio'],
+                $data['fecha_fin'] ?? $medicamento['fecha_fin'],
+                $data['activo'] ?? $medicamento['activo'],
+                $data['notas_medico'] ?? $medicamento['notas_medico'],
+                (int)$id
+            ]
+        );
+
+        return Response::success(null, 'Medicamento actualizado');
+    }
+
+    /**
+     * Desactivar/eliminar medicamento
+     */
+    public function eliminarMedicamento($id)
+    {
+        $medicamento = $this->db->query(
+            "SELECT * FROM medicamentos_paciente WHERE id = ?",
+            [(int)$id]
+        )->fetch();
+
+        if (!$medicamento) {
+            return Response::error('Medicamento no encontrado', 404);
+        }
+
+        // Desactivar en vez de eliminar para mantener historial
+        $this->db->query(
+            "UPDATE medicamentos_paciente SET activo = 0, fecha_fin = CURDATE() WHERE id = ?",
+            [(int)$id]
+        );
+
+        return Response::success(null, 'Medicamento desactivado');
     }
 }

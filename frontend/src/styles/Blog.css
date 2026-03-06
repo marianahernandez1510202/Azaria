@@ -95,6 +95,8 @@
 }
 
 .articulo-header h1 {
+  font-family: 'Open Sans', sans-serif;
+  color: var(--inst-title, #0c71c3);
   margin: var(--spacing-sm) 0;
   font-size: var(--font-size-2xl);
 }
@@ -188,7 +190,105 @@
 }
 
 @media (min-width: 768px) {
+  .blog-page {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
   .articulos-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+@media (max-width: 768px) {
+  .articulos-grid {
+    padding: 0 var(--spacing-md);
+  }
+
+  .modal-articulo {
+    max-width: 95vw;
+  }
+}
+
+@media (max-width: 480px) {
+  .articulo-imagen {
+    height: 140px;
+  }
+
+  .articulo-content {
+    padding: var(--spacing-md);
+  }
+
+  .articulo-content h2 {
+    font-size: var(--font-size-base, 18px);
+  }
+
+  .articulo-header h1 {
+    font-size: var(--font-size-xl, 24px);
+  }
+
+  .comentario-form {
+    flex-direction: column;
+  }
+
+  .articulo-completo {
+    max-height: 80vh;
+  }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .blog-page {
+  background: var(--background-primary);
+}
+
+[data-theme="dark"] .articulo-card {
+  background: var(--surface-primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .articulo-card:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .articulo-content h2 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .articulo-header h1 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .articulo-body p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .btn-like {
+  background: rgba(198, 40, 40, 0.15);
+  color: #ef5350;
+}
+
+[data-theme="dark"] .btn-like:hover {
+  background: rgba(198, 40, 40, 0.25);
+}
+
+[data-theme="dark"] .comentario {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .comentario-form textarea {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .comentario-texto {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .modal-articulo {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .articulo-acciones {
+  border-bottom-color: var(--border-color);
 }

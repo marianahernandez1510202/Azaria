@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, createContext, useContext } from 'react';
+import LucideIcon from './LucideIcon';
 import '../styles/VoiceHelper.css';
 
 /**
@@ -15,79 +16,79 @@ const MODULE_DESCRIPTIONS = {
   dashboard: {
     title: 'Panel Principal',
     description: 'Aquí puede ver un resumen de su salud. Encontrará sus próximas citas, recordatorios pendientes y su progreso general.',
-    icon: '🏠',
+    icon: 'home',
     shortcuts: 'Use las flechas para navegar entre las tarjetas. Presione Enter para seleccionar.'
   },
   nutricion: {
     title: 'Nutrición',
     description: 'En esta sección puede registrar lo que come cada día, llevar control del agua que toma, y ver recetas saludables recomendadas para usted.',
-    icon: '🥗',
+    icon: 'salad',
     shortcuts: 'Use Tab para moverse entre opciones. Presione Enter para registrar alimentos.'
   },
   fisioterapia: {
     title: 'Fisioterapia',
     description: 'Aquí encontrará sus ejercicios de rehabilitación. Puede ver videos que le muestran cómo hacer cada ejercicio y marcar los que ya completó.',
-    icon: '🏃',
+    icon: 'dumbbell',
     shortcuts: 'Use las flechas para navegar entre ejercicios. Presione Espacio para marcar como completado.'
   },
   medicina: {
     title: 'Medicina',
     description: 'En esta sección puede registrar sus signos vitales como presión arterial, glucosa y peso. También puede ver su historial de medicamentos.',
-    icon: '💊',
+    icon: 'pill',
     shortcuts: 'Use Tab para moverse entre campos. Los campos numéricos aceptan valores con las flechas.'
   },
   neuropsicologia: {
     title: 'Neuropsicología',
     description: 'Aquí encontrará ejercicios para mantener su mente activa, cuestionarios de bienestar emocional y recursos de apoyo psicológico.',
-    icon: '🧠',
+    icon: 'brain',
     shortcuts: 'Use las flechas para seleccionar respuestas. Presione Enter para confirmar.'
   },
   ortesis: {
     title: 'Prótesis y Órtesis',
     description: 'En esta sección puede llevar el control de su dispositivo ortopédico. Registre su uso diario, reporte problemas y vea guías de cuidado.',
-    icon: '🦿',
+    icon: 'accessibility',
     shortcuts: 'Use Tab para navegar entre secciones. Presione Enter para registrar uso.'
   },
   comunidad: {
     title: 'Comunidad',
     description: 'Aquí puede conectar con otras personas que tienen experiencias similares. Comparta sus logros, haga preguntas y apoye a otros.',
-    icon: '👥',
+    icon: 'users',
     shortcuts: 'Use las flechas para navegar publicaciones. Presione Enter para interactuar.'
   },
   citas: {
     title: 'Citas Médicas',
     description: 'En esta sección puede ver sus próximas citas con doctores, agendar nuevas citas y ver el historial de consultas anteriores.',
-    icon: '📅',
+    icon: 'calendar',
     shortcuts: 'Use las flechas en el calendario. Presione Enter para seleccionar fecha.'
   },
   recordatorios: {
     title: 'Recordatorios',
     description: 'Aquí puede configurar alarmas para sus medicamentos, ejercicios, citas y otras actividades importantes de su tratamiento.',
-    icon: '⏰',
+    icon: 'alarm-clock',
     shortcuts: 'Use Tab para moverse entre campos de hora. Las flechas ajustan valores.'
   },
   blog: {
     title: 'Artículos de Salud',
     description: 'En esta sección encontrará artículos educativos sobre su salud, consejos de especialistas y noticias relevantes para su bienestar.',
-    icon: '📚',
+    icon: 'book-open',
     shortcuts: 'Use las flechas para navegar artículos. Presione Enter para leer completo.'
   },
   chat: {
     title: 'Mensajes',
     description: 'Aquí puede comunicarse con su equipo médico. Envíe preguntas y reciba respuestas de sus especialistas.',
-    icon: '💬',
+    icon: 'message',
     shortcuts: 'Tab para moverse al campo de mensaje. Enter para enviar.'
   },
   configuracion: {
     title: 'Configuración',
     description: 'Aquí puede personalizar la aplicación según sus necesidades. Ajuste el tamaño del texto, colores y opciones de accesibilidad.',
-    icon: '⚙️',
+    icon: 'settings',
     shortcuts: 'Use Tab para navegar opciones. Espacio para activar/desactivar.'
   },
   perfil: {
     title: 'Mi Perfil',
     description: 'Aquí puede ver y editar su información personal, foto de perfil y preferencias de cuenta.',
-    icon: '👤',
+    icon: 'user',
     shortcuts: 'Tab para moverse entre campos. Enter para editar.'
   }
 };
@@ -319,12 +320,12 @@ const VoiceHelper = ({ currentModule = 'dashboard', customText = null, showShort
         aria-pressed={isSpeaking}
         title={isSpeaking ? 'Toque para detener' : 'Toque para escuchar ayuda'}
       >
-        {isSpeaking ? '⏹️' : '🔊'}
+        <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
       </button>
 
       {showTooltip && !isSpeaking && (
         <div className="voice-tooltip" role="tooltip">
-          <span className="tooltip-icon" aria-hidden="true">💡</span>
+          <span className="tooltip-icon" aria-hidden="true"><LucideIcon name="lightbulb" size={16} /></span>
           <span>Toque para escuchar<br/>una explicación</span>
         </div>
       )}
@@ -439,7 +440,7 @@ export const Speakable = ({
           aria-label={isSpeaking ? 'Detener lectura' : 'Escuchar descripción'}
           type="button"
         >
-          {isSpeaking ? '⏹️' : '🔊'}
+          <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
         </button>
       )}
     </div>

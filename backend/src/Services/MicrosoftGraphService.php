@@ -19,7 +19,9 @@ class MicrosoftGraphService
     {
         $this->clientId = $_ENV['MICROSOFT_CLIENT_ID'] ?? null;
         $this->clientSecret = $_ENV['MICROSOFT_CLIENT_SECRET'] ?? null;
-        $this->tenantId = $_ENV['MICROSOFT_TENANT_ID'] ?? 'common';
+        // Usar 'consumers' para permitir solo cuentas personales (outlook.com, hotmail.com, live.com)
+        // Esto evita el requisito de aprobación de administrador de cuentas organizacionales
+        $this->tenantId = $_ENV['MICROSOFT_TENANT_ID'] ?? 'consumers';
         $this->redirectUri = $_ENV['MICROSOFT_REDIRECT_URI'] ?? 'http://localhost:8000/api/auth/microsoft/callback';
     }
 
@@ -75,7 +77,6 @@ class MicrosoftGraphService
             ];
         }
 
-        error_log('Error getting token: ' . json_encode($response));
         return null;
     }
 
@@ -168,7 +169,6 @@ class MicrosoftGraphService
             ];
         }
 
-        error_log('Error creating event: ' . json_encode($response));
         return null;
     }
 
@@ -339,7 +339,6 @@ class MicrosoftGraphService
         curl_close($ch);
 
         if ($error) {
-            error_log('cURL Error: ' . $error);
             return null;
         }
 
@@ -393,7 +392,6 @@ class MicrosoftGraphService
         curl_close($ch);
 
         if ($error) {
-            error_log('Graph API cURL Error: ' . $error);
             return ['error' => $error];
         }
 
@@ -405,7 +403,6 @@ class MicrosoftGraphService
         $decoded = json_decode($response, true);
 
         if ($httpCode >= 400) {
-            error_log("Graph API Error ({$httpCode}): " . json_encode($decoded));
             return ['error' => $decoded['error']['message'] ?? 'Error desconocido', 'code' => $httpCode];
         }
 

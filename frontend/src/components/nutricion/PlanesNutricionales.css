@@ -39,20 +39,51 @@
   color: var(--color-primary);
 }
 
+.planes-header-actions {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+}
+
+.btn-generar-plan {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  padding: var(--spacing-sm) var(--spacing-lg);
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius-md, 12px);
+  font-weight: 600;
+  font-size: var(--font-size-base, 18px);
+  cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn-generar-plan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
 .btn-nuevo-plan {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
   padding: var(--spacing-sm) var(--spacing-lg);
   background: linear-gradient(135deg, #FF9800, #F57C00);
   color: white;
   border: none;
-  border-radius: var(--border-radius-md);
+  border-radius: var(--border-radius-md, 12px);
   font-weight: 600;
+  font-size: var(--font-size-base, 18px);
   cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-nuevo-plan:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.25);
 }
 
 /* Empty State */
@@ -97,7 +128,7 @@
 /* Planes Grid */
 .planes-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
   gap: var(--spacing-lg);
 }
 
@@ -110,12 +141,12 @@
 }
 
 .plan-card:hover {
-  border-color: #FF9800;
+  border-color: #F57F17;
   transform: translateY(-2px);
 }
 
 .plan-card.activo {
-  border-color: #4CAF50;
+  border-color: #2E7D32;
 }
 
 .plan-card.borrador {
@@ -146,13 +177,13 @@
 }
 
 .plan-estado.activo {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
+  background: rgba(46, 125, 50, 0.2);
+  color: #2E7D32;
 }
 
 .plan-estado.borrador {
-  background: rgba(255, 152, 0, 0.2);
-  color: #FF9800;
+  background: rgba(245, 127, 23, 0.2);
+  color: #F57F17;
 }
 
 .plan-estado.archivado {
@@ -231,8 +262,8 @@
 }
 
 .btn-eliminar:hover {
-  border-color: #F44336;
-  color: #F44336;
+  border-color: #C62828;
+  color: #C62828;
 }
 
 /* ===== MODAL DE UPLOAD ===== */
@@ -270,8 +301,8 @@
 }
 
 .file-label:hover {
-  border-color: #FF9800;
-  background: rgba(255, 152, 0, 0.05);
+  border-color: #F57F17;
+  background: rgba(245, 127, 23, 0.05);
 }
 
 .file-label .upload-icon {
@@ -316,7 +347,7 @@
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #FF9800, #4CAF50);
+  background: linear-gradient(90deg, #F57F17, #2E7D32);
   border-radius: 4px;
   transition: width 0.3s ease;
 }
@@ -332,13 +363,13 @@
 .upload-info {
   margin-top: var(--spacing-lg);
   padding: var(--spacing-md);
-  background: rgba(33, 150, 243, 0.1);
+  background: rgba(33, 150, 243, 0.08);
   border-radius: var(--border-radius-md);
   border-left: 4px solid #2196F3;
 }
 
 .upload-info h4 {
-  color: #2196F3;
+  color: #1565C0;
   margin: 0 0 var(--spacing-sm);
 }
 
@@ -421,7 +452,7 @@
 }
 
 .dia-section.dia-actual {
-  border: 2px solid #4CAF50;
+  border: 2px solid #2E7D32;
 }
 
 .dia-header {
@@ -437,7 +468,7 @@
 
 .badge-hoy {
   padding: 2px 8px;
-  background: #4CAF50;
+  background: #2E7D32;
   color: white;
   font-size: var(--font-size-xs);
   border-radius: var(--border-radius-sm);
@@ -453,7 +484,7 @@
   background: var(--surface-primary);
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-md);
-  border-left: 4px solid #FF9800;
+  border-left: 4px solid #F57F17;
 }
 
 .comida-header {
@@ -465,7 +496,7 @@
 
 .comida-tipo {
   font-weight: 600;
-  color: #FF9800;
+  color: #F57F17;
   font-size: var(--font-size-sm);
 }
 
@@ -578,15 +609,15 @@
 .asignar-warning {
   margin-top: var(--spacing-md);
   padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(255, 152, 0, 0.1);
-  border-left: 4px solid #FF9800;
+  background: rgba(245, 127, 23, 0.1);
+  border-left: 4px solid #F57F17;
   border-radius: var(--border-radius-sm);
 }
 
 .asignar-warning p {
   margin: 0;
   font-size: var(--font-size-sm);
-  color: #FF9800;
+  color: #F57F17;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -638,7 +669,7 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-sm) var(--spacing-md);
-  background: rgba(33, 150, 243, 0.1);
+  background: rgba(33, 150, 243, 0.08);
   border-radius: var(--border-radius-md);
   margin-bottom: var(--spacing-lg);
   border-left: 4px solid #2196F3;
@@ -646,7 +677,7 @@
 
 .estimado-badge span {
   font-size: var(--font-size-sm);
-  color: #2196F3;
+  color: #1565C0;
 }
 
 .totales-grid {
@@ -659,8 +690,8 @@
 .comida-kcal {
   font-size: var(--font-size-sm);
   font-weight: 600;
-  color: #FF9800;
-  background: rgba(255, 152, 0, 0.15);
+  color: #F57F17;
+  background: rgba(245, 127, 23, 0.15);
   padding: 2px 8px;
   border-radius: var(--border-radius-sm);
 }
@@ -677,7 +708,7 @@
   background: var(--surface-secondary);
   border-radius: var(--border-radius-sm);
   padding: var(--spacing-md);
-  border-left: 3px solid #4CAF50;
+  border-left: 3px solid #2E7D32;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -702,8 +733,8 @@
 .opcion-kcal {
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: #FF9800;
-  background: rgba(255, 152, 0, 0.15);
+  color: #F57F17;
+  background: rgba(245, 127, 23, 0.15);
   padding: 2px 6px;
   border-radius: var(--border-radius-sm);
 }
@@ -742,8 +773,8 @@
 }
 
 .confianza-badge.alta {
-  background: rgba(76, 175, 80, 0.2);
-  color: #4CAF50;
+  background: rgba(46, 125, 50, 0.2);
+  color: #2E7D32;
 }
 
 .confianza-badge.media {
@@ -790,7 +821,7 @@
 }
 
 [data-theme="light"] .plan-card:hover {
-  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(245, 127, 23, 0.2);
 }
 
 [data-theme="light"] .file-label {
@@ -832,7 +863,7 @@
   align-items: center;
   gap: var(--spacing-xs);
   padding: var(--spacing-xs) var(--spacing-md);
-  background: rgba(255, 152, 0, 0.15);
+  background: rgba(245, 127, 23, 0.15);
   border-radius: var(--border-radius-full);
   font-size: var(--font-size-sm);
   color: var(--primary-color);
@@ -841,9 +872,9 @@
 
 .plan-objetivo {
   padding: var(--spacing-md);
-  background: rgba(76, 175, 80, 0.1);
+  background: rgba(46, 125, 50, 0.1);
   border-radius: var(--border-radius-md);
-  border-left: 4px solid #4CAF50;
+  border-left: 4px solid #2E7D32;
   margin-bottom: var(--spacing-lg);
   font-size: var(--font-size-sm);
 }
@@ -878,7 +909,7 @@
   content: "✓";
   position: absolute;
   left: var(--spacing-md);
-  color: #4CAF50;
+  color: #2E7D32;
   font-weight: bold;
 }
 
@@ -980,12 +1011,12 @@
   left: 0;
   width: 4px;
   height: 100%;
-  background: linear-gradient(180deg, #4CAF50, #8BC34A);
+  background: linear-gradient(180deg, #2E7D32, #66BB6A);
 }
 
 .opcion-card-new:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border-color: var(--primary-color);
 }
 
@@ -1007,8 +1038,8 @@
 .opcion-kcal-badge {
   font-size: var(--font-size-xs);
   font-weight: 600;
-  color: #FF9800;
-  background: rgba(255, 152, 0, 0.15);
+  color: #F57F17;
+  background: rgba(245, 127, 23, 0.15);
   padding: 2px 8px;
   border-radius: var(--border-radius-sm);
 }
@@ -1052,9 +1083,9 @@
   font-weight: 500;
 }
 
-.macro-mini.proteinas .macro-value { color: #F44336; }
-.macro-mini.carbos .macro-value { color: #FF9800; }
-.macro-mini.grasas .macro-value { color: #4CAF50; }
+.macro-mini.proteinas .macro-value { color: #C62828; }
+.macro-mini.carbos .macro-value { color: #F57F17; }
+.macro-mini.grasas .macro-value { color: #2E7D32; }
 
 /* Toggle de ingredientes */
 .ingredientes-toggle {
@@ -1144,9 +1175,9 @@
 
 /* Total items coloreados */
 .total-item.calorias { border-bottom: 3px solid #FF5722; }
-.total-item.proteinas { border-bottom: 3px solid #F44336; }
-.total-item.carbos { border-bottom: 3px solid #FF9800; }
-.total-item.grasas { border-bottom: 3px solid #4CAF50; }
+.total-item.proteinas { border-bottom: 3px solid #C62828; }
+.total-item.carbos { border-bottom: 3px solid #F57F17; }
+.total-item.grasas { border-bottom: 3px solid #2E7D32; }
 
 /* Responsive */
 @media (max-width: 768px) {
@@ -1224,7 +1255,7 @@
 
 .graficas-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
   gap: var(--spacing-lg);
 }
 
@@ -1238,7 +1269,7 @@
 
 .grafica-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   border-color: var(--primary-color);
 }
 
@@ -1251,7 +1282,7 @@
 }
 
 .grafica-image-container::after {
-  content: "🔍 Click para ampliar";
+  content: "Click para ampliar";
   position: absolute;
   bottom: 8px;
   right: 8px;
@@ -1297,7 +1328,7 @@
 .grafica-tipo-badge {
   display: inline-block;
   padding: 2px 10px;
-  background: rgba(255, 152, 0, 0.15);
+  background: rgba(245, 127, 23, 0.15);
   color: var(--primary-color);
   font-size: var(--font-size-xs);
   font-weight: 500;
@@ -1322,4 +1353,339 @@
 
 [data-theme="light"] .grafica-card:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .plan-card {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .plan-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .plan-estado.activo {
+  background: rgba(46, 125, 50, 0.15);
+}
+
+[data-theme="dark"] .plan-estado.borrador {
+  background: rgba(245, 127, 23, 0.15);
+}
+
+[data-theme="dark"] .plan-estado.archivado {
+  background: rgba(158, 158, 158, 0.15);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .upload-info {
+  background: rgba(33, 150, 243, 0.1);
+}
+
+[data-theme="dark"] .upload-info h4 {
+  color: #58a6ff;
+}
+
+[data-theme="dark"] .estimado-badge {
+  background: rgba(33, 150, 243, 0.1);
+}
+
+[data-theme="dark"] .estimado-badge span {
+  color: #58a6ff;
+}
+
+[data-theme="dark"] .ingredientes-detectados {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .confianza-badge.alta {
+  background: rgba(46, 125, 50, 0.15);
+}
+
+[data-theme="dark"] .confianza-badge.media {
+  background: rgba(255, 193, 7, 0.15);
+}
+
+[data-theme="dark"] .confianza-badge.baja {
+  background: rgba(158, 158, 158, 0.15);
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .file-label {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .file-label:hover {
+  background: rgba(245, 127, 23, 0.08);
+}
+
+[data-theme="dark"] .dia-section {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .comida-item {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .opcion-item {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .opcion-item:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .opcion-card-new {
+  background: var(--background-primary);
+}
+
+[data-theme="dark"] .opcion-card-new:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .indicaciones-list li {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .ingredientes-list {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .asignar-warning {
+  background: rgba(245, 127, 23, 0.1);
+}
+
+[data-theme="dark"] .plan-objetivo {
+  background: rgba(46, 125, 50, 0.1);
+}
+
+[data-theme="dark"] .comida-timeline-item {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .grafica-card {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .grafica-card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .grafica-image-container {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .grafica-tipo-badge {
+  background: rgba(245, 127, 23, 0.15);
+}
+
+/* ===== Recetas adjuntas al plan (vista especialista) ===== */
+.plan-recetas-section,
+.plan-imagenes-section {
+  margin-top: var(--spacing-lg, 24px);
+  padding-top: var(--spacing-lg, 24px);
+  border-top: 1px solid var(--border-color, #30363D);
+}
+
+.plan-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.plan-section-header h3 {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  font-size: 1.1rem;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0;
+}
+
+.btn-add-small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: var(--color-nutricion, #4CAF50);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 0.85rem;
+  cursor: pointer;
+  min-height: 40px;
+  transition: opacity 0.2s;
+}
+
+.btn-add-small:hover {
+  opacity: 0.85;
+}
+
+.btn-add-small:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.empty-hint {
+  color: var(--text-muted, #6E7681);
+  font-size: 0.9rem;
+  font-style: italic;
+  text-align: center;
+  padding: var(--spacing-md, 16px);
+}
+
+/* Recetas adjuntas list */
+.recetas-adjuntas-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.receta-adjunta-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-secondary, #21262D);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+}
+
+.receta-adjunta-img {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm, 8px);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.receta-adjunta-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.receta-adjunta-nombre {
+  color: var(--text-primary, #E6EDF3);
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.receta-adjunta-tipo {
+  color: var(--color-nutricion, #4CAF50);
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}
+
+.receta-adjunta-kcal {
+  color: var(--text-secondary, #8B949E);
+  font-size: 0.8rem;
+}
+
+.btn-remove-small {
+  background: none;
+  border: none;
+  color: var(--text-muted, #6E7681);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--radius-sm, 8px);
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s, background 0.2s;
+}
+
+.btn-remove-small:hover {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+/* Imágenes grid */
+.plan-imagenes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: var(--spacing-sm, 8px);
+}
+
+.plan-imagen-card {
+  position: relative;
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+  aspect-ratio: 4/3;
+  cursor: pointer;
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.plan-imagen-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.2s;
+}
+
+.plan-imagen-card:hover .plan-imagen-img {
+  transform: scale(1.05);
+}
+
+.plan-imagen-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 6px 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.plan-imagen-overlay span {
+  color: #fff;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.btn-remove-img {
+  background: rgba(244, 67, 54, 0.6);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  min-width: 28px;
+  min-height: 28px;
+  justify-content: center;
+}
+
+.btn-remove-img:hover {
+  background: rgba(244, 67, 54, 0.9);
+}
+
+/* Selector de recetas (sub-modal) */
+.receta-selector-overlay {
+  z-index: 1100;
+}
+
+.receta-selector-modal {
+  max-width: 700px;
+  max-height: 85vh;
+}
+
+.receta-selector-body {
+  max-height: 70vh;
+  overflow-y: auto;
 }

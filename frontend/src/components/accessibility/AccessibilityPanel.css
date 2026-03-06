@@ -145,13 +145,13 @@
 
 /* ===== TEMA Y CONTRASTE ===== */
 
-.theme-options {
+.acc-theme-options {
   display: flex;
   gap: var(--spacing-md);
   margin-bottom: var(--spacing-lg);
 }
 
-.theme-btn {
+.acc-theme-btn {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -168,23 +168,23 @@
   font-weight: 500;
 }
 
-.theme-btn:hover {
+.acc-theme-btn:hover {
   background: var(--surface-tertiary);
   border-color: var(--color-primary);
 }
 
-.theme-btn.active {
+.acc-theme-btn.active {
   background: var(--color-primary);
   border-color: var(--color-primary);
   color: white;
 }
 
-.theme-btn:focus-visible {
+.acc-theme-btn:focus-visible {
   outline: 3px solid var(--focus-ring);
   outline-offset: 2px;
 }
 
-.theme-icon {
+.acc-theme-icon {
   font-size: 32px;
 }
 
@@ -367,7 +367,7 @@
 }
 
 .age-profile-btn.active {
-  background: rgba(0, 191, 165, 0.15);
+  background: rgba(46, 125, 50, 0.15);
   border-color: var(--color-primary);
 }
 
@@ -475,7 +475,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .theme-options {
+  .acc-theme-options {
     flex-direction: column;
   }
 

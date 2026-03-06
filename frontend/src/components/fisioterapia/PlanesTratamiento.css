@@ -1,0 +1,608 @@
+.planes-tratamiento .module-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+}
+
+.planes-tratamiento .module-header .btn-primary {
+  margin-left: auto;
+}
+
+/* Lista */
+.planes-tratamiento .planes-lista {
+  padding: var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .planes-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.planes-tratamiento .plan-card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--color-fisioterapia, #FF9800);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--spacing-md, 16px);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.planes-tratamiento .plan-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.planes-tratamiento .plan-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-xs, 4px);
+}
+
+.planes-tratamiento .plan-card-top h4 {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .estado-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border: 1px solid;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.planes-tratamiento .plan-objetivo {
+  margin: 4px 0 8px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.planes-tratamiento .plan-meta {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+}
+
+.planes-tratamiento .plan-meta span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Form */
+.planes-tratamiento .plan-form {
+  padding: var(--spacing-md, 16px);
+  max-width: 800px;
+}
+
+.planes-tratamiento .form-section-title {
+  margin: 0 0 var(--spacing-md, 16px);
+  font-size: 20px;
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .form-section {
+  margin-bottom: var(--spacing-lg, 24px);
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+}
+
+.planes-tratamiento .section-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--spacing-md, 16px);
+  font-size: 16px;
+  color: var(--color-fisioterapia, #FF9800);
+}
+
+.planes-tratamiento .section-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .form-group {
+  margin-bottom: var(--spacing-sm, 8px);
+}
+
+.planes-tratamiento .form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.planes-tratamiento .form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+}
+
+.planes-tratamiento .form-group input,
+.planes-tratamiento .form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 8px);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 16px;
+  min-height: var(--touch-target-min, 48px);
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.planes-tratamiento .form-group textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+/* Ejercicios list in form */
+.planes-tratamiento .empty-ejercicios {
+  text-align: center;
+  padding: var(--spacing-md, 16px);
+  color: var(--text-muted);
+}
+
+.planes-tratamiento .ejercicios-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.planes-tratamiento .ejercicio-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-color);
+}
+
+.planes-tratamiento .ejercicio-order {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 30px;
+}
+
+.planes-tratamiento .order-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.planes-tratamiento .order-btn:hover:not(:disabled) {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .order-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.planes-tratamiento .order-num {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--color-fisioterapia, #FF9800);
+}
+
+.planes-tratamiento .ejercicio-info {
+  flex: 1;
+}
+
+.planes-tratamiento .ejercicio-info strong {
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.planes-tratamiento .ejercicio-params {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  margin-top: var(--spacing-xs, 4px);
+  flex-wrap: wrap;
+}
+
+.planes-tratamiento .param-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.planes-tratamiento .param-group label {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.planes-tratamiento .param-group input {
+  width: 80px;
+  padding: 4px 8px;
+  min-height: 32px;
+  font-size: 14px;
+}
+
+.planes-tratamiento .remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm, 8px);
+  transition: all 0.2s;
+}
+
+.planes-tratamiento .remove-btn:hover {
+  color: #F44336;
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.planes-tratamiento .form-actions {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  justify-content: flex-end;
+  padding-top: var(--spacing-md, 16px);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Detalle */
+.planes-tratamiento .plan-detalle {
+  padding: var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .detalle-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+  gap: var(--spacing-sm, 8px);
+}
+
+.planes-tratamiento .detalle-header h3 {
+  margin: 0 0 var(--spacing-xs, 4px);
+  font-size: 22px;
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .detalle-actions {
+  display: flex;
+  gap: var(--spacing-sm, 8px);
+  flex-wrap: wrap;
+}
+
+.planes-tratamiento .plan-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: var(--spacing-md, 16px);
+  margin-bottom: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+}
+
+.planes-tratamiento .info-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.planes-tratamiento .info-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.planes-tratamiento .info-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.planes-tratamiento .info-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .detalle-section {
+  margin-bottom: var(--spacing-md, 16px);
+  padding: var(--spacing-md, 16px);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+}
+
+.planes-tratamiento .detalle-section h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 var(--spacing-md, 16px);
+  font-size: 16px;
+  color: var(--color-fisioterapia, #FF9800);
+}
+
+.planes-tratamiento .detalle-ejercicios {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.planes-tratamiento .detalle-ej-card {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-secondary);
+  border-radius: var(--radius-sm, 8px);
+  align-items: flex-start;
+}
+
+.planes-tratamiento .ej-num {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-fisioterapia, #FF9800);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.planes-tratamiento .ej-content {
+  flex: 1;
+}
+
+.planes-tratamiento .ej-content strong {
+  color: var(--text-primary);
+  font-size: 15px;
+}
+
+.planes-tratamiento .ej-desc {
+  margin: 2px 0 4px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.planes-tratamiento .ej-params {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+}
+
+.planes-tratamiento .ej-params span {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.planes-tratamiento .ej-nivel {
+  text-transform: capitalize;
+  font-weight: 500;
+}
+
+.planes-tratamiento .no-ejercicios {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Modal */
+.planes-tratamiento .modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .modal-content {
+  background: var(--surface-primary);
+  border-radius: var(--radius-lg, 16px);
+  width: 100%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.planes-tratamiento .modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md, 16px);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.planes-tratamiento .modal-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .modal-close {
+  color: var(--text-muted);
+  cursor: pointer;
+  min-width: 40px;
+  min-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.planes-tratamiento .modal-body {
+  padding: var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .video-selector-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs, 4px);
+}
+
+.planes-tratamiento .video-selector-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border-radius: var(--radius-sm, 8px);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.planes-tratamiento .video-selector-item:hover:not(.disabled) {
+  background: var(--surface-secondary);
+}
+
+.planes-tratamiento .video-selector-item.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.planes-tratamiento .vs-info strong {
+  display: block;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .vs-meta {
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: capitalize;
+}
+
+.planes-tratamiento .vs-add {
+  color: var(--color-fisioterapia, #FF9800);
+}
+
+.planes-tratamiento .vs-added {
+  color: #4CAF50;
+}
+
+/* Empty / Loading */
+.planes-tratamiento .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl, 32px);
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.planes-tratamiento .empty-state h3 {
+  margin: var(--spacing-md, 16px) 0 var(--spacing-xs, 4px);
+  color: var(--text-primary);
+}
+
+.planes-tratamiento .empty-state p {
+  margin: 0 0 var(--spacing-md, 16px);
+}
+
+.planes-tratamiento .loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl, 32px);
+  gap: var(--spacing-md, 16px);
+}
+
+/* Shared buttons */
+.planes-tratamiento .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--color-fisioterapia, #FF9800);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
+  transition: opacity 0.2s;
+}
+
+.planes-tratamiento .btn-primary:hover { opacity: 0.85; }
+.planes-tratamiento .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.planes-tratamiento .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 15px;
+  cursor: pointer;
+  min-height: var(--touch-target-min, 48px);
+}
+
+.planes-tratamiento .btn-secondary:hover { background: var(--surface-secondary); }
+
+.planes-tratamiento .btn-secondary-sm {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--color-fisioterapia, #FF9800);
+  border: 1px solid var(--color-fisioterapia, #FF9800);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+.planes-tratamiento .btn-secondary-sm:hover {
+  background: rgba(255, 152, 0, 0.08);
+}

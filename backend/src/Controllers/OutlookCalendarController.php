@@ -161,7 +161,7 @@ class OutlookCalendarController
         $accessToken = $this->getValidAccessToken($userId);
 
         if (!$accessToken) {
-            return Response::error('No hay conexión con Outlook. Por favor conecta tu cuenta.', 401);
+            return Response::error('No hay conexión con Outlook. Por favor conecta tu cuenta.', 403);
         }
 
         // Obtener datos de la cita
@@ -239,7 +239,7 @@ class OutlookCalendarController
         $accessToken = $this->getValidAccessToken($userId);
 
         if (!$accessToken) {
-            return Response::error('No hay conexión con Outlook', 401);
+            return Response::error('No hay conexión con Outlook', 403);
         }
 
         $events = $this->graphService->getCalendarEvents($accessToken, $startDate, $endDate);
@@ -259,7 +259,7 @@ class OutlookCalendarController
         $accessToken = $this->getValidAccessToken($userId);
 
         if (!$accessToken) {
-            return Response::error('No hay conexión con Outlook', 401);
+            return Response::error('No hay conexión con Outlook', 403);
         }
 
         $emails = $data['emails'] ?? [];
@@ -283,7 +283,7 @@ class OutlookCalendarController
         $accessToken = $this->getValidAccessToken($userId);
 
         if (!$accessToken) {
-            return Response::error('No hay conexión con Outlook', 401);
+            return Response::error('No hay conexión con Outlook', 403);
         }
 
         // Obtener cita y su evento de Outlook
@@ -329,7 +329,7 @@ class OutlookCalendarController
         $accessToken = $this->getValidAccessToken($userId);
 
         if (!$accessToken) {
-            return Response::error('No hay conexión con Outlook', 401);
+            return Response::error('No hay conexión con Outlook', 403);
         }
 
         $cita = $this->db->query(

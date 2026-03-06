@@ -4,11 +4,39 @@ import { useAuth } from '../../context/AuthContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice, Speakable } from '../../components/VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../../components/accessibility/AccessibilityPanel';
+import InstitutionalHeader from '../../components/layouts/InstitutionalHeader';
+import InstitutionalFooter from '../../components/layouts/InstitutionalFooter';
 import OutlookConnect, { OutlookSyncButton } from '../../components/outlook/OutlookConnect';
 import OutlookCalendar from '../../components/outlook/OutlookCalendar';
 import PlanesNutricionales from '../../components/nutricion/PlanesNutricionales';
+import SeguimientoPeso from '../../components/nutricion/SeguimientoPeso';
+import HistorialAlimenticio from '../../components/nutricion/HistorialAlimenticio';
+import IMCPacientes from '../../components/nutricion/IMCPacientes';
+import CalculadoraCalorica from '../../components/nutricion/CalculadoraCalorica';
+import HistorialPlanes from '../../components/nutricion/HistorialPlanes';
+import CatalogoRecetas from '../../components/nutricion/CatalogoRecetas';
+import GeneradorPlan from '../../components/nutricion/GeneradorPlan';
+import EjerciciosPacientes from '../../components/fisioterapia/EjerciciosPacientes';
+import EvaluacionesFisicas from '../../components/fisioterapia/EvaluacionesFisicas';
+import PlanesTratamiento from '../../components/fisioterapia/PlanesTratamiento';
+import ProgresoPacientes from '../../components/fisioterapia/ProgresoPacientes';
+import EvaluacionesCognitivas from '../../components/neuropsicologia/EvaluacionesCognitivas';
+import EstadoEmocionalPaciente from '../../components/neuropsicologia/EstadoEmocionalPaciente';
+import ActividadACTPaciente from '../../components/neuropsicologia/ActividadACTPaciente';
+import CuestionariosHistorial from '../../components/neuropsicologia/CuestionariosHistorial';
+import DispositivosPacientes from '../../components/ortesis/DispositivosPacientes';
+import SeguimientoAdaptacion from '../../components/ortesis/SeguimientoAdaptacion';
+import MantenimientoCalendario from '../../components/ortesis/MantenimientoCalendario';
+import MedicionesAjustes from '../../components/ortesis/MedicionesAjustes';
+import LucideIcon from '../../components/LucideIcon';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Filler, Title, Tooltip, Legend } from 'chart.js';
 import api from '../../services/api';
+
+import '../../components/layouts/institutional.css';
 import './EspecialistaDashboard.css';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Title, Tooltip, Legend);
 
 /**
  * EspecialistaDashboard - Panel personalizado para especialistas médicos
@@ -20,84 +48,447 @@ import './EspecialistaDashboard.css';
 const AREAS_CONFIG = {
   fisioterapia: {
     nombre: 'Fisioterapia',
-    icon: '🏃',
-    color: '#FF9800',
+    icon: 'dumbbell',
+    color: '#E65100',
     modulos: [
-      { id: 'ejercicios', nombre: 'Ejercicios de Pacientes', icon: '🏋️', descripcion: 'Ver rutinas y progreso', view: 'mod-ejercicios' },
-      { id: 'evaluaciones', nombre: 'Evaluaciones', icon: '📊', descripcion: 'Evaluaciones físicas de pacientes', view: 'mod-evaluaciones' },
-      { id: 'planes', nombre: 'Planes de Tratamiento', icon: '📋', descripcion: 'Gestionar planes de pacientes', view: 'mod-planes' },
-      { id: 'progreso', nombre: 'Progreso', icon: '📈', descripcion: 'Ver progreso de pacientes', view: 'mod-progreso' },
+      { id: 'ejercicios', nombre: 'Ejercicios de Pacientes', icon: 'dumbbell', descripcion: 'Ver rutinas y progreso', view: 'mod-ejercicios' },
+      { id: 'evaluaciones', nombre: 'Evaluaciones', icon: 'bar-chart', descripcion: 'Evaluaciones físicas de pacientes', view: 'mod-evaluaciones' },
+      { id: 'planes', nombre: 'Planes de Tratamiento', icon: 'clipboard', descripcion: 'Gestionar planes de pacientes', view: 'mod-planes' },
+      { id: 'progreso', nombre: 'Progreso', icon: 'trending-up', descripcion: 'Ver progreso de pacientes', view: 'mod-progreso' },
     ],
     herramientas: [
-      { nombre: 'Calculadora de ROM', icon: '📐' },
-      { nombre: 'Escala de Dolor', icon: '😣' },
-      { nombre: 'Test Muscular', icon: '💪' },
+      { nombre: 'Calculadora de ROM', icon: 'compass' },
+      { nombre: 'Escala de Dolor', icon: 'frown' },
+      { nombre: 'Test Muscular', icon: 'zap' },
     ]
   },
   nutricion: {
     nombre: 'Nutrición',
-    icon: '🥗',
-    color: '#4CAF50',
+    icon: 'salad',
+    color: '#2E7D32',
     modulos: [
-      { id: 'planes-nutricionales', nombre: 'Planes Nutricionales', icon: '🍽️', descripcion: 'Ver dietas de pacientes', view: 'mod-planes-nutricionales' },
-      { id: 'seguimiento-peso', nombre: 'Seguimiento de Peso', icon: '📉', descripcion: 'Ver peso de pacientes', view: 'mod-seguimiento-peso' },
-      { id: 'historial-alimenticio', nombre: 'Historial Alimenticio', icon: '🥗', descripcion: 'Ver registros de alimentación', view: 'mod-historial-alimenticio' },
-      { id: 'imc-pacientes', nombre: 'IMC de Pacientes', icon: '⚖️', descripcion: 'Ver índice de masa corporal', view: 'mod-imc' },
+      { id: 'planes-nutricionales', nombre: 'Planes Nutricionales', icon: 'utensils', descripcion: 'Ver dietas de pacientes', view: 'mod-planes-nutricionales' },
+      { id: 'seguimiento-peso', nombre: 'Seguimiento de Peso', icon: 'chart-line', descripcion: 'Ver peso de pacientes', view: 'mod-seguimiento-peso' },
+      { id: 'historial-alimenticio', nombre: 'Historial Alimenticio', icon: 'salad', descripcion: 'Ver registros de alimentación', view: 'mod-historial-alimenticio' },
+      { id: 'imc-pacientes', nombre: 'IMC de Pacientes', icon: 'scale', descripcion: 'Ver índice de masa corporal', view: 'mod-imc' },
+      { id: 'calculadora-calorica', nombre: 'Calculadora Calórica', icon: 'target', descripcion: 'Calcular requerimiento calórico', view: 'mod-calculadora-calorica' },
+      { id: 'historial-planes', nombre: 'Historial de Planes', icon: 'file-text', descripcion: 'Ver planes asignados al paciente', view: 'mod-historial-planes' },
+      { id: 'catalogo-recetas', nombre: 'Catálogo de Recetas', icon: 'book-open', descripcion: 'Gestionar recetas del catálogo', view: 'mod-catalogo-recetas' },
+      { id: 'generador-plan', nombre: 'Generar Plan', icon: 'cooking-pot', descripcion: 'Crear plan desde recetas', view: 'mod-generador-plan' },
     ],
     herramientas: [
-      { nombre: 'Calculadora Calórica', icon: '🔢' },
-      { nombre: 'Tabla de Alimentos', icon: '📊' },
-      { nombre: 'Macronutrientes', icon: '🥩' },
+      { nombre: 'Tabla de Alimentos', icon: 'bar-chart' },
+      { nombre: 'Macronutrientes', icon: 'apple' },
     ]
   },
   medicina: {
     nombre: 'Medicina General',
-    icon: '❤️',
-    color: '#F44336',
+    icon: 'heart',
+    color: '#C62828',
     modulos: [
-      { id: 'consultas', nombre: 'Historial Consultas', icon: '🩺', descripcion: 'Ver historial de consultas', view: 'mod-consultas' },
-      { id: 'signos-vitales', nombre: 'Signos Vitales', icon: '❤️‍🩹', descripcion: 'Ver signos vitales de pacientes', view: 'mod-signos-vitales' },
-      { id: 'estudios', nombre: 'Estudios Clínicos', icon: '🔬', descripcion: 'Ver estudios de pacientes', view: 'mod-estudios' },
-      { id: 'recetas-medicas', nombre: 'Recetas Médicas', icon: '💊', descripcion: 'Generar recetas para pacientes', view: 'mod-recetas' },
+      { id: 'consultas', nombre: 'Historial Consultas', icon: 'stethoscope', descripcion: 'Ver historial de consultas', view: 'mod-consultas' },
+      { id: 'signos-vitales', nombre: 'Signos Vitales', icon: 'heart-pulse', descripcion: 'Ver signos vitales de pacientes', view: 'mod-signos-vitales' },
+      { id: 'estudios', nombre: 'Estudios Clínicos', icon: 'microscope', descripcion: 'Ver estudios de pacientes', view: 'mod-estudios' },
+      { id: 'recetas-medicas', nombre: 'Recetas Médicas', icon: 'pill', descripcion: 'Generar recetas para pacientes', view: 'mod-recetas' },
     ],
     herramientas: [
-      { nombre: 'Calculadora de Dosis', icon: '💉' },
-      { nombre: 'CIE-10', icon: '📖' },
-      { nombre: 'Interacciones', icon: '⚠️' },
+      { nombre: 'Calculadora de Dosis', icon: 'syringe' },
+      { nombre: 'CIE-10', icon: 'book-open' },
+      { nombre: 'Interacciones', icon: 'alert-triangle' },
     ]
   },
   neuropsicologia: {
     nombre: 'Neuropsicología',
-    icon: '🧠',
-    color: '#9C27B0',
+    icon: 'brain',
+    color: '#6A1B9A',
     modulos: [
-      { id: 'evaluaciones-cognitivas', nombre: 'Evaluaciones Cognitivas', icon: '🧩', descripcion: 'Ver tests de pacientes', view: 'mod-evaluaciones-cognitivas' },
-      { id: 'ejercicios-mentales', nombre: 'Ejercicios Mentales', icon: '🎯', descripcion: 'Ver actividades de pacientes', view: 'mod-ejercicios-mentales' },
-      { id: 'memoria', nombre: 'Registro de Memoria', icon: '📝', descripcion: 'Ver seguimiento cognitivo', view: 'mod-memoria' },
-      { id: 'emocional', nombre: 'Estado Emocional', icon: '😊', descripcion: 'Ver evaluación emocional', view: 'mod-emocional' },
+      { id: 'evaluaciones-cognitivas', nombre: 'Evaluaciones Cognitivas', icon: 'target', descripcion: 'Ver tests de pacientes', view: 'mod-evaluaciones-cognitivas' },
+      { id: 'ejercicios-mentales', nombre: 'Ejercicios Mentales', icon: 'target', descripcion: 'Ver actividades de pacientes', view: 'mod-ejercicios-mentales' },
+      { id: 'memoria', nombre: 'Registro de Memoria', icon: 'pen-line', descripcion: 'Ver seguimiento cognitivo', view: 'mod-memoria' },
+      { id: 'emocional', nombre: 'Estado Emocional', icon: 'smile', descripcion: 'Ver evaluación emocional', view: 'mod-emocional' },
     ],
     herramientas: [
-      { nombre: 'Test Mini-Mental', icon: '📋' },
-      { nombre: 'Escala de Ansiedad', icon: '😰' },
-      { nombre: 'Test de Memoria', icon: '🧠' },
+      { nombre: 'Test Mini-Mental', icon: 'clipboard' },
+      { nombre: 'Escala de Ansiedad', icon: 'frown' },
+      { nombre: 'Test de Memoria', icon: 'brain' },
     ]
   },
   ortesis: {
     nombre: 'Ortesis y Prótesis',
-    icon: '🦿',
-    color: '#00BCD4',
+    icon: 'accessibility',
+    color: '#1565C0',
     modulos: [
-      { id: 'dispositivos', nombre: 'Dispositivos', icon: '🦾', descripcion: 'Ver dispositivos de pacientes', view: 'mod-dispositivos' },
-      { id: 'adaptacion', nombre: 'Adaptación', icon: '🔧', descripcion: 'Ver seguimiento de adaptación', view: 'mod-adaptacion' },
-      { id: 'mantenimiento', nombre: 'Mantenimiento', icon: '🛠️', descripcion: 'Ver calendario de mantenimiento', view: 'mod-mantenimiento' },
-      { id: 'medidas', nombre: 'Medidas y Ajustes', icon: '📏', descripcion: 'Ver registro de medidas', view: 'mod-medidas' },
+      { id: 'dispositivos', nombre: 'Dispositivos', icon: 'accessibility', descripcion: 'Ver dispositivos de pacientes', view: 'mod-dispositivos' },
+      { id: 'adaptacion', nombre: 'Adaptación', icon: 'wrench', descripcion: 'Ver seguimiento de adaptación', view: 'mod-adaptacion' },
+      { id: 'mantenimiento', nombre: 'Mantenimiento', icon: 'hammer', descripcion: 'Ver calendario de mantenimiento', view: 'mod-mantenimiento' },
+      { id: 'medidas', nombre: 'Medidas y Ajustes', icon: 'clipboard', descripcion: 'Ver registro de medidas', view: 'mod-medidas' },
     ],
     herramientas: [
-      { nombre: 'Guía de Tallas', icon: '📐' },
-      { nombre: 'Materiales', icon: '🧱' },
-      { nombre: 'Proveedores', icon: '🏭' },
+      { nombre: 'Guía de Tallas', icon: 'clipboard' },
+      { nombre: 'Materiales', icon: 'wrench' },
+      { nombre: 'Proveedores', icon: 'hospital' },
     ]
   },
+};
+
+// ============================================================
+// Componente interno: Recetas Médicas (CRUD de medicamentos)
+// ============================================================
+const VIAS_ADMINISTRACION = [
+  { value: 'oral', label: 'Oral' },
+  { value: 'inyectable', label: 'Inyectable' },
+  { value: 'topica', label: 'Tópica' },
+  { value: 'inhalada', label: 'Inhalada' },
+  { value: 'sublingual', label: 'Sublingual' },
+  { value: 'otra', label: 'Otra' },
+];
+
+const RecetasMedicasView = ({ pacienteId, pacienteNombre, faseActual, areaColor, onBack, expedienteLink }) => {
+  const [medicamentos, setMedicamentos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [editingMed, setEditingMed] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [filtro, setFiltro] = useState('todos');
+
+  const emptyMed = {
+    nombre_comercial: '', nombre_generico: '', dosis: '', frecuencia: '',
+    via_administracion: 'oral', instrucciones_especiales: '',
+    fecha_inicio: new Date().toISOString().split('T')[0], fecha_fin: '', notas_medico: ''
+  };
+  const [formMeds, setFormMeds] = useState([{ ...emptyMed }]);
+
+  useEffect(() => {
+    loadMedicamentos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pacienteId]);
+
+  const loadMedicamentos = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get(`/medicina/medicamentos/${pacienteId}`);
+      setMedicamentos(res?.data || []);
+    } catch (err) {
+      console.error('Error cargando medicamentos:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const openCreate = () => {
+    setEditingMed(null);
+    setFormMeds([{ ...emptyMed }]);
+    setShowModal(true);
+  };
+
+  const openEdit = (med) => {
+    setEditingMed(med);
+    setFormMeds([{
+      nombre_comercial: med.nombre_comercial || '',
+      nombre_generico: med.nombre_generico || '',
+      dosis: med.dosis || '',
+      frecuencia: med.frecuencia || '',
+      via_administracion: med.via_administracion || 'oral',
+      instrucciones_especiales: med.instrucciones_especiales || '',
+      fecha_inicio: med.fecha_inicio || '',
+      fecha_fin: med.fecha_fin || '',
+      notas_medico: med.notas_medico || '',
+    }]);
+    setShowModal(true);
+  };
+
+  const addMedRow = () => {
+    setFormMeds([...formMeds, { ...emptyMed }]);
+  };
+
+  const removeMedRow = (idx) => {
+    setFormMeds(formMeds.filter((_, i) => i !== idx));
+  };
+
+  const updateMedRow = (idx, field, value) => {
+    const updated = [...formMeds];
+    updated[idx] = { ...updated[idx], [field]: value };
+    setFormMeds(updated);
+  };
+
+  const handleSave = async () => {
+    const valid = formMeds.filter(m => m.nombre_comercial.trim() && m.dosis.trim() && m.frecuencia.trim());
+    if (valid.length === 0) {
+      alert('Al menos un medicamento con nombre, dosis y frecuencia es requerido');
+      return;
+    }
+    setSaving(true);
+    try {
+      if (editingMed) {
+        await api.put(`/medicina/medicamentos/${editingMed.id}`, formMeds[0]);
+      } else {
+        await api.post('/medicina/medicamentos', {
+          paciente_id: pacienteId,
+          medicamentos: valid
+        });
+      }
+      setShowModal(false);
+      setFormMeds([{ ...emptyMed }]);
+      setEditingMed(null);
+      loadMedicamentos();
+    } catch (err) {
+      console.error('Error guardando medicamento:', err);
+      alert('Error al guardar el medicamento');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDesactivar = async (id) => {
+    if (!window.confirm('¿Desactivar este medicamento? Se marcará como finalizado.')) return;
+    try {
+      await api.delete(`/medicina/medicamentos/${id}`);
+      loadMedicamentos();
+    } catch (err) {
+      console.error('Error desactivando medicamento:', err);
+      alert('Error al desactivar el medicamento');
+    }
+  };
+
+  const filteredMeds = medicamentos.filter(m => {
+    if (filtro === 'activos') return m.activo === 1 || m.activo === '1';
+    if (filtro === 'inactivos') return m.activo === 0 || m.activo === '0';
+    return true;
+  });
+
+  const activos = medicamentos.filter(m => m.activo === 1 || m.activo === '1');
+  const inactivos = medicamentos.filter(m => m.activo === 0 || m.activo === '0');
+
+  return (
+    <section className="module-view">
+      <div className="module-header">
+        <button className="back-btn" onClick={onBack}>← Cambiar paciente</button>
+        <h2 className="module-title"><LucideIcon name="pill" size={22} /> Recetas de {pacienteNombre}</h2>
+      </div>
+
+      {loading ? (
+        <div className="loading-module">
+          <div className="loading-spinner"></div>
+          <p>Cargando medicamentos...</p>
+        </div>
+      ) : (
+        <div className="module-content">
+          {/* Resumen */}
+          <div className="patient-summary-card" style={{ '--area-color': areaColor }}>
+            <div className="patient-avatar-large">{pacienteNombre?.charAt(0)}</div>
+            <div className="patient-summary-info">
+              <h3>{pacienteNombre}</h3>
+              <p>Fase: {faseActual || 'Sin asignar'}</p>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '6px' }}>
+                <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+                  <LucideIcon name="check-circle" size={14} /> {activos.length} activos
+                </span>
+                <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
+                  <LucideIcon name="x-circle" size={14} /> {inactivos.length} finalizados
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Filtros y botón crear */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '8px' }}>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {['todos', 'activos', 'inactivos'].map(f => (
+                <button
+                  key={f}
+                  className={`chip ${filtro === f ? 'active' : ''}`}
+                  onClick={() => setFiltro(f)}
+                  style={filtro === f ? { background: areaColor, borderColor: areaColor, color: '#fff' } : {}}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+            <button className="btn-primary" onClick={openCreate} style={{ background: areaColor }}>
+              <LucideIcon name="plus" size={16} /> Nueva Receta
+            </button>
+          </div>
+
+          {/* Lista de medicamentos */}
+          {filteredMeds.length > 0 ? (
+            <div className="recetas-list">
+              {filteredMeds.map(med => {
+                const esActivo = med.activo === 1 || med.activo === '1';
+                return (
+                  <div key={med.id} className={`receta-card ${esActivo ? 'activa' : 'vencida'}`}>
+                    <div className="receta-header">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <LucideIcon name="pill" size={18} style={{ color: esActivo ? areaColor : 'var(--text-muted)' }} />
+                        <strong style={{ fontSize: '16px' }}>{med.nombre_comercial}</strong>
+                        {med.nombre_generico && (
+                          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>({med.nombre_generico})</span>
+                        )}
+                      </div>
+                      <span className={`vigencia-badge ${esActivo ? 'activa' : 'vencida'}`}>
+                        {esActivo ? 'Activo' : 'Finalizado'}
+                      </span>
+                    </div>
+                    <div className="receta-medicamentos">
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px', margin: '8px 0' }}>
+                        <div><strong>Dosis:</strong> {med.dosis}</div>
+                        <div><strong>Frecuencia:</strong> {med.frecuencia}</div>
+                        <div><strong>Vía:</strong> {VIAS_ADMINISTRACION.find(v => v.value === med.via_administracion)?.label || med.via_administracion}</div>
+                        <div><strong>Inicio:</strong> {med.fecha_inicio}</div>
+                        {med.fecha_fin && <div><strong>Fin:</strong> {med.fecha_fin}</div>}
+                      </div>
+                      {med.instrucciones_especiales && (
+                        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: '4px 0' }}>
+                          <LucideIcon name="info" size={14} /> {med.instrucciones_especiales}
+                        </p>
+                      )}
+                      {med.notas_medico && (
+                        <p style={{ fontSize: '13px', color: 'var(--text-muted)', fontStyle: 'italic', margin: '4px 0' }}>
+                          Nota: {med.notas_medico}
+                        </p>
+                      )}
+                      {med.prescrito_por_nombre && (
+                        <p style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '6px' }}>
+                          Prescrito por: {med.prescrito_por_nombre}
+                        </p>
+                      )}
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'flex-end' }}>
+                      <button className="btn-icon" onClick={() => openEdit(med)} title="Editar">
+                        <LucideIcon name="pen-line" size={16} />
+                      </button>
+                      {esActivo && (
+                        <button className="btn-icon delete" onClick={() => handleDesactivar(med.id)} title="Finalizar medicamento">
+                          <LucideIcon name="x-circle" size={16} />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="empty-state">
+              <span className="empty-icon"><LucideIcon name="pill" size={32} /></span>
+              <p>{filtro === 'todos' ? 'No hay medicamentos registrados para este paciente' : `No hay medicamentos ${filtro}`}</p>
+              <button className="btn-primary" onClick={openCreate} style={{ background: areaColor, marginTop: '12px' }}>
+                <LucideIcon name="plus" size={16} /> Prescribir Medicamento
+              </button>
+            </div>
+          )}
+
+          <div className="module-actions" style={{ marginTop: '16px' }}>
+            <Link to={expedienteLink} className="btn-primary">
+              Ver Expediente Completo
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {/* Modal crear/editar */}
+      {showModal && (
+        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()} style={{ maxWidth: '620px' }}>
+            <div className="modal-header">
+              <h2>{editingMed ? 'Editar Medicamento' : 'Nueva Receta Médica'}</h2>
+              <button className="modal-close" onClick={() => setShowModal(false)}>✕</button>
+            </div>
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxHeight: '70vh', overflowY: 'auto' }}>
+              {formMeds.map((med, idx) => (
+                <div key={idx} style={{ border: formMeds.length > 1 ? '1px solid var(--border-color, #30363D)' : 'none', borderRadius: '12px', padding: formMeds.length > 1 ? '16px' : '0', position: 'relative' }}>
+                  {formMeds.length > 1 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: 600, color: areaColor }}>
+                        <LucideIcon name="pill" size={14} /> Medicamento {idx + 1}
+                      </span>
+                      <button type="button" className="btn-icon delete" onClick={() => removeMedRow(idx)} title="Quitar medicamento"
+                        style={{ padding: '4px' }}>
+                        <LucideIcon name="trash-2" size={16} />
+                      </button>
+                    </div>
+                  )}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <div className="form-row" style={{ display: 'flex', gap: '12px' }}>
+                      <div className="form-group" style={{ flex: 2 }}>
+                        <label>Nombre comercial *</label>
+                        <input type="text" className="form-input" value={med.nombre_comercial}
+                          onChange={e => updateMedRow(idx, 'nombre_comercial', e.target.value)}
+                          placeholder="Ej: Metformina" />
+                      </div>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Nombre genérico</label>
+                        <input type="text" className="form-input" value={med.nombre_generico}
+                          onChange={e => updateMedRow(idx, 'nombre_generico', e.target.value)}
+                          placeholder="Opcional" />
+                      </div>
+                    </div>
+                    <div className="form-row" style={{ display: 'flex', gap: '12px' }}>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Dosis *</label>
+                        <input type="text" className="form-input" value={med.dosis}
+                          onChange={e => updateMedRow(idx, 'dosis', e.target.value)}
+                          placeholder="Ej: 500mg" />
+                      </div>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Frecuencia *</label>
+                        <input type="text" className="form-input" value={med.frecuencia}
+                          onChange={e => updateMedRow(idx, 'frecuencia', e.target.value)}
+                          placeholder="Ej: Cada 8 horas" />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label>Vía de administración</label>
+                      <select className="form-input" value={med.via_administracion}
+                        onChange={e => updateMedRow(idx, 'via_administracion', e.target.value)}>
+                        {VIAS_ADMINISTRACION.map(v => (
+                          <option key={v.value} value={v.value}>{v.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="form-row" style={{ display: 'flex', gap: '12px' }}>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Fecha inicio *</label>
+                        <input type="date" className="form-input" value={med.fecha_inicio}
+                          onChange={e => updateMedRow(idx, 'fecha_inicio', e.target.value)} />
+                      </div>
+                      <div className="form-group" style={{ flex: 1 }}>
+                        <label>Fecha fin (opcional)</label>
+                        <input type="date" className="form-input" value={med.fecha_fin}
+                          onChange={e => updateMedRow(idx, 'fecha_fin', e.target.value)} />
+                      </div>
+                    </div>
+                    <div className="form-group">
+                      <label>Instrucciones especiales</label>
+                      <textarea className="form-input" rows="2" value={med.instrucciones_especiales}
+                        onChange={e => updateMedRow(idx, 'instrucciones_especiales', e.target.value)}
+                        placeholder="Ej: Tomar con alimentos, evitar alcohol..." />
+                    </div>
+                    <div className="form-group">
+                      <label>Notas del médico</label>
+                      <textarea className="form-input" rows="2" value={med.notas_medico}
+                        onChange={e => updateMedRow(idx, 'notas_medico', e.target.value)}
+                        placeholder="Notas adicionales..." />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {!editingMed && (
+                <button type="button" className="btn-secondary" onClick={addMedRow}
+                  style={{ alignSelf: 'flex-start', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <LucideIcon name="plus-circle" size={16} /> Agregar otro medicamento
+                </button>
+              )}
+            </div>
+            <div className="modal-footer">
+              <button className="btn-secondary" onClick={() => setShowModal(false)}>Cancelar</button>
+              <button className="btn-primary" onClick={handleSave} disabled={saving} style={{ background: areaColor }}>
+                {saving ? 'Guardando...' : (editingMed ? 'Guardar Cambios' : `Prescribir${formMeds.length > 1 ? ` (${formMeds.length})` : ''}`)}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </section>
+  );
 };
 
 const EspecialistaDashboard = () => {
@@ -157,6 +548,11 @@ const EspecialistaDashboard = () => {
 
   // Estado para integración con Outlook
   const [outlookConnected, setOutlookConnected] = useState(false);
+
+  // Estados para signos vitales (gráficas medicina)
+  const [signosData, setSignosData] = useState({ glucosa: [], presion: [], dolor: [], hba1c: [], resumen: null });
+  const [signosLoading, setSignosLoading] = useState(false);
+  const [signosTab, setSignosTab] = useState('glucosa');
 
   // Obtener área médica del especialista
   const areaCodigo = user?.area_medica || 'medicina';
@@ -230,10 +626,38 @@ const EspecialistaDashboard = () => {
     }
   };
 
+  // Cargar signos vitales (glucosa, presión, dolor) de un paciente
+  const loadSignosVitales = async (pacienteId) => {
+    setSignosLoading(true);
+    try {
+      const [glucosaRes, presionRes, dolorRes, hba1cRes, resumenRes] = await Promise.all([
+        api.get(`/medicina/glucosa/${pacienteId}`).catch(() => ({ data: [] })),
+        api.get(`/medicina/presion/${pacienteId}`).catch(() => ({ data: [] })),
+        api.get(`/medicina/dolor/${pacienteId}`).catch(() => ({ data: [] })),
+        api.get(`/medicina/hba1c/${pacienteId}`).catch(() => ({ data: [] })),
+        api.get(`/medicina/resumen/${pacienteId}`).catch(() => ({ data: null })),
+      ]);
+      setSignosData({
+        glucosa: glucosaRes?.data || [],
+        presion: presionRes?.data || [],
+        dolor: dolorRes?.data || [],
+        hba1c: hba1cRes?.data || [],
+        resumen: resumenRes?.data || null,
+      });
+    } catch (error) {
+      console.error('Error cargando signos vitales:', error);
+    } finally {
+      setSignosLoading(false);
+    }
+  };
+
   // Seleccionar paciente y cargar sus datos
   const handleSelectPaciente = (paciente) => {
     setSelectedPaciente(paciente);
     loadPacienteData(paciente.id);
+    if (activeView === 'mod-signos-vitales') {
+      loadSignosVitales(paciente.id);
+    }
   };
 
   // Volver a la lista de pacientes en módulos
@@ -536,7 +960,7 @@ const EspecialistaDashboard = () => {
             <p className="user-name">Dr(a). {user?.nombre?.split(' ')[0] || 'Especialista'}</p>
             <p className="welcome-subtitle">Especialista en {areaConfig.nombre}</p>
           </div>
-          <div className="welcome-illustration">{areaConfig.icon}</div>
+          <div className="welcome-illustration"><LucideIcon name={areaConfig.icon} size={48} /></div>
         </section>
       </Speakable>
 
@@ -544,28 +968,28 @@ const EspecialistaDashboard = () => {
       <section className="quick-stats-section">
         <div className="quick-stats-grid">
           <div className="quick-stat-card" onClick={() => setActiveView('pacientes')}>
-            <span className="stat-icon">👥</span>
+            <span className="stat-icon"><LucideIcon name="users" size={18} /></span>
             <div className="stat-info">
               <span className="stat-value">{dashboardData.pacientesActivos}</span>
               <span className="stat-label">Pacientes</span>
             </div>
           </div>
           <div className="quick-stat-card" onClick={() => setActiveView('agenda')}>
-            <span className="stat-icon">📅</span>
+            <span className="stat-icon"><LucideIcon name="calendar" size={18} /></span>
             <div className="stat-info">
               <span className="stat-value">{dashboardData.todayCitas.length}</span>
               <span className="stat-label">Citas hoy</span>
             </div>
           </div>
           <div className="quick-stat-card" onClick={() => setActiveView('seguimientos')}>
-            <span className="stat-icon">📋</span>
+            <span className="stat-icon"><LucideIcon name="clipboard" size={18} /></span>
             <div className="stat-info">
               <span className="stat-value">{dashboardData.seguimientosPendientes}</span>
               <span className="stat-label">Seguimientos</span>
             </div>
           </div>
           <div className="quick-stat-card" onClick={() => setActiveView('mensajes')}>
-            <span className="stat-icon">💬</span>
+            <span className="stat-icon"><LucideIcon name="message" size={18} /></span>
             <div className="stat-info">
               <span className="stat-value">{dashboardData.mensajesNuevos}</span>
               <span className="stat-label">Mensajes</span>
@@ -577,12 +1001,12 @@ const EspecialistaDashboard = () => {
       {/* Citas del día */}
       <section className="today-appointments">
         <div className="section-header">
-          <h2 className="section-title">📅 Citas de Hoy</h2>
+          <h2 className="section-title"><LucideIcon name="calendar" size={22} /> Citas de Hoy</h2>
           <button className="section-link" onClick={() => setActiveView('agenda')}>Ver agenda</button>
         </div>
         {dashboardData.todayCitas.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-icon">📭</span>
+            <span className="empty-icon"><LucideIcon name="calendar" size={32} /></span>
             <p>No tienes citas programadas para hoy</p>
           </div>
         ) : (
@@ -613,7 +1037,7 @@ const EspecialistaDashboard = () => {
 
       {/* Módulos del área */}
       <section className="area-modules">
-        <h2 className="section-title">{areaConfig.icon} Módulos de {areaConfig.nombre}</h2>
+        <h2 className="section-title"><LucideIcon name={areaConfig.icon} size={22} /> Módulos de {areaConfig.nombre}</h2>
         <div className="modules-grid">
           {areaConfig.modulos.map((modulo) => (
             <button
@@ -622,7 +1046,7 @@ const EspecialistaDashboard = () => {
               className="module-card"
               style={{ '--module-color': areaConfig.color }}
             >
-              <span className="module-icon">{modulo.icon}</span>
+              <span className="module-icon"><LucideIcon name={modulo.icon} size={24} /></span>
               <span className="module-name">{modulo.nombre}</span>
               <span className="module-desc">{modulo.descripcion}</span>
             </button>
@@ -632,7 +1056,7 @@ const EspecialistaDashboard = () => {
 
       {/* Herramientas rápidas */}
       <section className="quick-tools">
-        <h2 className="section-title">🛠️ Herramientas Rápidas</h2>
+        <h2 className="section-title"><LucideIcon name="hammer" size={22} /> Herramientas Rápidas</h2>
         <div className="tools-grid">
           {areaConfig.herramientas.map((tool, idx) => (
             <button
@@ -641,7 +1065,7 @@ const EspecialistaDashboard = () => {
               style={{ '--tool-color': areaConfig.color }}
               onClick={() => handleOpenTool(tool.nombre)}
             >
-              <span className="tool-icon">{tool.icon}</span>
+              <span className="tool-icon"><LucideIcon name={tool.icon} size={20} /></span>
               <span className="tool-name">{tool.nombre}</span>
             </button>
           ))}
@@ -654,13 +1078,13 @@ const EspecialistaDashboard = () => {
   const renderPacientes = () => (
     <section className="patients-view">
       <div className="section-header">
-        <h2 className="section-title">👥 Mis Pacientes</h2>
+        <h2 className="section-title"><LucideIcon name="users" size={22} /> Mis Pacientes</h2>
         <span className="patient-count">{dashboardData.pacientes.length} pacientes</span>
       </div>
 
       {dashboardData.pacientes.length === 0 ? (
         <div className="empty-state">
-          <span className="empty-icon">👥</span>
+          <span className="empty-icon"><LucideIcon name="users" size={32} /></span>
           <p>No tienes pacientes asignados</p>
         </div>
       ) : (
@@ -697,7 +1121,7 @@ const EspecialistaDashboard = () => {
   const renderAgenda = () => (
     <section className="agenda-view">
       <div className="section-header">
-        <h2 className="section-title">📅 Mi Agenda</h2>
+        <h2 className="section-title"><LucideIcon name="calendar" size={22} /> Mi Agenda</h2>
         <button
           className="btn-nueva-cita"
           onClick={handleOpenNuevaCita}
@@ -719,7 +1143,7 @@ const EspecialistaDashboard = () => {
 
         {dashboardData.todayCitas.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-icon">📅</span>
+            <span className="empty-icon"><LucideIcon name="calendar" size={32} /></span>
             <p>No hay citas para hoy</p>
           </div>
         ) : (
@@ -761,7 +1185,7 @@ const EspecialistaDashboard = () => {
   const renderSeguimientos = () => (
     <section className="followups-view">
       <div className="section-header">
-        <h2 className="section-title">📋 Seguimientos Pendientes</h2>
+        <h2 className="section-title"><LucideIcon name="clipboard" size={22} /> Seguimientos Pendientes</h2>
         <span className="followup-count">{dashboardData.seguimientosPendientes} pendientes</span>
       </div>
 
@@ -771,7 +1195,7 @@ const EspecialistaDashboard = () => {
 
       {dashboardData.pacientes.filter(p => !p.ultima_cita || new Date(p.ultima_cita) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length === 0 ? (
         <div className="empty-state success">
-          <span className="empty-icon">✅</span>
+          <span className="empty-icon"><LucideIcon name="circle-check" size={32} /></span>
           <p>Todos los pacientes están al día con sus citas</p>
         </div>
       ) : (
@@ -803,7 +1227,7 @@ const EspecialistaDashboard = () => {
   const renderMensajes = () => (
       <section className="messages-view chat-view">
         <div className="section-header">
-          <h2 className="section-title">💬 Mensajes</h2>
+          <h2 className="section-title"><LucideIcon name="message" size={22} /> Mensajes</h2>
           {dashboardData.mensajesNuevos > 0 && (
             <span className="unread-badge">{dashboardData.mensajesNuevos} nuevos</span>
           )}
@@ -868,7 +1292,7 @@ const EspecialistaDashboard = () => {
           <div className={`chat-main ${conversacionActiva ? 'active' : ''}`}>
             {!conversacionActiva ? (
               <div className="chat-placeholder">
-                <span className="chat-placeholder-icon">💬</span>
+                <span className="chat-placeholder-icon"><LucideIcon name="message" size={32} /></span>
                 <p>Selecciona una conversación para ver los mensajes</p>
                 <p className="text-muted">O inicia una nueva conversación con un paciente</p>
               </div>
@@ -944,13 +1368,13 @@ const EspecialistaDashboard = () => {
   const renderHerramientas = () => (
     <section className="tools-view">
       <div className="section-header">
-        <h2 className="section-title">🛠️ Herramientas de {areaConfig.nombre}</h2>
+        <h2 className="section-title"><LucideIcon name="hammer" size={22} /> Herramientas de {areaConfig.nombre}</h2>
       </div>
 
       <div className="tools-full-grid">
         {areaConfig.herramientas.map((tool, idx) => (
           <div key={idx} className="tool-card-full" style={{ '--tool-color': areaConfig.color }}>
-            <span className="tool-icon-large">{tool.icon}</span>
+            <span className="tool-icon-large"><LucideIcon name={tool.icon} size={32} /></span>
             <h3 className="tool-title">{tool.nombre}</h3>
             <button className="btn-use-tool">Usar herramienta</button>
           </div>
@@ -962,7 +1386,7 @@ const EspecialistaDashboard = () => {
         <div className="modules-list">
           {areaConfig.modulos.map((modulo) => (
             <button key={modulo.id} onClick={() => setActiveView(modulo.view)} className="module-list-item">
-              <span className="module-icon">{modulo.icon}</span>
+              <span className="module-icon"><LucideIcon name={modulo.icon} size={20} /></span>
               <div className="module-info">
                 <h4>{modulo.nombre}</h4>
                 <p>{modulo.descripcion}</p>
@@ -984,14 +1408,14 @@ const EspecialistaDashboard = () => {
         <button className="back-btn" onClick={() => setActiveView('inicio')}>
           ← Volver
         </button>
-        <h2 className="module-title">{icon} {title}</h2>
+        <h2 className="module-title"><LucideIcon name={icon} size={22} /> {title}</h2>
       </div>
 
       <div className="patient-selector">
         <h3>Selecciona un paciente para ver sus datos:</h3>
         {dashboardData.pacientes.length === 0 ? (
           <div className="empty-state">
-            <span className="empty-icon">👥</span>
+            <span className="empty-icon"><LucideIcon name="users" size={32} /></span>
             <p>No tienes pacientes asignados</p>
           </div>
         ) : (
@@ -1021,7 +1445,7 @@ const EspecialistaDashboard = () => {
   // Vista: Historial de Consultas (Medicina)
   const renderModConsultas = () => {
     if (!selectedPaciente) {
-      return renderPatientSelector('Historial de Consultas', '🩺');
+      return renderPatientSelector('Historial de Consultas', 'stethoscope');
     }
 
     return (
@@ -1030,7 +1454,7 @@ const EspecialistaDashboard = () => {
           <button className="back-btn" onClick={handleBackToPatientList}>
             ← Cambiar paciente
           </button>
-          <h2 className="module-title">🩺 Consultas de {selectedPaciente.nombre}</h2>
+          <h2 className="module-title"><LucideIcon name="stethoscope" size={22} /> Consultas de {selectedPaciente.nombre}</h2>
         </div>
 
         {loadingPacienteData ? (
@@ -1071,7 +1495,7 @@ const EspecialistaDashboard = () => {
                 ))
               ) : (
                 <div className="empty-state">
-                  <span className="empty-icon">📋</span>
+                  <span className="empty-icon"><LucideIcon name="clipboard" size={32} /></span>
                   <p>No hay consultas registradas para este paciente</p>
                 </div>
               )}
@@ -1094,15 +1518,41 @@ const EspecialistaDashboard = () => {
   // Vista: Signos Vitales (Medicina)
   const renderModSignosVitales = () => {
     if (!selectedPaciente) {
-      return renderPatientSelector('Signos Vitales', '❤️‍🩹');
+      return renderPatientSelector('Signos Vitales', 'heart-pulse');
     }
 
-    // Datos de ejemplo - en producción vendrían del backend
-    const signosVitales = pacienteData?.signos_vitales || [
-      { fecha: '2024-01-15', presion: '120/80', glucosa: 95, frecuencia: 72, temperatura: 36.5 },
-      { fecha: '2024-01-10', presion: '118/78', glucosa: 92, frecuencia: 70, temperatura: 36.4 },
-      { fecha: '2024-01-05', presion: '122/82', glucosa: 98, frecuencia: 75, temperatura: 36.6 },
-    ];
+    // Cargar datos si aún no se han cargado
+    if (!signosLoading && signosData.glucosa.length === 0 && signosData.presion.length === 0 && signosData.dolor.length === 0 && signosData.hba1c.length === 0 && !signosData.resumen) {
+      loadSignosVitales(selectedPaciente.id);
+    }
+
+    const resumen = signosData.resumen;
+    const formatFecha = (fecha) => {
+      if (!fecha) return '--';
+      const d = new Date(fecha);
+      return `${d.getDate()}/${d.getMonth() + 1}`;
+    };
+
+    const chartOptions = {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { ticks: { color: '#8B949E', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { ticks: { color: '#8B949E', font: { size: 10 }, maxRotation: 45 }, grid: { display: false } }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 10, titleFont: { size: 13 }, bodyFont: { size: 12 } }
+      }
+    };
+
+    const glucosaData = [...signosData.glucosa].reverse().slice(-20);
+    const presionData = [...signosData.presion].reverse().slice(-20);
+    const dolorData = [...signosData.dolor].reverse().slice(-20);
+    const hba1cData = [...signosData.hba1c].reverse().slice(-20);
+
+    const getHba1cColor = (v) => v < 5.7 ? '#4CAF50' : v < 6.5 ? '#FF9800' : '#EF5350';
+    const getHba1cTexto = (v) => v < 5.7 ? 'Normal' : v < 6.5 ? 'Prediabético' : 'Diabético';
 
     return (
       <section className="module-view">
@@ -1110,79 +1560,306 @@ const EspecialistaDashboard = () => {
           <button className="back-btn" onClick={handleBackToPatientList}>
             ← Cambiar paciente
           </button>
-          <h2 className="module-title">❤️‍🩹 Signos Vitales de {selectedPaciente.nombre}</h2>
+          <h2 className="module-title"><LucideIcon name="heart-pulse" size={22} /> Signos Vitales de {selectedPaciente.nombre}</h2>
         </div>
 
-        {loadingPacienteData ? (
+        {signosLoading ? (
           <div className="loading-module">
             <div className="loading-spinner"></div>
             <p>Cargando signos vitales...</p>
           </div>
         ) : (
           <div className="module-content">
-            <div className="patient-summary-card" style={{ '--area-color': areaConfig.color }}>
-              <div className="patient-avatar-large">{selectedPaciente.nombre?.charAt(0)}</div>
-              <div className="patient-summary-info">
-                <h3>{selectedPaciente.nombre}</h3>
-                <p>Fase: {selectedPaciente.fase_actual || 'Sin asignar'}</p>
-              </div>
-            </div>
-
+            {/* Tarjetas resumen */}
             <div className="vitals-summary">
-              <h3 className="subsection-title">Últimos Registros</h3>
+              <h3 className="subsection-title">Últimos Valores</h3>
               <div className="vitals-grid">
                 <div className="vital-card">
-                  <span className="vital-icon">🫀</span>
-                  <span className="vital-label">Presión Arterial</span>
-                  <span className="vital-value">{signosVitales[0]?.presion || 'N/A'}</span>
-                  <span className="vital-unit">mmHg</span>
-                </div>
-                <div className="vital-card">
-                  <span className="vital-icon">🩸</span>
+                  <span className="vital-icon"><LucideIcon name="droplet" size={20} /></span>
                   <span className="vital-label">Glucosa</span>
-                  <span className="vital-value">{signosVitales[0]?.glucosa || 'N/A'}</span>
+                  <span className="vital-value">{resumen?.ultima_glucosa?.valor || signosData.glucosa[0]?.nivel_glucosa || '--'}</span>
                   <span className="vital-unit">mg/dL</span>
                 </div>
                 <div className="vital-card">
-                  <span className="vital-icon">💓</span>
-                  <span className="vital-label">Frecuencia Cardíaca</span>
-                  <span className="vital-value">{signosVitales[0]?.frecuencia || 'N/A'}</span>
-                  <span className="vital-unit">bpm</span>
+                  <span className="vital-icon"><LucideIcon name="heart-pulse" size={20} /></span>
+                  <span className="vital-label">Presión</span>
+                  <span className="vital-value">
+                    {resumen?.ultima_presion ? `${resumen.ultima_presion.sistolica}/${resumen.ultima_presion.diastolica}` :
+                     signosData.presion[0] ? `${signosData.presion[0].sistolica}/${signosData.presion[0].diastolica}` : '--'}
+                  </span>
+                  <span className="vital-unit">mmHg</span>
                 </div>
                 <div className="vital-card">
-                  <span className="vital-icon">🌡️</span>
-                  <span className="vital-label">Temperatura</span>
-                  <span className="vital-value">{signosVitales[0]?.temperatura || 'N/A'}</span>
-                  <span className="vital-unit">°C</span>
+                  <span className="vital-icon"><LucideIcon name="activity" size={20} /></span>
+                  <span className="vital-label">Dolor</span>
+                  <span className="vital-value">{resumen?.ultimo_dolor?.intensidad || signosData.dolor[0]?.intensidad || '--'}</span>
+                  <span className="vital-unit">/ 10</span>
+                </div>
+                <div className="vital-card">
+                  <span className="vital-icon"><LucideIcon name="droplet" size={20} /></span>
+                  <span className="vital-label">HbA1c</span>
+                  <span className="vital-value" style={{ color: signosData.hba1c[0] ? getHba1cColor(signosData.hba1c[0].valor) : undefined }}>
+                    {resumen?.hba1c?.valor || signosData.hba1c[0]?.valor || '--'}
+                  </span>
+                  <span className="vital-unit">%</span>
                 </div>
               </div>
             </div>
 
-            <div className="vitals-history">
-              <h3 className="subsection-title">Historial</h3>
-              <table className="vitals-table">
-                <thead>
-                  <tr>
-                    <th>Fecha</th>
-                    <th>Presión</th>
-                    <th>Glucosa</th>
-                    <th>FC</th>
-                    <th>Temp</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {signosVitales.map((registro, idx) => (
-                    <tr key={idx}>
-                      <td>{registro.fecha}</td>
-                      <td>{registro.presion}</td>
-                      <td>{registro.glucosa}</td>
-                      <td>{registro.frecuencia}</td>
-                      <td>{registro.temperatura}°</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Tabs de gráficas */}
+            <div className="signos-tabs">
+              <button className={`signos-tab ${signosTab === 'glucosa' ? 'active' : ''}`} onClick={() => setSignosTab('glucosa')}>
+                <LucideIcon name="droplet" size={16} /> Glucosa
+              </button>
+              <button className={`signos-tab ${signosTab === 'presion' ? 'active' : ''}`} onClick={() => setSignosTab('presion')}>
+                <LucideIcon name="heart-pulse" size={16} /> Presión
+              </button>
+              <button className={`signos-tab ${signosTab === 'dolor' ? 'active' : ''}`} onClick={() => setSignosTab('dolor')}>
+                <LucideIcon name="activity" size={16} /> Dolor
+              </button>
+              <button className={`signos-tab ${signosTab === 'hba1c' ? 'active' : ''}`} onClick={() => setSignosTab('hba1c')}>
+                <LucideIcon name="droplet" size={16} /> HbA1c
+              </button>
             </div>
+
+            {/* Gráfica de Glucosa */}
+            {signosTab === 'glucosa' && (
+              <div className="signos-chart-container">
+                <h3 className="subsection-title">Tendencia de Glucosa</h3>
+                {glucosaData.length >= 2 ? (
+                  <div className="signos-chart-wrapper">
+                    <Line
+                      data={{
+                        labels: glucosaData.map(r => formatFecha(r.fecha_hora || r.fecha)),
+                        datasets: [{
+                          label: 'Glucosa (mg/dL)',
+                          data: glucosaData.map(r => r.nivel_glucosa || r.valor),
+                          borderColor: '#1976D2',
+                          backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                          pointBackgroundColor: glucosaData.map(r => {
+                            const v = r.nivel_glucosa || r.valor;
+                            return v < 70 ? '#EF5350' : v > 140 ? '#FF9800' : '#4CAF50';
+                          }),
+                          pointBorderColor: '#fff',
+                          pointBorderWidth: 2,
+                          pointRadius: 5,
+                          tension: 0.3,
+                          fill: true,
+                        }]
+                      }}
+                      options={chartOptions}
+                    />
+                  </div>
+                ) : (
+                  <p className="signos-empty">Sin datos suficientes para graficar</p>
+                )}
+
+                {/* Tabla historial glucosa */}
+                {signosData.glucosa.length > 0 && (
+                  <div className="vitals-history" style={{ marginTop: '16px' }}>
+                    <h4 className="subsection-title">Últimos Registros</h4>
+                    <table className="vitals-table">
+                      <thead><tr><th>Fecha</th><th>Glucosa</th><th>Momento</th></tr></thead>
+                      <tbody>
+                        {signosData.glucosa.slice(0, 10).map((r, i) => (
+                          <tr key={i}>
+                            <td>{formatFecha(r.fecha_hora || r.fecha)}</td>
+                            <td style={{ color: (r.nivel_glucosa || r.valor) < 70 ? '#EF5350' : (r.nivel_glucosa || r.valor) > 140 ? '#FF9800' : '#4CAF50', fontWeight: 600 }}>
+                              {r.nivel_glucosa || r.valor} mg/dL
+                            </td>
+                            <td>{r.momento || r.notas || '--'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gráfica de Presión */}
+            {signosTab === 'presion' && (
+              <div className="signos-chart-container">
+                <h3 className="subsection-title">Tendencia de Presión Arterial</h3>
+                {presionData.length >= 2 ? (
+                  <div className="signos-chart-wrapper">
+                    <Line
+                      data={{
+                        labels: presionData.map(r => formatFecha(r.fecha_hora || r.fecha)),
+                        datasets: [
+                          {
+                            label: 'Sistólica',
+                            data: presionData.map(r => r.sistolica),
+                            borderColor: '#EF5350',
+                            backgroundColor: 'rgba(239, 83, 80, 0.1)',
+                            pointBackgroundColor: '#EF5350',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            tension: 0.3,
+                            fill: true,
+                          },
+                          {
+                            label: 'Diastólica',
+                            data: presionData.map(r => r.diastolica),
+                            borderColor: '#42A5F5',
+                            backgroundColor: 'rgba(66, 165, 245, 0.1)',
+                            pointBackgroundColor: '#42A5F5',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            tension: 0.3,
+                            fill: true,
+                          }
+                        ]
+                      }}
+                      options={{ ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: true, labels: { color: '#8B949E', font: { size: 12 } } } } }}
+                    />
+                  </div>
+                ) : (
+                  <p className="signos-empty">Sin datos suficientes para graficar</p>
+                )}
+
+                {signosData.presion.length > 0 && (
+                  <div className="vitals-history" style={{ marginTop: '16px' }}>
+                    <h4 className="subsection-title">Últimos Registros</h4>
+                    <table className="vitals-table">
+                      <thead><tr><th>Fecha</th><th>Presión</th><th>Pulso</th></tr></thead>
+                      <tbody>
+                        {signosData.presion.slice(0, 10).map((r, i) => {
+                          const elevated = r.sistolica >= 140 || r.diastolica >= 90;
+                          return (
+                            <tr key={i}>
+                              <td>{formatFecha(r.fecha_hora || r.fecha)}</td>
+                              <td style={{ color: elevated ? '#EF5350' : '#4CAF50', fontWeight: 600 }}>
+                                {r.sistolica}/{r.diastolica} mmHg
+                              </td>
+                              <td>{r.pulso || '--'} bpm</td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gráfica de Dolor */}
+            {signosTab === 'dolor' && (
+              <div className="signos-chart-container">
+                <h3 className="subsection-title">Tendencia de Dolor</h3>
+                {dolorData.length >= 2 ? (
+                  <div className="signos-chart-wrapper">
+                    <Line
+                      data={{
+                        labels: dolorData.map(r => formatFecha(r.fecha_hora || r.fecha)),
+                        datasets: [{
+                          label: 'Intensidad (0-10)',
+                          data: dolorData.map(r => r.intensidad),
+                          borderColor: '#FF9800',
+                          backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                          pointBackgroundColor: dolorData.map(r => {
+                            const v = r.intensidad;
+                            return v <= 3 ? '#4CAF50' : v <= 6 ? '#FF9800' : '#EF5350';
+                          }),
+                          pointBorderColor: '#fff',
+                          pointBorderWidth: 2,
+                          pointRadius: 5,
+                          tension: 0.3,
+                          fill: true,
+                        }]
+                      }}
+                      options={{ ...chartOptions, scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, min: 0, max: 10 } } }}
+                    />
+                  </div>
+                ) : (
+                  <p className="signos-empty">Sin datos suficientes para graficar</p>
+                )}
+
+                {signosData.dolor.length > 0 && (
+                  <div className="vitals-history" style={{ marginTop: '16px' }}>
+                    <h4 className="subsection-title">Últimos Registros</h4>
+                    <table className="vitals-table">
+                      <thead><tr><th>Fecha</th><th>Intensidad</th><th>Ubicación</th><th>Tipo</th></tr></thead>
+                      <tbody>
+                        {signosData.dolor.slice(0, 10).map((r, i) => (
+                          <tr key={i}>
+                            <td>{formatFecha(r.fecha_hora || r.fecha)}</td>
+                            <td style={{ color: r.intensidad <= 3 ? '#4CAF50' : r.intensidad <= 6 ? '#FF9800' : '#EF5350', fontWeight: 600 }}>
+                              {r.intensidad}/10
+                            </td>
+                            <td>{r.ubicacion || '--'}</td>
+                            <td>{r.tipo_dolor || '--'}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Gráfica de HbA1c */}
+            {signosTab === 'hba1c' && (
+              <div className="signos-chart-container">
+                <h3 className="subsection-title">Tendencia de HbA1c</h3>
+                {hba1cData.length >= 2 ? (
+                  <div className="signos-chart-wrapper">
+                    <Line
+                      data={{
+                        labels: hba1cData.map(r => formatFecha(r.fecha)),
+                        datasets: [{
+                          label: 'HbA1c (%)',
+                          data: hba1cData.map(r => r.valor),
+                          borderColor: '#FF6F00',
+                          backgroundColor: 'rgba(255, 111, 0, 0.1)',
+                          pointBackgroundColor: hba1cData.map(r => getHba1cColor(r.valor)),
+                          pointBorderColor: '#fff',
+                          pointBorderWidth: 2,
+                          pointRadius: 6,
+                          tension: 0.3,
+                          fill: true,
+                        }]
+                      }}
+                      options={{
+                        ...chartOptions,
+                        scales: {
+                          ...chartOptions.scales,
+                          y: { ...chartOptions.scales.y, min: 3, max: 14, ticks: { ...chartOptions.scales.y.ticks, callback: (v) => v + '%' } }
+                        },
+                        plugins: {
+                          ...chartOptions.plugins,
+                          tooltip: { ...chartOptions.plugins.tooltip, callbacks: { label: (ctx) => `HbA1c: ${ctx.raw}%` } }
+                        }
+                      }}
+                    />
+                  </div>
+                ) : (
+                  <p className="signos-empty">Sin datos suficientes para graficar</p>
+                )}
+
+                {signosData.hba1c.length > 0 && (
+                  <div className="vitals-history" style={{ marginTop: '16px' }}>
+                    <h4 className="subsection-title">Últimos Registros</h4>
+                    <table className="vitals-table">
+                      <thead><tr><th>Fecha</th><th>HbA1c</th><th>Estado</th></tr></thead>
+                      <tbody>
+                        {signosData.hba1c.slice(0, 10).map((r, i) => (
+                          <tr key={i}>
+                            <td>{new Date(r.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                            <td style={{ color: getHba1cColor(r.valor), fontWeight: 600 }}>
+                              {r.valor}%
+                            </td>
+                            <td style={{ color: getHba1cColor(r.valor) }}>{getHba1cTexto(r.valor)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            )}
 
             <div className="module-actions">
               <Link
@@ -1201,7 +1878,7 @@ const EspecialistaDashboard = () => {
   // Vista: Estudios Clínicos (Medicina)
   const renderModEstudios = () => {
     if (!selectedPaciente) {
-      return renderPatientSelector('Estudios Clínicos', '🔬');
+      return renderPatientSelector('Estudios Clínicos', 'microscope');
     }
 
     // Combinar estudios del backend con los locales
@@ -1218,7 +1895,7 @@ const EspecialistaDashboard = () => {
           <button className="back-btn" onClick={handleBackToPatientList}>
             ← Cambiar paciente
           </button>
-          <h2 className="module-title">🔬 Estudios de {selectedPaciente.nombre}</h2>
+          <h2 className="module-title"><LucideIcon name="microscope" size={22} /> Estudios de {selectedPaciente.nombre}</h2>
         </div>
 
         {loadingPacienteData ? (
@@ -1250,7 +1927,7 @@ const EspecialistaDashboard = () => {
               {estudios.length > 0 ? (
                 estudios.map((estudio) => (
                   <div key={estudio.id} className="estudio-card">
-                    <div className="estudio-icon">📄</div>
+                    <div className="estudio-icon"><LucideIcon name="file-text" size={20} /></div>
                     <div className="estudio-info">
                       <h4>{estudio.nombre}</h4>
                       <span className="estudio-date">{estudio.fecha}</span>
@@ -1266,7 +1943,7 @@ const EspecialistaDashboard = () => {
                 ))
               ) : (
                 <div className="empty-state">
-                  <span className="empty-icon">🔬</span>
+                  <span className="empty-icon"><LucideIcon name="microscope" size={32} /></span>
                   <p>No hay estudios registrados para este paciente</p>
                 </div>
               )}
@@ -1296,83 +1973,17 @@ const EspecialistaDashboard = () => {
   // Vista: Recetas Médicas (Medicina)
   const renderModRecetas = () => {
     if (!selectedPaciente) {
-      return renderPatientSelector('Recetas Médicas', '💊');
+      return renderPatientSelector('Recetas Médicas', 'pill');
     }
 
-    // Datos de ejemplo
-    const recetas = pacienteData?.recetas || [
-      { id: 1, fecha: '2024-01-15', medicamentos: ['Metformina 500mg', 'Losartán 50mg'], vigencia: 'Activa' },
-      { id: 2, fecha: '2024-01-01', medicamentos: ['Ibuprofeno 400mg'], vigencia: 'Vencida' },
-    ];
-
-    return (
-      <section className="module-view">
-        <div className="module-header">
-          <button className="back-btn" onClick={handleBackToPatientList}>
-            ← Cambiar paciente
-          </button>
-          <h2 className="module-title">💊 Recetas de {selectedPaciente.nombre}</h2>
-        </div>
-
-        {loadingPacienteData ? (
-          <div className="loading-module">
-            <div className="loading-spinner"></div>
-            <p>Cargando recetas...</p>
-          </div>
-        ) : (
-          <div className="module-content">
-            <div className="patient-summary-card" style={{ '--area-color': areaConfig.color }}>
-              <div className="patient-avatar-large">{selectedPaciente.nombre?.charAt(0)}</div>
-              <div className="patient-summary-info">
-                <h3>{selectedPaciente.nombre}</h3>
-                <p>Fase: {selectedPaciente.fase_actual || 'Sin asignar'}</p>
-              </div>
-            </div>
-
-            <div className="recetas-list">
-              <h3 className="subsection-title">Recetas Emitidas</h3>
-              {recetas.length > 0 ? (
-                recetas.map((receta) => (
-                  <div key={receta.id} className={`receta-card ${receta.vigencia.toLowerCase()}`}>
-                    <div className="receta-header">
-                      <span className="receta-date">📅 {receta.fecha}</span>
-                      <span className={`vigencia-badge ${receta.vigencia.toLowerCase()}`}>
-                        {receta.vigencia}
-                      </span>
-                    </div>
-                    <div className="receta-medicamentos">
-                      <strong>Medicamentos:</strong>
-                      <ul>
-                        {receta.medicamentos.map((med, idx) => (
-                          <li key={idx}>💊 {med}</li>
-                        ))}
-                      </ul>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="empty-state">
-                  <span className="empty-icon">💊</span>
-                  <p>No hay recetas registradas para este paciente</p>
-                </div>
-              )}
-            </div>
-
-            <div className="module-actions">
-              <button className="btn-secondary" style={{ '--area-color': areaConfig.color }}>
-                + Nueva Receta
-              </button>
-              <Link
-                to={`/especialista/pacientes/${selectedPaciente.id}/expediente`}
-                className="btn-primary"
-              >
-                Ver Expediente Completo
-              </Link>
-            </div>
-          </div>
-        )}
-      </section>
-    );
+    return <RecetasMedicasView
+      pacienteId={selectedPaciente.id}
+      pacienteNombre={selectedPaciente.nombre}
+      faseActual={selectedPaciente.fase_actual}
+      areaColor={areaConfig.color}
+      onBack={handleBackToPatientList}
+      expedienteLink={`/especialista/pacientes/${selectedPaciente.id}/expediente`}
+    />;
   };
 
   // Vista genérica para módulos en desarrollo
@@ -1385,29 +1996,10 @@ const EspecialistaDashboard = () => {
         especialistaId={especialistaId}
         pacientes={dashboardData.pacientes}
         onBack={() => setActiveView('inicio')}
+        onOpenGenerator={() => setActiveView('mod-generador-plan')}
       />
     );
   };
-
-  const renderModuloEnDesarrollo = (titulo, icono) => (
-    <section className="module-view">
-      <div className="module-header">
-        <button className="back-btn" onClick={() => setActiveView('inicio')}>
-          ← Volver
-        </button>
-        <h2 className="module-title">{icono} {titulo}</h2>
-      </div>
-
-      <div className="module-content">
-        <div className="coming-soon">
-          <span className="coming-soon-icon">🚧</span>
-          <h3>Módulo en Desarrollo</h3>
-          <p>Este módulo estará disponible próximamente.</p>
-          <p>Podrás ver los datos de tus pacientes relacionados con {titulo.toLowerCase()}.</p>
-        </div>
-      </div>
-    </section>
-  );
 
   // Renderizar contenido según vista activa
   const renderContent = () => {
@@ -1424,23 +2016,67 @@ const EspecialistaDashboard = () => {
       case 'mod-estudios': return renderModEstudios();
       case 'mod-recetas': return renderModRecetas();
 
-      // Módulos de otras áreas (en desarrollo)
-      case 'mod-ejercicios': return renderModuloEnDesarrollo('Ejercicios de Pacientes', '🏋️');
-      case 'mod-evaluaciones': return renderModuloEnDesarrollo('Evaluaciones Físicas', '📊');
-      case 'mod-planes': return renderModuloEnDesarrollo('Planes de Tratamiento', '📋');
-      case 'mod-progreso': return renderModuloEnDesarrollo('Progreso de Pacientes', '📈');
+      // Módulos de Fisioterapia
+      case 'mod-ejercicios':
+        if (!selectedPaciente) return renderPatientSelector('Ejercicios de Pacientes', 'dumbbell');
+        return <EjerciciosPacientes pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-evaluaciones':
+        if (!selectedPaciente) return renderPatientSelector('Evaluaciones Físicas', 'bar-chart');
+        return <EvaluacionesFisicas pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-planes':
+        if (!selectedPaciente) return renderPatientSelector('Planes de Tratamiento', 'clipboard');
+        return <PlanesTratamiento pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-progreso':
+        if (!selectedPaciente) return renderPatientSelector('Progreso de Pacientes', 'trending-up');
+        return <ProgresoPacientes pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
       case 'mod-planes-nutricionales': return renderPlanesNutricionales();
-      case 'mod-seguimiento-peso': return renderModuloEnDesarrollo('Seguimiento de Peso', '📉');
-      case 'mod-historial-alimenticio': return renderModuloEnDesarrollo('Historial Alimenticio', '🥗');
-      case 'mod-imc': return renderModuloEnDesarrollo('IMC de Pacientes', '⚖️');
-      case 'mod-evaluaciones-cognitivas': return renderModuloEnDesarrollo('Evaluaciones Cognitivas', '🧩');
-      case 'mod-ejercicios-mentales': return renderModuloEnDesarrollo('Ejercicios Mentales', '🎯');
-      case 'mod-memoria': return renderModuloEnDesarrollo('Registro de Memoria', '📝');
-      case 'mod-emocional': return renderModuloEnDesarrollo('Estado Emocional', '😊');
-      case 'mod-dispositivos': return renderModuloEnDesarrollo('Dispositivos', '🦾');
-      case 'mod-adaptacion': return renderModuloEnDesarrollo('Adaptación', '🔧');
-      case 'mod-mantenimiento': return renderModuloEnDesarrollo('Mantenimiento', '🛠️');
-      case 'mod-medidas': return renderModuloEnDesarrollo('Medidas y Ajustes', '📏');
+      case 'mod-seguimiento-peso':
+        if (!selectedPaciente) return renderPatientSelector('Seguimiento de Peso', 'chart-line');
+        return <SeguimientoPeso pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-historial-alimenticio':
+        if (!selectedPaciente) return renderPatientSelector('Historial Alimenticio', 'salad');
+        return <HistorialAlimenticio pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-imc':
+        if (!selectedPaciente) return renderPatientSelector('IMC de Pacientes', 'scale');
+        return <IMCPacientes pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-calculadora-calorica':
+        if (!selectedPaciente) return renderPatientSelector('Calculadora Calórica', 'target');
+        return <CalculadoraCalorica pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-historial-planes':
+        if (!selectedPaciente) return renderPatientSelector('Historial de Planes', 'file-text');
+        return <HistorialPlanes pacienteId={selectedPaciente.id} especialistaId={user?.especialista_id || user?.id} onBack={handleBackToPatientList} />;
+      case 'mod-catalogo-recetas':
+        return <CatalogoRecetas onBack={() => setActiveView('inicio')} />;
+      case 'mod-generador-plan':
+        return <GeneradorPlan
+          especialistaId={user?.especialista_id || user?.id}
+          onBack={() => setActiveView('inicio')}
+          onPlanCreated={() => setActiveView('mod-planes-nutricionales')}
+        />;
+      case 'mod-evaluaciones-cognitivas':
+        if (!selectedPaciente) return renderPatientSelector('Evaluaciones Cognitivas', 'target');
+        return <EvaluacionesCognitivas pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-ejercicios-mentales':
+        if (!selectedPaciente) return renderPatientSelector('Herramientas ACT', 'sparkles');
+        return <ActividadACTPaciente pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-memoria':
+        if (!selectedPaciente) return renderPatientSelector('Cuestionarios Psicológicos', 'clipboard-list');
+        return <CuestionariosHistorial pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-emocional':
+        if (!selectedPaciente) return renderPatientSelector('Estado Emocional', 'heart');
+        return <EstadoEmocionalPaciente pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-dispositivos':
+        if (!selectedPaciente) return renderPatientSelector('Dispositivos', 'accessibility');
+        return <DispositivosPacientes pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-adaptacion':
+        if (!selectedPaciente) return renderPatientSelector('Seguimiento de Adaptación', 'wrench');
+        return <SeguimientoAdaptacion pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-mantenimiento':
+        if (!selectedPaciente) return renderPatientSelector('Mantenimiento', 'hammer');
+        return <MantenimientoCalendario pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
+      case 'mod-medidas':
+        if (!selectedPaciente) return renderPatientSelector('Medidas y Ajustes', 'clipboard');
+        return <MedicionesAjustes pacienteId={selectedPaciente.id} onBack={handleBackToPatientList} />;
 
       default: return renderInicio();
     }
@@ -1458,23 +2094,19 @@ const EspecialistaDashboard = () => {
   }
 
   return (
-    <div className="especialista-dashboard" data-age-mode={settings.ageMode} data-area={areaCodigo}>
-      {/* Header */}
-      <header className="dashboard-header" style={{ '--area-color': areaConfig.color }}>
-        <div className="header-left">
-          <div className="brand">
-            <span className="brand-icon">{areaConfig.icon}</span>
-            <span className="brand-name">Azaria - {areaConfig.nombre}</span>
-          </div>
-        </div>
+    <div className="especialista-dashboard" data-age-mode={settings.ageMode} data-area={areaCodigo} style={{ '--area-color': areaConfig.color }}>
+      {/* Header institucional DGTIC */}
+      <InstitutionalHeader />
 
+      {/* Barra de acciones */}
+      <div className="dashboard-actions-bar">
         <div className="header-right">
           <button
             className={`header-btn voice-btn ${isSpeaking ? 'speaking' : ''}`}
             onClick={() => isSpeaking ? stop() : speakModule('especialista-dashboard')}
             aria-label={isSpeaking ? 'Detener audio' : 'Escuchar ayuda'}
           >
-            {isSpeaking ? '⏹️' : '🔊'}
+            <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={22} color={areaConfig.color} />
           </button>
 
           <button
@@ -1482,7 +2114,7 @@ const EspecialistaDashboard = () => {
             onClick={togglePanel}
             aria-label="Accesibilidad"
           >
-            ♿
+            <LucideIcon name="accessibility" size={22} color={areaConfig.color} />
           </button>
 
           <div className="user-menu">
@@ -1490,11 +2122,11 @@ const EspecialistaDashboard = () => {
               {user?.nombre?.charAt(0) || 'E'}
             </div>
             <button className="header-btn logout-btn" onClick={handleLogout} title="Cerrar sesión">
-              🚪
+              <LucideIcon name="logout" size={20} color="#C62828" />
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content */}
       <main className="dashboard-content">
@@ -1502,39 +2134,42 @@ const EspecialistaDashboard = () => {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="bottom-navigation" style={{ '--area-color': areaConfig.color }}>
+      <nav className="bottom-navigation">
         <button
           className={`nav-item ${activeView === 'inicio' ? 'active' : ''}`}
           onClick={() => setActiveView('inicio')}
         >
-          <span className="nav-icon">🏠</span>
+          <span className="nav-icon"><LucideIcon name="home" size={20} /></span>
           <span className="nav-label">Inicio</span>
         </button>
         <button
           className={`nav-item ${activeView === 'agenda' ? 'active' : ''}`}
           onClick={() => setActiveView('agenda')}
         >
-          <span className="nav-icon">📅</span>
+          <span className="nav-icon"><LucideIcon name="calendar" size={20} /></span>
           <span className="nav-label">Agenda</span>
         </button>
         <button
           className={`nav-item ${activeView === 'pacientes' ? 'active' : ''}`}
           onClick={() => setActiveView('pacientes')}
         >
-          <span className="nav-icon">👥</span>
+          <span className="nav-icon"><LucideIcon name="users" size={20} /></span>
           <span className="nav-label">Pacientes</span>
         </button>
         <button
           className={`nav-item ${activeView === 'mensajes' ? 'active' : ''}`}
           onClick={() => setActiveView('mensajes')}
         >
-          <span className="nav-icon">💬</span>
+          <span className="nav-icon"><LucideIcon name="message" size={20} /></span>
           <span className="nav-label">Mensajes</span>
           {dashboardData.mensajesNuevos > 0 && (
             <span className="nav-badge">{dashboardData.mensajesNuevos}</span>
           )}
         </button>
       </nav>
+
+      {/* Footer institucional DGTIC */}
+      <InstitutionalFooter />
 
       <AccessibilityPanel />
       <AccessibilityFAB />
@@ -1546,7 +2181,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content tool-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>💉 Calculadora de Dosis</h2>
+              <h2><LucideIcon name="syringe" size={22} /> Calculadora de Dosis</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1621,7 +2256,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content tool-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>📖 Códigos CIE-10</h2>
+              <h2><LucideIcon name="book-open" size={22} /> Códigos CIE-10</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1661,7 +2296,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content tool-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>⚠️ Verificar Interacciones</h2>
+              <h2><LucideIcon name="alert-triangle" size={22} /> Verificar Interacciones</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1689,7 +2324,7 @@ const EspecialistaDashboard = () => {
               {interaccionForm.medicamento1 && interaccionForm.medicamento2 && (
                 <div className="interaccion-result">
                   <div className="interaccion-header safe">
-                    <span className="interaccion-icon">✅</span>
+                    <span className="interaccion-icon"><LucideIcon name="circle-check" size={20} /></span>
                     <span>Sin interacciones graves conocidas</span>
                   </div>
                   <p className="interaccion-nota">
@@ -1716,7 +2351,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content tool-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>😣 Escala de Dolor (EVA)</h2>
+              <h2><LucideIcon name="frown" size={22} /> Escala de Dolor (EVA)</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1725,7 +2360,7 @@ const EspecialistaDashboard = () => {
                   <div key={nivel} className={`dolor-nivel nivel-${nivel}`}>
                     <span className="dolor-numero">{nivel}</span>
                     <span className="dolor-emoji">
-                      {nivel <= 2 ? '😊' : nivel <= 4 ? '🙂' : nivel <= 6 ? '😐' : nivel <= 8 ? '😣' : '😭'}
+                      <LucideIcon name={nivel <= 2 ? 'smile' : nivel <= 4 ? 'smile' : nivel <= 6 ? 'meh' : nivel <= 8 ? 'frown' : 'angry'} size={20} />
                     </span>
                   </div>
                 ))}
@@ -1752,7 +2387,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content tool-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>📋 Herramienta de Evaluación</h2>
+              <h2><LucideIcon name="clipboard" size={22} /> Herramienta de Evaluación</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1773,12 +2408,12 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content tool-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>🛠️ Herramienta</h2>
+              <h2><LucideIcon name="hammer" size={22} /> Herramienta</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
               <div className="coming-soon-modal">
-                <span className="coming-soon-icon">🚧</span>
+                <span className="coming-soon-icon"><LucideIcon name="alert-triangle" size={32} /></span>
                 <p>Esta herramienta estará disponible próximamente.</p>
               </div>
             </div>
@@ -1796,7 +2431,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>🔬 Nuevo Estudio Clínico</h2>
+              <h2><LucideIcon name="microscope" size={22} /> Nuevo Estudio Clínico</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1889,7 +2524,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>💬 Nueva Conversación</h2>
+              <h2><LucideIcon name="message" size={22} /> Nueva Conversación</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -1899,7 +2534,7 @@ const EspecialistaDashboard = () => {
 
               {dashboardData.pacientes.length === 0 ? (
                 <div className="empty-state">
-                  <span className="empty-icon">👥</span>
+                  <span className="empty-icon"><LucideIcon name="users" size={32} /></span>
                   <p>No tienes pacientes asignados</p>
                 </div>
               ) : (
@@ -1941,7 +2576,7 @@ const EspecialistaDashboard = () => {
         <div className="modal-overlay" onClick={() => setShowModal(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>📅 Agendar Nueva Cita</h2>
+              <h2><LucideIcon name="calendar" size={22} /> Agendar Nueva Cita</h2>
               <button className="modal-close" onClick={() => setShowModal(null)}>✕</button>
             </div>
             <div className="modal-body">
@@ -2007,7 +2642,10 @@ const EspecialistaDashboard = () => {
                         key={hora}
                         type="button"
                         className={`horario-btn ${citaForm.hora_inicio === hora ? 'selected' : ''}`}
-                        onClick={() => setCitaForm({...citaForm, hora_inicio: hora})}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCitaForm(prev => ({...prev, hora_inicio: hora}));
+                        }}
                         style={{ '--area-color': areaConfig.color }}
                       >
                         {hora}

@@ -1,0 +1,237 @@
+.hist-planes-container {
+  --hp-color: #4CAF50;
+  --hp-color-rgb: 76, 175, 80;
+  padding: var(--spacing-md, 16px);
+  max-width: 900px; margin: 0 auto;
+}
+
+.hist-planes-header {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px); color: white;
+}
+.hist-planes-header-top { display: flex; align-items: center; gap: 16px; }
+.hist-planes-back-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15); color: white;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.hist-planes-back-btn:hover { background: rgba(255,255,255,0.25); }
+.hist-planes-header-title { display: flex; align-items: center; gap: 8px; }
+.hist-planes-header-title h2 { font-size: 1.4rem; font-weight: 700; margin: 0; color: white; }
+
+/* LOADING */
+.hist-planes-loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 300px; gap: 12px;
+}
+.hist-planes-loading p { color: var(--text-secondary, #666); }
+.hist-planes-spinner {
+  width: 36px; height: 36px; border: 4px solid var(--border-color, #E0E0E0);
+  border-top-color: var(--hp-color); border-radius: 50%;
+  animation: hp-spin 0.8s linear infinite;
+}
+@keyframes hp-spin { to { transform: rotate(360deg); } }
+
+/* PLAN ACTIVO */
+.hist-planes-activo {
+  background: var(--surface-secondary, #F5F5F5);
+  border: 2px solid var(--hp-color);
+  border-radius: var(--radius-lg, 16px);
+  padding: 20px; margin-bottom: 24px;
+  position: relative;
+}
+.hist-planes-activo-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--hp-color); color: white;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 700; margin-bottom: 12px;
+}
+.hist-planes-activo h3 {
+  margin: 0 0 6px; font-size: 1.2rem; color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-activo > p {
+  margin: 0 0 12px; font-size: 0.9rem; color: var(--text-secondary, #666);
+}
+.hist-planes-activo-meta {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  font-size: 0.85rem; color: var(--text-secondary, #666);
+}
+.hist-planes-activo-meta span { display: flex; align-items: center; gap: 4px; }
+.hist-planes-activo-notas {
+  margin-top: 10px; padding: 10px;
+  background: rgba(var(--hp-color-rgb), 0.08);
+  border-radius: 8px; font-size: 0.9rem;
+  color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-btn-ver {
+  margin-top: 12px; padding: 10px 20px; min-height: 44px;
+  background: var(--hp-color); color: white; border: none;
+  border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+  cursor: pointer;
+}
+.hist-planes-btn-ver:hover { background: #388E3C; }
+
+/* SECTION */
+.hist-planes-section-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 1.1rem; font-weight: 600;
+  color: var(--text-primary, #1A1A1A);
+  margin: 0 0 16px;
+}
+
+.hist-planes-empty {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 16px; gap: 8px; text-align: center;
+  color: var(--text-muted, #9E9E9E);
+}
+.hist-planes-empty h3 { color: var(--text-primary, #1A1A1A); margin: 0; }
+.hist-planes-empty p { margin: 0; }
+
+/* PLAN CARDS LIST */
+.hist-planes-list { display: flex; flex-direction: column; gap: 12px; }
+
+.hist-planes-card {
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-md, 12px);
+  padding: 16px;
+  border: 1px solid var(--border-color, #E0E0E0);
+}
+.hist-planes-card.activo { border-color: rgba(var(--hp-color-rgb), 0.4); }
+
+.hist-planes-card-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 6px;
+}
+.hist-planes-card-header h4 {
+  margin: 0; font-size: 1rem; color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-estado {
+  padding: 3px 10px; border-radius: 12px;
+  font-size: 0.75rem; font-weight: 700; text-transform: capitalize;
+}
+.hist-planes-estado.activo { background: rgba(76,175,80,0.15); color: #4CAF50; }
+.hist-planes-estado.borrador { background: rgba(139,148,158,0.15); color: #8B949E; }
+
+.hist-planes-card-desc {
+  font-size: 0.85rem; color: var(--text-secondary, #666);
+  margin: 0 0 10px; line-height: 1.4;
+}
+.hist-planes-card-stats {
+  display: flex; flex-wrap: wrap; gap: 12px;
+  font-size: 0.8rem; color: var(--text-muted, #9E9E9E);
+  margin-bottom: 10px;
+}
+.hist-planes-card-stats span { display: flex; align-items: center; gap: 4px; }
+
+.hist-planes-btn-detalle {
+  padding: 8px 16px; min-height: 40px;
+  border: 2px solid var(--hp-color); color: var(--hp-color);
+  background: transparent; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 600; cursor: pointer;
+}
+.hist-planes-btn-detalle:hover {
+  background: rgba(var(--hp-color-rgb), 0.1);
+}
+
+/* MODAL */
+.hist-planes-modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.6); z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+}
+.hist-planes-modal {
+  background: var(--surface-primary, #FFFFFF);
+  border-radius: var(--radius-lg, 16px);
+  max-width: 600px; width: 100%;
+  max-height: 85vh; overflow-y: auto;
+}
+.hist-planes-modal-header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 20px; border-bottom: 1px solid var(--border-color, #E0E0E0);
+}
+.hist-planes-modal-header h2 {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 1.2rem; margin: 0; color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-modal-close {
+  width: 40px; height: 40px; border-radius: 50%; border: none;
+  background: var(--surface-secondary, #F5F5F5);
+  color: var(--text-primary, #1A1A1A);
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.hist-planes-modal-body { padding: 20px; }
+.hist-planes-modal-desc {
+  font-size: 0.95rem; color: var(--text-secondary, #666);
+  margin: 0 0 16px; line-height: 1.5;
+}
+
+.hist-planes-modal-macros {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; margin-bottom: 20px;
+}
+.hist-planes-macro-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 12px;
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: 10px; color: var(--hp-color);
+}
+.hist-planes-macro-item .macro-value {
+  font-size: 1.15rem; font-weight: 700; color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-macro-item .macro-label {
+  font-size: 0.7rem; color: var(--text-muted, #9E9E9E);
+  text-transform: uppercase;
+}
+
+.hist-planes-modal-section { margin-bottom: 16px; }
+.hist-planes-modal-section h4 {
+  font-size: 0.95rem; margin: 0 0 8px; color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-pacientes-list { display: flex; flex-direction: column; gap: 6px; }
+.hist-planes-paciente-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 12px; background: var(--surface-secondary, #F5F5F5);
+  border-radius: 8px; font-size: 0.9rem;
+  color: var(--text-primary, #1A1A1A);
+}
+.hist-planes-paciente-fecha { font-size: 0.8rem; color: var(--text-muted, #9E9E9E); }
+
+.hist-planes-modal-meta {
+  display: flex; gap: 16px; font-size: 0.85rem;
+  color: var(--text-secondary, #666);
+}
+
+.hist-planes-modal-footer {
+  padding: 16px 20px; border-top: 1px solid var(--border-color, #E0E0E0);
+  display: flex; justify-content: flex-end;
+}
+.hist-planes-btn-cerrar {
+  padding: 10px 24px; min-height: 44px;
+  background: var(--surface-secondary, #F5F5F5); color: var(--text-primary, #1A1A1A);
+  border: 1px solid var(--border-color, #E0E0E0);
+  border-radius: 8px; font-size: 0.95rem; cursor: pointer;
+}
+.hist-planes-btn-cerrar:hover { background: var(--surface-tertiary, #E8E8E8); }
+
+/* LIGHT THEME */
+[data-theme="light"] .hist-planes-activo,
+[data-theme="light"] .hist-planes-card,
+[data-theme="light"] .hist-planes-macro-item,
+[data-theme="light"] .hist-planes-paciente-item {
+  background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .hist-planes-modal {
+  background: white;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hist-planes-modal-macros { grid-template-columns: repeat(2, 1fr); }
+  .hist-planes-activo-meta { flex-direction: column; gap: 6px; }
+}

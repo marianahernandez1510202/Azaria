@@ -18,8 +18,12 @@ use App\Controllers\DashboardController;
 use App\Controllers\AdminController;
 use App\Controllers\EspecialistaController;
 use App\Controllers\MensajesController;
+use App\Controllers\ExpedienteController;
+use App\Controllers\ConfiguracionController;
+use App\Controllers\AdmisionesController;
 use App\Middleware\AuthMiddleware;
 use App\Middleware\RoleMiddleware;
+use App\Middleware\RateLimitMiddleware;
 
 // Función helper para rutas
 function route($method, $path, $callback, $middleware = []) {
@@ -31,6 +35,13 @@ function route($method, $path, $callback, $middleware = []) {
             if ($mw === 'auth') {
                 $auth = new AuthMiddleware();
                 $auth->handle();
+            } elseif ($mw === 'rate:auth') {
+                RateLimitMiddleware::checkAuth();
+            } elseif ($mw === 'rate:api') {
+                RateLimitMiddleware::checkApi();
+            } elseif (str_starts_with($mw, 'role:')) {
+                $roles = explode(',', substr($mw, 5));
+                RoleMiddleware::check($roles);
             }
         }
 
@@ -43,154 +54,27 @@ function route($method, $path, $callback, $middleware = []) {
 
 // RUTAS PÚBLICAS
 
-// Ruta de prueba para verificar conexión a base de datos
-route('GET', '/api/test/db', function() {
-    // Mostrar configuración actual (sin contraseña)
-    $config = [
-        'DB_HOST' => $_ENV['DB_HOST'] ?? 'no definido',
-        'DB_PORT' => $_ENV['DB_PORT'] ?? 'no definido',
-        'DB_NAME' => $_ENV['DB_NAME'] ?? 'no definido',
-        'DB_USER' => $_ENV['DB_USER'] ?? 'no definido',
-    ];
-
-    try {
-        $dsn = "mysql:host={$_ENV['DB_HOST']};port={$_ENV['DB_PORT']};dbname={$_ENV['DB_NAME']};charset=utf8mb4";
-        $pdo = new \PDO($dsn, $_ENV['DB_USER'], $_ENV['DB_PASSWORD'], [
-            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
-        ]);
-        $result = $pdo->query("SELECT COUNT(*) as total FROM niveles_k")->fetch();
-        \App\Utils\Response::success([
-            'status' => 'connected',
-            'config' => $config,
-            'niveles_k_count' => $result['total'] ?? 0
-        ]);
-    } catch (\PDOException $e) {
-        \App\Utils\Response::error('Error PDO: ' . $e->getMessage() . ' | Config: ' . json_encode($config), 500);
-    } catch (\Exception $e) {
-        \App\Utils\Response::error('Error: ' . $e->getMessage() . ' | Config: ' . json_encode($config), 500);
-    }
-});
-
-// Ruta pública para obtener tipos de prótesis (sin auth para testing)
-route('GET', '/api/test/tipos-protesis', function() {
-    try {
-        $db = \App\Services\DatabaseService::getInstance();
-        $tipos = $db->query("SELECT * FROM tipos_dispositivo WHERE categoria = 'protesis'")->fetchAll();
-        \App\Utils\Response::success($tipos);
-    } catch (\Exception $e) {
-        \App\Utils\Response::error('Error: ' . $e->getMessage(), 500);
-    }
-});
-
-// Ruta pública para contenido educativo (sin auth para testing)
-route('GET', '/api/test/educativo', function() {
-    try {
-        $db = \App\Services\DatabaseService::getInstance();
-
-        // Verificar qué tablas existen
-        $tablas = [];
-
-        // Niveles K
-        try {
-            $nivelesK = $db->query("SELECT * FROM niveles_k ORDER BY nivel")->fetchAll();
-            $tablas['niveles_k'] = count($nivelesK) . ' registros';
-        } catch (\Exception $e) {
-            $tablas['niveles_k'] = 'ERROR: ' . $e->getMessage();
-        }
-
-        // Tipos dispositivo
-        try {
-            $tipos = $db->query("SELECT * FROM tipos_dispositivo WHERE categoria = 'protesis'")->fetchAll();
-            $tablas['tipos_dispositivo'] = count($tipos) . ' registros';
-        } catch (\Exception $e) {
-            $tablas['tipos_dispositivo'] = 'ERROR: ' . $e->getMessage();
-        }
-
-        // Guias cuidado
-        try {
-            $guias = $db->query("SELECT * FROM guias_cuidado")->fetchAll();
-            $tablas['guias_cuidado'] = count($guias) . ' registros';
-        } catch (\Exception $e) {
-            $tablas['guias_cuidado'] = 'ERROR: ' . $e->getMessage();
-        }
-
-        // FAQs
-        try {
-            $faqs = $db->query("SELECT * FROM faq_protesis")->fetchAll();
-            $tablas['faq_protesis'] = count($faqs) . ' registros';
-        } catch (\Exception $e) {
-            $tablas['faq_protesis'] = 'ERROR: ' . $e->getMessage();
-        }
-
-        // Videos
-        try {
-            $videos = $db->query("SELECT * FROM videos_educativos_protesis")->fetchAll();
-            $tablas['videos_educativos_protesis'] = count($videos) . ' registros';
-        } catch (\Exception $e) {
-            $tablas['videos_educativos_protesis'] = 'ERROR: ' . $e->getMessage();
-        }
-
-        \App\Utils\Response::success($tablas);
-    } catch (\Exception $e) {
-        \App\Utils\Response::error('Error general: ' . $e->getMessage(), 500);
-    }
-});
-
-// TEST: Dispositivo del paciente (sin auth para debugging)
-route('GET', '/api/test/dispositivo/(\d+)', function($pacienteId) {
-    try {
-        $db = \App\Services\DatabaseService::getInstance();
-        $dispositivo = $db->query(
-            "SELECT dp.*, td.nombre as tipo_protesis_nombre, td.categoria, td.cuidados_especificos,
-                    nk.nombre as nivel_k_nombre, nk.descripcion as nivel_k_descripcion
-             FROM dispositivos_paciente dp
-             LEFT JOIN tipos_dispositivo td ON dp.tipo_dispositivo_id = td.id
-             LEFT JOIN niveles_k nk ON dp.nivel_k = nk.nivel
-             WHERE dp.paciente_id = ?",
-            [$pacienteId]
-        )->fetch();
-
-        if (!$dispositivo) {
-            \App\Utils\Response::success([
-                'tiene_dispositivo' => false,
-                'mensaje' => 'No hay dispositivo registrado'
-            ]);
-        } else {
-            $dispositivo['tiene_dispositivo'] = true;
-            \App\Utils\Response::success($dispositivo);
-        }
-    } catch (\Exception $e) {
-        \App\Utils\Response::error('Error: ' . $e->getMessage(), 500);
-    }
-});
-
 route('POST', '/api/auth/login', function() {
-    $rawInput = file_get_contents('php://input');
-    $data = json_decode($rawInput, true);
-
-    // Debug log
-    error_log("LOGIN REQUEST - Raw: " . substr($rawInput, 0, 500));
-    error_log("LOGIN REQUEST - Parsed email: " . ($data['email'] ?? 'NULL'));
-    error_log("LOGIN REQUEST - Parsed credential: " . (isset($data['credential']) ? 'SET' : 'NOT SET'));
+    $data = json_decode(file_get_contents('php://input'), true);
 
     $controller = new AuthController();
     $controller->login($data);
-});
+}, ['rate:auth']);
 
 route('POST', '/api/auth/forgot-password', function() {
     $controller = new AuthController();
     $controller->forgotPassword(json_decode(file_get_contents('php://input'), true));
-});
+}, ['rate:auth']);
 
 route('POST', '/api/auth/verify-code', function() {
     $controller = new AuthController();
     $controller->verifyRecoveryCode(json_decode(file_get_contents('php://input'), true));
-});
+}, ['rate:auth']);
 
 route('POST', '/api/auth/reset-password', function() {
     $controller = new AuthController();
     $controller->resetPassword(json_decode(file_get_contents('php://input'), true));
-});
+}, ['rate:auth']);
 
 // RUTAS PROTEGIDAS - AUTENTICACIÓN
 route('POST', '/api/auth/logout', function() {
@@ -338,6 +222,38 @@ route('GET', '/api/medicina/resumen/(\d+)', function($pacienteId) {
     $controller->getResumen($pacienteId);
 }, ['auth']);
 
+// HbA1c (Hemoglobina Glicosilada)
+route('GET', '/api/medicina/hba1c/(\d+)', function($pacienteId) {
+    $controller = new MedicinaController();
+    $controller->getHba1c($pacienteId);
+}, ['auth']);
+
+route('POST', '/api/medicina/hba1c', function() {
+    $controller = new MedicinaController();
+    $controller->registrarHba1c(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Medicamentos (Recetas Médicas)
+route('GET', '/api/medicina/medicamentos/(\d+)', function($pacienteId) {
+    $controller = new MedicinaController();
+    $controller->getMedicamentos($pacienteId);
+}, ['auth']);
+
+route('POST', '/api/medicina/medicamentos', function() {
+    $controller = new MedicinaController();
+    $controller->crearMedicamento(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+route('PUT', '/api/medicina/medicamentos/(\d+)', function($id) {
+    $controller = new MedicinaController();
+    $controller->actualizarMedicamento($id);
+}, ['auth']);
+
+route('DELETE', '/api/medicina/medicamentos/(\d+)', function($id) {
+    $controller = new MedicinaController();
+    $controller->eliminarMedicamento($id);
+}, ['auth']);
+
 // RUTAS DE FISIOTERAPIA
 route('GET', '/api/fisioterapia/videos', function() {
     $controller = new FisioterapiaController();
@@ -374,6 +290,70 @@ route('POST', '/api/fisioterapia/checklist', function() {
     $controller->guardarChecklist(array_merge($_POST, json_decode(file_get_contents('php://input'), true) ?? [], $_FILES));
 }, ['auth']);
 
+// Completar ejercicio (paciente)
+route('POST', '/api/fisioterapia/ejercicio/completar', function() {
+    $controller = new FisioterapiaController();
+    $controller->completarEjercicio(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Evaluaciones físicas
+route('GET', '/api/fisioterapia/evaluaciones/(\d+)', function($pacienteId) {
+    $controller = new FisioterapiaController();
+    $controller->getEvaluaciones($pacienteId);
+}, ['auth']);
+
+route('GET', '/api/fisioterapia/evaluacion/(\d+)', function($id) {
+    $controller = new FisioterapiaController();
+    $controller->getEvaluacion($id);
+}, ['auth']);
+
+route('POST', '/api/fisioterapia/evaluaciones', function() {
+    $controller = new FisioterapiaController();
+    $controller->crearEvaluacion();
+}, ['auth']);
+
+route('PUT', '/api/fisioterapia/evaluaciones/(\d+)', function($id) {
+    $controller = new FisioterapiaController();
+    $controller->actualizarEvaluacion($id);
+}, ['auth']);
+
+route('DELETE', '/api/fisioterapia/evaluaciones/(\d+)', function($id) {
+    $controller = new FisioterapiaController();
+    $controller->eliminarEvaluacion($id);
+}, ['auth']);
+
+// Planes de tratamiento
+route('GET', '/api/fisioterapia/planes/paciente/(\d+)', function($pacienteId) {
+    $controller = new FisioterapiaController();
+    $controller->getPlanes($pacienteId);
+}, ['auth']);
+
+route('GET', '/api/fisioterapia/planes/(\d+)', function($id) {
+    $controller = new FisioterapiaController();
+    $controller->getPlan($id);
+}, ['auth']);
+
+route('POST', '/api/fisioterapia/planes', function() {
+    $controller = new FisioterapiaController();
+    $controller->crearPlan();
+}, ['auth']);
+
+route('PUT', '/api/fisioterapia/planes/(\d+)', function($id) {
+    $controller = new FisioterapiaController();
+    $controller->actualizarPlan($id);
+}, ['auth']);
+
+route('PUT', '/api/fisioterapia/planes/(\d+)/estado', function($id) {
+    $controller = new FisioterapiaController();
+    $controller->cambiarEstadoPlan($id);
+}, ['auth']);
+
+// Stats de fisioterapia para especialista
+route('GET', '/api/fisioterapia/stats/paciente/(\d+)', function($pacienteId) {
+    $controller = new FisioterapiaController();
+    $controller->getEstadisticasPaciente($pacienteId);
+}, ['auth']);
+
 // RUTAS DE NEUROPSICOLOGÍA
 route('GET', '/api/neuropsicologia/estados-animo/(\d+)', function($pacienteId) {
     $controller = new NeuropsicologiaController();
@@ -398,6 +378,44 @@ route('GET', '/api/neuropsicologia/cuestionarios/(\d+)', function($pacienteId) {
 route('POST', '/api/neuropsicologia/cuestionarios', function() {
     $controller = new NeuropsicologiaController();
     $controller->guardarCuestionario(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Cuestionarios ACT - Resultados
+route('POST', '/api/neuropsicologia/cuestionarios/resultado', function() {
+    $controller = new NeuropsicologiaController();
+    $controller->guardarResultadoCuestionario(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+route('GET', '/api/neuropsicologia/cuestionarios/historial/(\d+)', function($pacienteId) {
+    $controller = new NeuropsicologiaController();
+    $controller->getHistorialCuestionarios($pacienteId);
+}, ['auth']);
+
+// Sesiones ACT
+route('POST', '/api/neuropsicologia/act/sesion', function() {
+    $controller = new NeuropsicologiaController();
+    $controller->guardarSesionACT(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+route('GET', '/api/neuropsicologia/act/historial/(\d+)', function($pacienteId) {
+    $controller = new NeuropsicologiaController();
+    $controller->getHistorialACT($pacienteId);
+}, ['auth']);
+
+// Evaluación neuropsicológica (perfil cognitivo)
+route('GET', '/api/neuropsicologia/evaluacion/(\d+)', function($pacienteId) {
+    $controller = new NeuropsicologiaController();
+    $controller->getEvaluacion($pacienteId);
+}, ['auth']);
+
+route('GET', '/api/neuropsicologia/evaluacion/historial/(\d+)', function($pacienteId) {
+    $controller = new NeuropsicologiaController();
+    $controller->getHistorialEvaluaciones($pacienteId);
+}, ['auth']);
+
+route('POST', '/api/neuropsicologia/evaluacion', function() {
+    $controller = new NeuropsicologiaController();
+    $controller->guardarEvaluacion(json_decode(file_get_contents('php://input'), true));
 }, ['auth']);
 
 // ===== RUTAS DE PRÓTESIS Y ÓRTESIS =====
@@ -480,7 +498,7 @@ route('PUT', '/api/ortesis/dispositivo/(\d+)/nivel-k', function($pacienteId) {
 
 // Checklist de prótesis
 route('GET', '/api/ortesis/checklist/(\d+)/([0-9-]+)', function($pacienteId, $fecha) {
-    $controller = new FisioterapiaController();
+    $controller = new OrtesisController();
     $controller->getChecklist($pacienteId, $fecha);
 }, ['auth']);
 
@@ -501,6 +519,23 @@ route('GET', '/api/ortesis/ajustes/(\d+)', function($pacienteId) {
     $controller->getAjustes($pacienteId);
 }, ['auth']);
 
+route('POST', '/api/ortesis/ajustes/(\d+)', function($pacienteId) {
+    $controller = new OrtesisController();
+    $controller->crearAjuste($pacienteId, json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Resolver problema reportado
+route('PUT', '/api/ortesis/problemas/(\d+)/resolver', function($problemaId) {
+    $controller = new OrtesisController();
+    $controller->resolverProblema($problemaId, json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Historial de checklist
+route('GET', '/api/ortesis/checklist/historial/(\d+)', function($pacienteId) {
+    $controller = new OrtesisController();
+    $controller->getChecklistHistorial($pacienteId);
+}, ['auth']);
+
 // Mantener compatibilidad con rutas antiguas
 route('GET', '/api/ortesis/guias', function() {
     $controller = new OrtesisController();
@@ -515,11 +550,7 @@ route('GET', '/api/citas', function() {
 }, ['auth']);
 
 route('POST', '/api/citas', function() {
-    $rawInput = file_get_contents('php://input');
-    $data = json_decode($rawInput, true);
-    error_log("=== POST /api/citas ===");
-    error_log("Raw input: " . $rawInput);
-    error_log("Parsed data: " . json_encode($data));
+    $data = json_decode(file_get_contents('php://input'), true);
     $controller = new CitasController();
     $controller->agendarCita($data);
 }, ['auth']);
@@ -655,94 +686,79 @@ route('POST', '/api/comunidad/reportar', function() {
 route('GET', '/api/admin/metricas', function() {
     $controller = new AdminController();
     $controller->getMetricas();
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('GET', '/api/admin/usuarios', function() {
     $controller = new AdminController();
     $controller->getUsuarios();
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('POST', '/api/admin/usuarios', function() {
     $controller = new AdminController();
     $controller->createUsuario(json_decode(file_get_contents('php://input'), true));
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('PUT', '/api/admin/usuarios/(\d+)', function($id) {
     $controller = new AdminController();
     $controller->updateUsuario($id, json_decode(file_get_contents('php://input'), true));
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('DELETE', '/api/admin/usuarios/(\d+)', function($id) {
     $controller = new AdminController();
     $controller->deleteUsuario($id);
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('PUT', '/api/admin/usuarios/(\d+)/toggle', function($id) {
     $controller = new AdminController();
     $controller->toggleUsuarioActivo($id);
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('GET', '/api/admin/especialistas', function() {
     $controller = new AdminController();
     $controller->getEspecialistas();
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('PUT', '/api/admin/especialistas/(\d+)', function($id) {
     $controller = new AdminController();
     $controller->updateUsuario($id, json_decode(file_get_contents('php://input'), true));
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('DELETE', '/api/admin/especialistas/(\d+)', function($id) {
     $controller = new AdminController();
     $controller->deleteUsuario($id);
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('GET', '/api/admin/blogs/metricas', function() {
     $controller = new AdminController();
     $controller->getBlogMetricas();
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('GET', '/api/admin/faqs', function() {
     $controller = new AdminController();
     $controller->getFAQs();
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('POST', '/api/admin/faqs', function() {
     $controller = new AdminController();
     $controller->createFAQ(json_decode(file_get_contents('php://input'), true));
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('PUT', '/api/admin/faqs/(\d+)', function($id) {
     $controller = new AdminController();
     $controller->updateFAQ($id, json_decode(file_get_contents('php://input'), true));
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 route('DELETE', '/api/admin/faqs/(\d+)', function($id) {
     $controller = new AdminController();
     $controller->deleteFAQ($id);
-}, ['auth']);
+}, ['auth', 'role:administrador']);
 
 // ===== RUTAS DE ESPECIALISTAS =====
 
 // Lista de todos los especialistas activos
 route('GET', '/api/especialistas', function() {
-    try {
-        $db = \App\Services\DatabaseService::getInstance();
-
-        $especialistas = $db->query(
-            "SELECT u.id, u.nombre_completo, u.email, u.avatar,
-                    COALESCE(am.nombre, 'Medicina General') as area_medica
-             FROM usuarios u
-             LEFT JOIN areas_medicas am ON u.area_medica_id = am.id
-             WHERE u.rol_id = 2 AND u.activo = 1
-             ORDER BY u.nombre_completo"
-        )->fetchAll();
-
-        \App\Utils\Response::success($especialistas ?: []);
-    } catch (\Exception $e) {
-        error_log('Error getting especialistas: ' . $e->getMessage());
-        \App\Utils\Response::error('Error al cargar especialistas', 500);
-    }
+    $controller = new EspecialistaController();
+    $controller->getEspecialistasActivos();
 }, ['auth']);
 
 route('GET', '/api/especialistas/(\d+)/citas-hoy', function($id) {
@@ -828,7 +844,6 @@ route('PUT', '/api/citas/(\d+)/notas', function($citaId) {
 }, ['auth']);
 
 route('PUT', '/api/citas/(\d+)/cancelar', function($citaId) {
-    error_log("=== PUT /api/citas/{$citaId}/cancelar ===");
     $controller = new CitasController();
     $controller->cancelarCita($citaId, ['motivo_cancelacion' => 'Cancelada por usuario']);
 }, ['auth']);
@@ -907,26 +922,96 @@ route('DELETE', '/api/outlook/sync/(\d+)', function($citaId) {
     $controller->deleteOutlookEvent($user['id'], $citaId);
 }, ['auth']);
 
+// ===== RUTAS DE ANTROPOMETRÍA (Nutrición Especialista) =====
+use App\Controllers\AntropometriaController;
+
+route('POST', '/api/nutricion/antropometria/(\d+)', function($pacienteId) {
+    $controller = new AntropometriaController();
+    $controller->registrarMedicion($pacienteId);
+}, ['auth']);
+
+route('GET', '/api/nutricion/antropometria/(\d+)', function($pacienteId) {
+    $controller = new AntropometriaController();
+    $controller->getMediciones($pacienteId);
+}, ['auth']);
+
+route('GET', '/api/nutricion/antropometria/(\d+)/ultima', function($pacienteId) {
+    $controller = new AntropometriaController();
+    $controller->getUltimaMedicion($pacienteId);
+}, ['auth']);
+
+route('GET', '/api/nutricion/antropometria/(\d+)/peso', function($pacienteId) {
+    $controller = new AntropometriaController();
+    $controller->getEvolucionPeso($pacienteId);
+}, ['auth']);
+
+route('DELETE', '/api/nutricion/antropometria/medicion/(\d+)', function($id) {
+    $controller = new AntropometriaController();
+    $controller->eliminarMedicion($id);
+}, ['auth']);
+
+// ===== RUTAS DE CATÁLOGO DE RECETAS (Generador de Planes) =====
+use App\Controllers\RecetaController;
+use App\Controllers\GeneradorPlanController;
+
+// CRUD Recetas del catálogo
+route('GET', '/api/nutricion/recetas/catalogo', function() {
+    $controller = new RecetaController();
+    $controller->getRecetas();
+}, ['auth']);
+
+route('GET', '/api/nutricion/recetas/catalogo/(\d+)', function($id) {
+    $controller = new RecetaController();
+    $controller->getReceta($id);
+}, ['auth']);
+
+route('POST', '/api/nutricion/recetas/catalogo', function() {
+    $controller = new RecetaController();
+    $controller->crearReceta();
+}, ['auth']);
+
+route('PUT', '/api/nutricion/recetas/catalogo/(\d+)', function($id) {
+    $controller = new RecetaController();
+    $controller->actualizarReceta($id);
+}, ['auth']);
+
+// POST con ID para actualizar (FormData con archivos no soporta PUT en todos los servidores)
+route('POST', '/api/nutricion/recetas/catalogo/(\d+)', function($id) {
+    $controller = new RecetaController();
+    $controller->actualizarReceta($id);
+}, ['auth']);
+
+route('DELETE', '/api/nutricion/recetas/catalogo/(\d+)', function($id) {
+    $controller = new RecetaController();
+    $controller->eliminarReceta($id);
+}, ['auth']);
+
+// Recetas agrupadas por tipo de comida (para wizard)
+route('GET', '/api/nutricion/recetas/por-tipo', function() {
+    $controller = new RecetaController();
+    $controller->getRecetasPorTipo();
+}, ['auth']);
+
+// Generador de Planes
+route('POST', '/api/nutricion/planes/generar', function() {
+    $controller = new GeneradorPlanController();
+    $controller->crearPlanDesdeRecetas();
+}, ['auth']);
+
+route('GET', '/api/nutricion/planes/generado/(\d+)', function($planId) {
+    $controller = new GeneradorPlanController();
+    $controller->getPlanGenerado($planId);
+}, ['auth']);
+
+route('PUT', '/api/nutricion/planes/generado/(\d+)', function($planId) {
+    $controller = new GeneradorPlanController();
+    $controller->actualizarPlanGenerado($planId);
+}, ['auth']);
+
 // ===== RUTAS DE ESTUDIOS CLÍNICOS =====
 route('POST', '/api/estudios', function() {
-    $data = json_decode(file_get_contents('php://input'), true);
-    $db = \App\Services\DatabaseService::getInstance();
-
-    $db->query(
-        "INSERT INTO estudios_clinicos (paciente_id, especialista_id, nombre, tipo, fecha, resultado, observaciones, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, NOW())",
-        [
-            $data['paciente_id'],
-            $data['especialista_id'],
-            $data['nombre'],
-            $data['tipo'] ?? 'laboratorio',
-            $data['fecha'],
-            $data['resultado'] ?? null,
-            $data['observaciones'] ?? null
-        ]
-    );
-
-    \App\Utils\Response::success(['id' => $db->lastInsertId()], 'Estudio registrado', 201);
+    $controller = new EspecialistaController();
+    $controller->registrarEstudio(json_decode(file_get_contents('php://input'), true));
 }, ['auth']);
 
 // ===== RUTAS DE PLANES NUTRICIONALES =====
@@ -979,3 +1064,331 @@ route('POST', '/api/nutricion/plan-paciente/(\d+)/seguimiento', function($pacien
     $controller = new PlanNutricionalController();
     $controller->registrarSeguimiento($pacienteId);
 }, ['auth']);
+
+// Agregar recetas del catálogo a un plan
+route('POST', '/api/nutricion/planes/(\d+)/recetas', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->addRecetasToPlan($planId);
+}, ['auth']);
+
+// Eliminar receta de un plan
+route('DELETE', '/api/nutricion/planes/(\d+)/recetas/(\d+)', function($planId, $comidaId) {
+    $controller = new PlanNutricionalController();
+    $controller->removeRecetaFromPlan($planId, $comidaId);
+}, ['auth']);
+
+// Subir imagen al plan
+route('POST', '/api/nutricion/planes/(\d+)/imagenes', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->uploadImagenPlan($planId);
+}, ['auth']);
+
+// Eliminar imagen del plan
+route('DELETE', '/api/nutricion/planes/(\d+)/imagenes', function($planId) {
+    $controller = new PlanNutricionalController();
+    $controller->removeImagenPlan($planId);
+}, ['auth']);
+
+// ===== RUTAS DE EXPEDIENTE =====
+
+// Resumen del expediente (glucosa, presion, animo, comida, citas del dia)
+route('GET', '/api/expediente/resumen/(\d+)', function($pacienteId) {
+    $controller = new ExpedienteController();
+    $controller->getResumen($pacienteId);
+}, ['auth']);
+
+// Subir archivo al expediente (PDF, DOCX, DOC)
+route('POST', '/api/expediente/archivos', function() {
+    $data = array_merge($_POST, $_FILES);
+    $controller = new ExpedienteController();
+    $controller->subirArchivo($data);
+}, ['auth']);
+
+// Listar archivos del expediente
+route('GET', '/api/expediente/archivos/(\d+)', function($pacienteId) {
+    $controller = new ExpedienteController();
+    $controller->getArchivos($pacienteId);
+}, ['auth']);
+
+// Eliminar archivo del expediente
+route('DELETE', '/api/expediente/archivos/(\d+)', function($archivoId) {
+    $controller = new ExpedienteController();
+    $controller->eliminarArchivo($archivoId);
+}, ['auth']);
+
+// Descargar archivo del expediente
+route('GET', '/api/expediente/archivos/(\d+)/descargar', function($archivoId) {
+    $controller = new ExpedienteController();
+    $controller->descargarArchivo($archivoId);
+}, ['auth']);
+
+// Generar link para compartir expediente
+route('POST', '/api/expediente/compartir/(\d+)', function($pacienteId) {
+    $controller = new ExpedienteController();
+    $controller->compartirExpediente($pacienteId);
+}, ['auth']);
+
+// Ver expediente compartido (PUBLICO - sin auth)
+route('GET', '/api/expediente/compartido/([a-f0-9]+)', function($token) {
+    $controller = new ExpedienteController();
+    $controller->getExpedienteCompartido($token);
+});
+
+// ===== RUTAS DE CONFIGURACIÓN =====
+
+// Obtener configuracion completa del usuario
+route('GET', '/api/configuracion', function() {
+    $controller = new ConfiguracionController();
+    $controller->getConfiguracion();
+}, ['auth']);
+
+// Guardar preferencias de notificaciones
+route('PUT', '/api/configuracion/notificaciones', function() {
+    $controller = new ConfiguracionController();
+    $controller->guardarNotificaciones(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Guardar preferencias de privacidad
+route('PUT', '/api/configuracion/privacidad', function() {
+    $controller = new ConfiguracionController();
+    $controller->guardarPrivacidad(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Cambiar contraseña
+route('PUT', '/api/auth/cambiar-password', function() {
+    $controller = new ConfiguracionController();
+    $controller->cambiarPassword(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Cambiar PIN
+route('PUT', '/api/auth/cambiar-pin', function() {
+    $controller = new ConfiguracionController();
+    $controller->cambiarPIN(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Eliminar dispositivo/sesion especifica
+route('DELETE', '/api/auth/devices/(\d+)', function($dispositivoId) {
+    $controller = new ConfiguracionController();
+    $controller->eliminarDispositivo($dispositivoId);
+}, ['auth']);
+
+// Cerrar todas las sesiones excepto la actual
+route('POST', '/api/auth/logout-all', function() {
+    $controller = new ConfiguracionController();
+    $controller->cerrarTodasSesiones();
+}, ['auth']);
+
+// ===== RUTAS DE AUTENTICACIÓN ADICIONALES =====
+
+// Registro de usuario
+route('POST', '/api/auth/register', function() {
+    $controller = new AuthController();
+    $controller->register(json_decode(file_get_contents('php://input'), true));
+});
+
+// Cerrar sesión en dispositivo específico
+route('DELETE', '/api/auth/devices/(\d+)/logout', function($deviceId) {
+    $user = AuthMiddleware::getCurrentUser();
+    $controller = new AuthController();
+    $controller->logoutDevice($user['id'], $deviceId);
+}, ['auth']);
+
+// Cerrar sesión en todos los dispositivos
+route('POST', '/api/auth/logout-all-devices', function() {
+    $user = AuthMiddleware::getCurrentUser();
+    $controller = new AuthController();
+    $controller->logoutAllDevices($user['id']);
+}, ['auth']);
+
+// Completar onboarding
+route('POST', '/api/auth/onboarding', function() {
+    $user = AuthMiddleware::getCurrentUser();
+    $controller = new AuthController();
+    $controller->completeOnboarding($user['id']);
+}, ['auth']);
+
+// ===== RUTAS DE FASES ADICIONALES =====
+
+// Cambiar fase de tratamiento
+route('PUT', '/api/fases/cambiar/(\d+)', function($pacienteId) {
+    $controller = new FaseController();
+    $controller->cambiarFase($pacienteId, json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Historial de cambios de fase
+route('GET', '/api/fases/historial/(\d+)', function($pacienteId) {
+    $controller = new FaseController();
+    $controller->getHistorialFases($pacienteId);
+}, ['auth']);
+
+// Dashboard de fases
+route('GET', '/api/fases/dashboard/(\d+)', function($pacienteId) {
+    $controller = new FaseController();
+    $controller->getDashboard($pacienteId);
+}, ['auth']);
+
+// ===== RUTAS DE FISIOTERAPIA ADICIONALES =====
+
+// Crear video educativo (especialista/admin)
+route('POST', '/api/fisioterapia/videos', function() {
+    $controller = new FisioterapiaController();
+    $controller->crearVideo(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Asignar video a paciente
+route('POST', '/api/fisioterapia/videos/asignar/(\d+)/(\d+)', function($pacienteId, $videoId) {
+    $controller = new FisioterapiaController();
+    $controller->asignarVideo($pacienteId, $videoId);
+}, ['auth']);
+
+// ===== RUTAS DE BLOG ADICIONALES =====
+
+// Crear artículo (admin)
+route('POST', '/api/blog/articulos', function() {
+    $controller = new BlogController();
+    $controller->crearArticulo(json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Actualizar artículo (admin)
+route('PUT', '/api/blog/articulos/(\d+)', function($id) {
+    $controller = new BlogController();
+    $controller->actualizarArticulo($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Eliminar artículo (admin)
+route('DELETE', '/api/blog/articulos/(\d+)', function($id) {
+    $controller = new BlogController();
+    $controller->eliminarArticulo($id);
+}, ['auth']);
+
+// ===== RUTAS DE COMUNIDAD ADICIONALES =====
+
+// Actualizar publicación
+route('PUT', '/api/comunidad/publicaciones/(\d+)', function($id) {
+    $controller = new ComunidadController();
+    $controller->actualizarPublicacion($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth']);
+
+// Eliminar publicación
+route('DELETE', '/api/comunidad/publicaciones/(\d+)', function($id) {
+    $controller = new ComunidadController();
+    $controller->eliminarPublicacion($id);
+}, ['auth']);
+
+// ===== RUTAS DE ADMISIONES =====
+
+// --- Públicas (sin auth) ---
+// Crear solicitud de admisión (formulario público)
+route('POST', '/api/admisiones/solicitud', function() {
+    $controller = new AdmisionesController();
+    $controller->crearSolicitud(json_decode(file_get_contents('php://input'), true));
+});
+
+// Subir documento por token (solicitante)
+route('POST', '/api/admisiones/documentos/([a-f0-9]{64})', function($token) {
+    $controller = new AdmisionesController();
+    $controller->subirDocumentoPorToken($token);
+});
+
+// Ver documentos subidos por token
+route('GET', '/api/admisiones/documentos/([a-f0-9]{64})', function($token) {
+    $controller = new AdmisionesController();
+    $controller->getDocumentosPorToken($token);
+});
+
+// Obtener documentos oficiales activos (público)
+route('GET', '/api/admisiones/documentos-oficiales', function() {
+    $controller = new AdmisionesController();
+    $controller->getDocumentosOficiales();
+});
+
+// Descargar documento oficial por ID (público)
+route('GET', '/api/admisiones/documentos-oficiales/(\d+)/descargar', function($id) {
+    $controller = new AdmisionesController();
+    $controller->descargarDocumentoOficial($id);
+});
+
+// Consultar estatus de solicitud (público)
+route('POST', '/api/admisiones/estatus', function() {
+    $controller = new AdmisionesController();
+    $controller->consultarEstatus(json_decode(file_get_contents('php://input'), true));
+});
+
+// --- Admin (auth + role:administrador) ---
+// Listar solicitudes con filtros
+route('GET', '/api/admin/admisiones', function() {
+    $controller = new AdmisionesController();
+    $controller->getSolicitudes($_GET);
+}, ['auth', 'role:administrador']);
+
+// Detalle de solicitud
+route('GET', '/api/admin/admisiones/(\d+)', function($id) {
+    $controller = new AdmisionesController();
+    $controller->getSolicitud($id);
+}, ['auth', 'role:administrador']);
+
+// Descargar/previsualizar documento de admisión
+route('GET', '/api/admin/admisiones/documentos/(\d+)/ver', function($docId) {
+    $controller = new AdmisionesController();
+    $controller->descargarDocumentoAdmision($docId);
+}, ['auth', 'role:administrador']);
+
+// Actualizar estado
+route('PUT', '/api/admin/admisiones/(\d+)/estado', function($id) {
+    $controller = new AdmisionesController();
+    $controller->actualizarEstado($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth', 'role:administrador']);
+
+// Generar token de documentos
+route('POST', '/api/admin/admisiones/(\d+)/token-documentos', function($id) {
+    $controller = new AdmisionesController();
+    $controller->generarTokenDocumentos($id);
+}, ['auth', 'role:administrador']);
+
+// Enviar referencia de pago
+route('POST', '/api/admin/admisiones/(\d+)/pago', function($id) {
+    $controller = new AdmisionesController();
+    $controller->enviarReferenciaPago($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth', 'role:administrador']);
+
+// Confirmar pago
+route('PUT', '/api/admin/admisiones/(\d+)/pago/confirmar', function($id) {
+    $controller = new AdmisionesController();
+    $controller->confirmarPago($id);
+}, ['auth', 'role:administrador']);
+
+// Programar preconsulta
+route('PUT', '/api/admin/admisiones/(\d+)/preconsulta', function($id) {
+    $controller = new AdmisionesController();
+    $controller->programarPreconsulta($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth', 'role:administrador']);
+
+// Admitir paciente
+route('POST', '/api/admin/admisiones/(\d+)/admitir', function($id) {
+    $controller = new AdmisionesController();
+    $controller->admitirPaciente($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth', 'role:administrador']);
+
+// Rechazar solicitud
+route('PUT', '/api/admin/admisiones/(\d+)/rechazar', function($id) {
+    $controller = new AdmisionesController();
+    $controller->rechazarSolicitud($id, json_decode(file_get_contents('php://input'), true));
+}, ['auth', 'role:administrador']);
+
+// Reporte semestral
+route('GET', '/api/admin/admisiones/reportes/semestre', function() {
+    $controller = new AdmisionesController();
+    $controller->getReporteSemestral($_GET['semestre'] ?? null);
+}, ['auth', 'role:administrador']);
+
+// Subir documento oficial
+route('POST', '/api/admin/documentos-oficiales', function() {
+    $controller = new AdmisionesController();
+    $controller->subirDocumentoOficial($_POST);
+}, ['auth', 'role:administrador']);
+
+// Eliminar documento oficial
+route('DELETE', '/api/admin/documentos-oficiales/(\d+)', function($id) {
+    $controller = new AdmisionesController();
+    $controller->eliminarDocumentoOficial($id);
+}, ['auth', 'role:administrador']);

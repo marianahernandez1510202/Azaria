@@ -4,6 +4,10 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
 import VoiceHelper from '../components/VoiceHelper';
+import LucideIcon from '../components/LucideIcon';
+import VistaEquivalentes, { limpiarAlimentos } from '../components/nutricion/VistaEquivalentes';
+import VistaPlan from '../components/nutricion/VistaPlan';
+import SeguimientoPeso from '../components/nutricion/SeguimientoPeso';
 import '../styles/Nutricion.css';
 
 const Nutricion = () => {
@@ -47,6 +51,9 @@ const Nutricion = () => {
   const [planAsignado, setPlanAsignado] = useState(null);
   const [loadingPlan, setLoadingPlan] = useState(false);
 
+  // Checklist de equivalentes (key: "NombreGrupo-colIdx", value: consumed count)
+  const [equivalentesCheck, setEquivalentesCheck] = useState({});
+
   // Recetas (legacy)
   const [recetas, setRecetas] = useState([]);
 
@@ -88,7 +95,33 @@ const Nutricion = () => {
 
   useEffect(() => {
     cargarDatosDia();
+    cargarChecklist();
   }, [selectedDate]);
+
+  // Cargar/guardar checklist de equivalentes desde localStorage
+  const getChecklistKey = () => {
+    const fechaStr = selectedDate.toISOString().split('T')[0];
+    return `nutricion-checklist-${pacienteId}-${fechaStr}`;
+  };
+
+  const cargarChecklist = () => {
+    try {
+      const saved = localStorage.getItem(getChecklistKey());
+      setEquivalentesCheck(saved ? JSON.parse(saved) : {});
+    } catch {
+      setEquivalentesCheck({});
+    }
+  };
+
+  const handleCheckToggle = (key, value) => {
+    setEquivalentesCheck(prev => {
+      const updated = { ...prev, [key]: value };
+      // Limpiar keys con valor 0
+      if (value === 0) delete updated[key];
+      localStorage.setItem(getChecklistKey(), JSON.stringify(updated));
+      return updated;
+    });
+  };
 
   // Sincronizar objetivos cuando se carga el plan
   useEffect(() => {
@@ -253,8 +286,6 @@ const Nutricion = () => {
       const response = await api.get(`/nutricion/plan-paciente/${pacienteId}`);
       // Manejar estructura de respuesta (puede venir en response.data o response.data.data)
       let data = response?.data?.data || response?.data || response;
-
-      console.log('Plan nutricional cargado:', data);
 
       if (data && data.tiene_plan) {
         // Asegurar que las calorías estén disponibles
@@ -502,77 +533,40 @@ const Nutricion = () => {
     return dias;
   };
 
-  const renderMacroCircle = () => {
-    const { calorias } = resumenDia;
-    const porcentaje = Math.min((calorias.consumidas / calorias.objetivo) * 100, 100);
-    const circunferencia = 2 * Math.PI * 45;
-    const offset = circunferencia - (porcentaje / 100) * circunferencia;
-
-    return (
-      <div className="macro-circle-container">
-        <svg className="macro-circle" viewBox="0 0 100 100">
-          <circle
-            className="macro-circle-bg"
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="#2d3748"
-            strokeWidth="8"
-          />
-          <circle
-            className="macro-circle-progress"
-            cx="50"
-            cy="50"
-            r="45"
-            fill="none"
-            stroke="url(#gradient)"
-            strokeWidth="8"
-            strokeLinecap="round"
-            strokeDasharray={circunferencia}
-            strokeDashoffset={offset}
-            transform="rotate(-90 50 50)"
-          />
-          <defs>
-            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="#00d4aa" />
-              <stop offset="100%" stopColor="#00bcd4" />
-            </linearGradient>
-          </defs>
-        </svg>
-        <div className="macro-circle-content">
-          <span className="macro-value">{calorias.objetivo - calorias.consumidas}</span>
-          <span className="macro-label">Restantes</span>
-        </div>
-      </div>
-    );
-  };
-
   return (
-    <div className="nutricion-page dark-theme">
+    <div className="nutricion-page">
       {/* Ayuda por voz */}
       <VoiceHelper currentModule="nutricion" />
 
-      {/* Header con fecha */}
-      <header className="nutricion-header">
-        <div className="date-nav">
-          <button className="date-arrow" onClick={() => cambiarDia(-1)}>‹</button>
-          <div className="date-display" onClick={() => setShowCalendar(true)}>
-            <span className="date-text">{formatearFecha(selectedDate)}</span>
+      {/* Header con gradient */}
+      <header className="nutricion-header-new">
+        <div className="nutricion-header-top">
+          <div className="nutricion-header-left">
+            <div className="nutricion-header-icon"><LucideIcon name="apple" size={24} /></div>
+            <div className="nutricion-header-text">
+              <h1>Nutrición</h1>
+              <p className="nutricion-subtitle">Tu plan de alimentación</p>
+            </div>
+          </div>
+          <button className="nutricion-calendar-btn" onClick={() => setShowCalendar(true)}>
+            <LucideIcon name="calendar" size={20} />
+          </button>
+        </div>
+        <div className="nutricion-date-nav">
+          <button className="nutricion-date-arrow" onClick={() => cambiarDia(-1)}>‹</button>
+          <div className="nutricion-date-display" onClick={() => setShowCalendar(true)}>
+            <span className="nutricion-date-text">{formatearFecha(selectedDate)}</span>
             {selectedDate.toDateString() !== new Date().toDateString() && (
-              <span className="date-full">, {selectedDate.getDate()}/{selectedDate.getMonth() + 1}</span>
+              <span className="nutricion-date-full">, {selectedDate.getDate()}/{selectedDate.getMonth() + 1}</span>
             )}
           </div>
           <button
-            className="date-arrow"
+            className="nutricion-date-arrow"
             onClick={() => cambiarDia(1)}
             disabled={selectedDate.toDateString() === new Date().toDateString()}
           >
             ›
           </button>
-        </div>
-        <div className="header-stats">
-          <button className="calendar-btn" onClick={() => setShowCalendar(true)}>📅</button>
         </div>
       </header>
 
@@ -591,7 +585,13 @@ const Nutricion = () => {
           className={`nutricion-tab ${activeTab === 'recetas' ? 'active' : ''}`}
           onClick={() => setActiveTab('recetas')}
         >
-          Recetas
+          Mi Plan
+        </button>
+        <button
+          className={`nutricion-tab ${activeTab === 'peso' ? 'active' : ''}`}
+          onClick={() => setActiveTab('peso')}
+        >
+          Mi Peso
         </button>
       </div>
 
@@ -599,107 +599,183 @@ const Nutricion = () => {
       <div className="nutricion-content">
         {activeTab === 'diario' && (
           <>
-            {/* Indicador de sincronización con plan */}
-            {planAsignado?.tiene_plan && (
-              <div className="synced-with-plan">
-                Objetivos sincronizados con tu plan: <strong>{planAsignado.nombre}</strong>
-              </div>
+            {/* Resumen del plan nutricional */}
+            {planAsignado?.tiene_plan ? (
+              <section className="plan-resumen-section">
+                <div className="plan-resumen-header">
+                  <h2><LucideIcon name="clipboard-list" size={20} /> {planAsignado.nombre || 'Mi Plan Nutricional'}</h2>
+                  {planAsignado.especialista_nombre && (
+                    <span className="plan-especialista">
+                      <LucideIcon name="stethoscope" size={14} /> {planAsignado.especialista_nombre}
+                    </span>
+                  )}
+                </div>
+
+                <div className="plan-macros-grid">
+                  <div className="plan-macro-card calorias">
+                    <div className="plan-macro-icon"><LucideIcon name="flame" size={20} /></div>
+                    <div className="plan-macro-info">
+                      <span className="plan-macro-value">
+                        {planAsignado.calorias_diarias || planAsignado.contenido?.totales?.calorias || resumenDia.calorias.objetivo}
+                      </span>
+                      <span className="plan-macro-label">kcal/día</span>
+                    </div>
+                  </div>
+                  <div className="plan-macro-card proteinas">
+                    <div className="plan-macro-icon"><LucideIcon name="beef" size={20} /></div>
+                    <div className="plan-macro-info">
+                      <span className="plan-macro-value">
+                        {planAsignado.proteinas_g || planAsignado.contenido?.totales?.proteinas || resumenDia.proteinas.objetivo}
+                      </span>
+                      <span className="plan-macro-label">g proteínas</span>
+                    </div>
+                  </div>
+                  <div className="plan-macro-card carbos">
+                    <div className="plan-macro-icon"><LucideIcon name="wheat" size={20} /></div>
+                    <div className="plan-macro-info">
+                      <span className="plan-macro-value">
+                        {planAsignado.carbohidratos_g || planAsignado.contenido?.totales?.carbohidratos || resumenDia.carbohidratos.objetivo}
+                      </span>
+                      <span className="plan-macro-label">g carbohidratos</span>
+                    </div>
+                  </div>
+                  <div className="plan-macro-card grasas">
+                    <div className="plan-macro-icon"><LucideIcon name="droplet" size={20} /></div>
+                    <div className="plan-macro-info">
+                      <span className="plan-macro-value">
+                        {planAsignado.grasas_g || planAsignado.contenido?.totales?.grasas || resumenDia.grasas.objetivo}
+                      </span>
+                      <span className="plan-macro-label">g grasas</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Checklist de equivalentes del plan */}
+                {(planAsignado.contenido?.tipo === 'equivalentes' || planAsignado.contenido?.cuadro_equivalentes?.grupos?.length > 0 || planAsignado.contenido?.texto_original?.includes('|||')) && (
+                  <div className="plan-equiv-wrapper">
+                    <VistaEquivalentes
+                      plan={planAsignado}
+                      contenido={planAsignado.contenido}
+                      compact={true}
+                      pacienteView={true}
+                      checklist={true}
+                      checkData={equivalentesCheck}
+                      onCheckToggle={handleCheckToggle}
+                    />
+                  </div>
+                )}
+              </section>
+            ) : (
+              <section className="plan-empty-section">
+                <div className="plan-empty-icon"><LucideIcon name="salad" size={40} /></div>
+                <h3>Sin plan nutricional asignado</h3>
+                <p>Tu nutriólogo te asignará un plan personalizado para apoyar tu recuperación.</p>
+              </section>
             )}
 
-            {/* Resumen de macros */}
-            <section className="section-card resumen-section">
-              <div className="section-header">
-                <h2>Resumen</h2>
-              </div>
+            {/* Plan de Alimentación por tiempo de comida */}
+            {planAsignado?.tiene_plan && planAsignado.contenido?.cuadro_equivalentes?.grupos?.length > 0 ? (() => {
+              const cuadro = planAsignado.contenido.cuadro_equivalentes;
+              const tiempos = cuadro.tiempos || [];
+              const grupos = cuadro.grupos || [];
+              const gruposAlimentos = planAsignado.contenido?.grupos_alimentos || [];
+              const ICONOS_TIEMPO = {
+                'Desayuno': 'sunrise', 'Colación 1': 'apple', 'Comida': 'utensils',
+                'Colación 2': 'cookie', 'Cena': 'moon'
+              };
+              const COLORES_GRUPO = {
+                'Verduras': '#4CAF50', 'Frutas': '#FF9800', 'Cereales': '#FFC107',
+                'Leguminosas': '#795548', 'Proteínas 1': '#F44336', 'Proteínas 2': '#E91E63',
+                'Proteínas 3': '#9C27B0', 'Lácteos': '#2196F3', 'Grasas': '#FF5722',
+                'Grasas con proteína': '#607D8B'
+              };
 
-              <div className="macros-display">
-                <div className="macro-stat">
-                  <span className="macro-number">{resumenDia.calorias.consumidas}</span>
-                  <span className="macro-name">Consumidas</span>
-                </div>
+              const getAlimentosForGrupo = (nombreGrupo) => {
+                const grupoData = gruposAlimentos.find(g => g.nombre === nombreGrupo);
+                if (!grupoData?.alimentos?.length) return [];
+                return limpiarAlimentos(grupoData.alimentos).slice(0, 8);
+              };
 
-                {renderMacroCircle()}
-
-                <div className="macro-stat">
-                  <span className="macro-number">0</span>
-                  <span className="macro-name">Quemadas</span>
-                </div>
-              </div>
-
-              <div className="macros-bars">
-                <div className="macro-bar-item">
-                  <span className="macro-bar-dot carbos"></span>
-                  <span className="macro-bar-label">Carbohidratos</span>
-                  <div className="macro-bar-track">
-                    <div
-                      className="macro-bar-fill carbos"
-                      style={{ width: `${Math.min((resumenDia.carbohidratos.consumidas / resumenDia.carbohidratos.objetivo) * 100, 100)}%` }}
-                    ></div>
+              return (
+                <section className="section-card plan-comidas-section">
+                  <div className="section-header">
+                    <h2><LucideIcon name="clipboard-list" size={20} /> Plan de Alimentación</h2>
                   </div>
-                  <span className="macro-bar-value">{resumenDia.carbohidratos.consumidas} / {resumenDia.carbohidratos.objetivo} g</span>
-                </div>
+                  <div className="plan-comidas-list">
+                    {tiempos.map((tiempo, tIdx) => {
+                      const gruposActivos = grupos
+                        .map((g, gIdx) => ({ nombre: g.nombre, cantidad: g.equivalentes?.[tIdx] || 0 }))
+                        .filter(g => g.cantidad > 0);
 
-                <div className="macro-bar-item">
-                  <span className="macro-bar-dot proteinas"></span>
-                  <span className="macro-bar-label">Proteínas</span>
-                  <div className="macro-bar-track">
-                    <div
-                      className="macro-bar-fill proteinas"
-                      style={{ width: `${Math.min((resumenDia.proteinas.consumidas / resumenDia.proteinas.objetivo) * 100, 100)}%` }}
-                    ></div>
+                      if (gruposActivos.length === 0) return null;
+
+                      return (
+                        <details key={tIdx} className="plan-comida-item" open={tIdx === 0}>
+                          <summary className="plan-comida-header">
+                            <div className="plan-comida-icon">
+                              <LucideIcon name={ICONOS_TIEMPO[tiempo] || 'utensils'} size={20} />
+                            </div>
+                            <div className="plan-comida-title">
+                              <span className="plan-comida-nombre">{tiempo}</span>
+                              <span className="plan-comida-count">{gruposActivos.length} grupos</span>
+                            </div>
+                            <LucideIcon name="chevron-down" size={18} className="plan-comida-chevron" />
+                          </summary>
+                          <div className="plan-comida-body">
+                            {gruposActivos.map((g, i) => {
+                              const alimentos = getAlimentosForGrupo(g.nombre);
+                              return (
+                                <details key={i} className="plan-comida-grupo-detail">
+                                  <summary className="plan-comida-grupo">
+                                    <span
+                                      className="plan-comida-grupo-dot"
+                                      style={{ background: COLORES_GRUPO[g.nombre] || '#8B949E' }}
+                                    />
+                                    <span className="plan-comida-grupo-nombre">{g.nombre}</span>
+                                    <span className="plan-comida-grupo-cant">
+                                      {g.cantidad % 1 === 0 ? g.cantidad : g.cantidad.toFixed(1)} {g.cantidad === 1 ? 'porción' : 'porciones'}
+                                    </span>
+                                    {alimentos.length > 0 && (
+                                      <LucideIcon name="chevron-down" size={14} className="plan-grupo-chevron" />
+                                    )}
+                                  </summary>
+                                  {alimentos.length > 0 && (
+                                    <div className="plan-comida-alimentos">
+                                      {alimentos.map((a, aIdx) => (
+                                        <div key={aIdx} className="plan-comida-alimento">
+                                          <span className="plan-alimento-nombre">{a.nombre}</span>
+                                          {a.equivalente && (
+                                            <span className="plan-alimento-porcion">{a.equivalente}</span>
+                                          )}
+                                        </div>
+                                      ))}
+                                      {gruposAlimentos.find(ga => ga.nombre === g.nombre)?.alimentos?.length > 8 && (
+                                        <span className="plan-alimentos-more">
+                                          Ver todos en Equivalentes
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                </details>
+                              );
+                            })}
+                          </div>
+                        </details>
+                      );
+                    })}
                   </div>
-                  <span className="macro-bar-value">{resumenDia.proteinas.consumidas} / {resumenDia.proteinas.objetivo} g</span>
+                </section>
+              );
+            })() : (
+              <section className="section-card alimentacion-section">
+                <div className="section-header">
+                  <h2>Alimentación</h2>
                 </div>
-
-                <div className="macro-bar-item">
-                  <span className="macro-bar-dot grasas"></span>
-                  <span className="macro-bar-label">Grasas</span>
-                  <div className="macro-bar-track">
-                    <div
-                      className="macro-bar-fill grasas"
-                      style={{ width: `${Math.min((resumenDia.grasas.consumidas / resumenDia.grasas.objetivo) * 100, 100)}%` }}
-                    ></div>
-                  </div>
-                  <span className="macro-bar-value">{resumenDia.grasas.consumidas} / {resumenDia.grasas.objetivo} g</span>
-                </div>
-              </div>
-
-            </section>
-
-            {/* Alimentación */}
-            <section className="section-card alimentacion-section">
-              <div className="section-header">
-                <h2>Alimentación</h2>
-              </div>
-
-              <div className="meals-list">
-                {[
-                  { key: 'desayuno', nombre: 'Desayuno', icon: '☕', data: comidas.desayuno },
-                  { key: 'almuerzo', nombre: 'Almuerzo', icon: '🍱', data: comidas.almuerzo },
-                  { key: 'cena', nombre: 'Cena', icon: '🥗', data: comidas.cena },
-                  { key: 'snacks', nombre: 'Snacks', icon: '⏳', data: comidas.snacks }
-                ].map(meal => (
-                  <div key={meal.key} className="meal-item">
-                    <div className="meal-icon">{meal.icon}</div>
-                    <div className="meal-info">
-                      <span className="meal-name">{meal.nombre} →</span>
-                      <span className="meal-calories">{meal.data.calorias} / {meal.data.objetivo} kcal</span>
-                      {meal.data.items.length > 0 && (
-                        <span className="meal-items-preview">
-                          {meal.data.items.map(i => i.nombre).join(', ')}
-                        </span>
-                      )}
-                    </div>
-                    <button
-                      className="meal-add-btn"
-                      onClick={() => abrirAgregarComida(meal.key)}
-                    >
-                      +
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </section>
+                <p className="empty-plan-hint">
+                  <LucideIcon name="info" size={16} /> Tu nutriólogo te asignará un plan con tus porciones por cada tiempo de comida.
+                </p>
+              </section>
+            )}
 
             {/* Registro de agua */}
             <section className="section-card agua-section">
@@ -712,7 +788,7 @@ const Nutricion = () => {
 
                 <div className="agua-vasos">
                   <button className="vaso-btn add" onClick={agregarVasoAgua}>
-                    <span className="vaso-icon empty">🥛</span>
+                    <span className="vaso-icon empty"><LucideIcon name="glass-water" size={20} /></span>
                     <span className="plus">+</span>
                   </button>
                   {agua.vasos.map((lleno, i) => (
@@ -721,7 +797,7 @@ const Nutricion = () => {
                       className={`vaso-btn ${lleno ? 'filled' : ''}`}
                       onClick={lleno ? quitarVasoAgua : agregarVasoAgua}
                     >
-                      <span className="vaso-icon">{lleno ? '💧' : '🥛'}</span>
+                      <span className="vaso-icon"><LucideIcon name={lleno ? 'droplet' : 'glass-water'} size={20} /></span>
                     </button>
                   ))}
                 </div>
@@ -735,24 +811,164 @@ const Nutricion = () => {
 
         {activeTab === 'recetas' && (
           <>
-            {/* Introducción */}
-            <div className="recetas-intro">
-              <p className="intro-text">
-                Aquí encontrarás las recetas recomendadas por tu nutriólogo para apoyar tu recuperación.
-              </p>
-            </div>
-
             {loadingPlan ? (
               <div className="loading-state">
                 <div className="loading-spinner"></div>
                 <p>Cargando tu plan nutricional...</p>
               </div>
             ) : planAsignado?.tiene_plan ? (
+              (planAsignado.contenido?.tipo === 'equivalentes' || planAsignado.contenido?.cuadro_equivalentes?.grupos?.length > 0) ? (
+                <>
+                  {/* Header del plan */}
+                  <div className="mi-plan-header">
+                    <div className="mi-plan-title-row">
+                      <h2><LucideIcon name="clipboard-list" size={22} /> {planAsignado.nombre || 'Mi Plan Nutricional'}</h2>
+                      <span className="plan-badge-activo">Activo</span>
+                    </div>
+                    {planAsignado.especialista_nombre && (
+                      <p className="mi-plan-especialista">
+                        <LucideIcon name="stethoscope" size={16} /> Asignado por: <strong>{planAsignado.especialista_nombre}</strong>
+                      </p>
+                    )}
+                    {planAsignado.contenido?.datos_paciente?.objetivo && (
+                      <div className="mi-plan-objetivo">
+                        <LucideIcon name="target" size={16} />
+                        <span>{planAsignado.contenido.datos_paciente.objetivo}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Macros del plan */}
+                  <div className="mi-plan-macros">
+                    <div className="mi-plan-macro calorias">
+                      <LucideIcon name="flame" size={18} />
+                      <span className="mi-plan-macro-val">{planAsignado.calorias_diarias || planAsignado.contenido?.totales?.calorias || 0}</span>
+                      <span className="mi-plan-macro-label">kcal</span>
+                    </div>
+                    <div className="mi-plan-macro proteinas">
+                      <LucideIcon name="beef" size={18} />
+                      <span className="mi-plan-macro-val">{Number(planAsignado.proteinas_g || planAsignado.contenido?.totales?.proteinas || 0).toFixed(0)}g</span>
+                      <span className="mi-plan-macro-label">Prot</span>
+                    </div>
+                    <div className="mi-plan-macro carbos">
+                      <LucideIcon name="wheat" size={18} />
+                      <span className="mi-plan-macro-val">{Number(planAsignado.carbohidratos_g || planAsignado.contenido?.totales?.carbohidratos || 0).toFixed(0)}g</span>
+                      <span className="mi-plan-macro-label">Carbos</span>
+                    </div>
+                    <div className="mi-plan-macro grasas">
+                      <LucideIcon name="droplet" size={18} />
+                      <span className="mi-plan-macro-val">{Number(planAsignado.grasas_g || planAsignado.contenido?.totales?.grasas || 0).toFixed(0)}g</span>
+                      <span className="mi-plan-macro-label">Grasas</span>
+                    </div>
+                  </div>
+
+                  {/* Vista completa de equivalentes (cuadro + grupos + libres + recomendaciones) */}
+                  <VistaEquivalentes
+                    plan={planAsignado}
+                    contenido={planAsignado.contenido}
+                    pacienteView
+                  />
+
+                  {/* Recetas adjuntas al plan */}
+                  {(() => {
+                    const recetasAdjuntas = (planAsignado.comidas || []).filter(c => c.receta_id);
+                    if (recetasAdjuntas.length === 0) return null;
+                    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+                    const TIPOS_COMIDA = {
+                      desayuno: 'Desayuno', media_manana: 'Colación 1', almuerzo: 'Comida',
+                      merienda: 'Colación 2', cena: 'Cena', snack: 'Snack'
+                    };
+                    return (
+                      <section className="mi-plan-recetas-section">
+                        <h3 className="mi-plan-section-title">
+                          <LucideIcon name="book-open" size={20} /> Recetas Sugeridas
+                        </h3>
+                        <div className="mi-plan-recetas-grid">
+                          {recetasAdjuntas.map((c) => {
+                            const nombre = c.receta_titulo || c.nombre_plato;
+                            const imagen = c.receta_imagen || c.imagen_url;
+                            const ingredientes = c.receta_ingredientes || c.ingredientes || [];
+                            const instrucciones = c.receta_instrucciones || c.instrucciones_json || [];
+                            return (
+                              <div key={c.id} className="mi-plan-receta-card">
+                                {imagen && (
+                                  <img src={`${apiUrl}${imagen}`} alt={nombre} className="mi-plan-receta-img" />
+                                )}
+                                <div className="mi-plan-receta-body">
+                                  <h4 className="mi-plan-receta-nombre">{nombre}</h4>
+                                  <span className="mi-plan-receta-tipo">{TIPOS_COMIDA[c.tipo_comida] || c.tipo_comida}</span>
+                                  {c.calorias > 0 && (
+                                    <div className="mi-plan-receta-macros">
+                                      <span><LucideIcon name="flame" size={14} /> {c.calorias} kcal</span>
+                                      {c.proteinas_g > 0 && <span>{Number(c.proteinas_g).toFixed(0)}g prot</span>}
+                                      {c.carbohidratos_g > 0 && <span>{Number(c.carbohidratos_g).toFixed(0)}g carbs</span>}
+                                    </div>
+                                  )}
+                                  {ingredientes.length > 0 && (
+                                    <details className="mi-plan-receta-details">
+                                      <summary>Ingredientes ({ingredientes.length})</summary>
+                                      <ul>
+                                        {ingredientes.map((ing, i) => (
+                                          <li key={i}>
+                                            {typeof ing === 'string' ? ing : `${ing.cantidad || ''} ${ing.unidad || ''} ${ing.nombre || ''}`}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </details>
+                                  )}
+                                  {instrucciones.length > 0 && (
+                                    <details className="mi-plan-receta-details">
+                                      <summary>Preparación ({instrucciones.length} pasos)</summary>
+                                      <ol>
+                                        {instrucciones.map((paso, i) => (
+                                          <li key={i}>{typeof paso === 'string' ? paso : paso.descripcion || paso.paso || ''}</li>
+                                        ))}
+                                      </ol>
+                                    </details>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </section>
+                    );
+                  })()}
+
+                  {/* Material visual / Imágenes del plan */}
+                  {planAsignado.contenido?.imagenes?.length > 0 && (() => {
+                    const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+                    return (
+                      <section className="mi-plan-imagenes-section">
+                        <h3 className="mi-plan-section-title">
+                          <LucideIcon name="image" size={20} /> Material Visual
+                        </h3>
+                        <div className="mi-plan-imagenes-grid">
+                          {planAsignado.contenido.imagenes.map((item, idx) => {
+                            const imgPath = item.path || item;
+                            return (
+                              <div key={idx} className="mi-plan-imagen-card" onClick={() => window.open(`${apiUrl}${imgPath}`, '_blank')}>
+                                <img src={`${apiUrl}${imgPath}`} alt={item.titulo || `Imagen ${idx + 1}`} />
+                                {item.titulo && <span className="mi-plan-imagen-titulo">{item.titulo}</span>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </section>
+                    );
+                  })()}
+                </>
+              ) : planAsignado.contenido?.generado_con_catalogo === true ? (
+                <VistaPlan
+                  plan={planAsignado}
+                  contenido={planAsignado.contenido}
+                />
+              ) : (
               <>
                 {/* Info del plan */}
                 <section className="plan-info-section">
                   <div className="plan-header-info">
-                    <h3>📋 {planAsignado.nombre}</h3>
+                    <h3><LucideIcon name="clipboard" size={20} /> {planAsignado.nombre}</h3>
                     <span className="plan-badge-activo">Activo</span>
                   </div>
                   {planAsignado.descripcion && (
@@ -765,29 +981,29 @@ const Nutricion = () => {
                   {/* Objetivo si existe */}
                   {planAsignado.contenido?.objetivo && (
                     <div className="plan-objetivo-paciente">
-                      <strong>🎯 Objetivo:</strong> {planAsignado.contenido.objetivo}
+                      <strong><LucideIcon name="target" size={18} /> Objetivo:</strong> {planAsignado.contenido.objetivo}
                     </div>
                   )}
 
                   {/* Macros del plan */}
                   <div className="plan-macros-resumen">
                     <div className="macro-item calorias">
-                      <span className="macro-icon">🔥</span>
+                      <span className="macro-icon"><LucideIcon name="zap" size={18} /></span>
                       <span className="macro-value">{planAsignado.calorias_diarias || planAsignado.contenido?.totales?.calorias || 0}</span>
                       <span className="macro-label">kcal/día</span>
                     </div>
                     <div className="macro-item proteinas">
-                      <span className="macro-icon">🥩</span>
+                      <span className="macro-icon"><LucideIcon name="target" size={18} /></span>
                       <span className="macro-value">{Number(planAsignado.proteinas_g || planAsignado.contenido?.totales?.proteinas || 0).toFixed(0)}g</span>
                       <span className="macro-label">Proteínas</span>
                     </div>
                     <div className="macro-item carbos">
-                      <span className="macro-icon">🍞</span>
+                      <span className="macro-icon"><LucideIcon name="sprout" size={18} /></span>
                       <span className="macro-value">{Number(planAsignado.carbohidratos_g || planAsignado.contenido?.totales?.carbohidratos || 0).toFixed(0)}g</span>
                       <span className="macro-label">Carbos</span>
                     </div>
                     <div className="macro-item grasas">
-                      <span className="macro-icon">🥑</span>
+                      <span className="macro-icon"><LucideIcon name="droplet" size={18} /></span>
                       <span className="macro-value">{Number(planAsignado.grasas_g || planAsignado.contenido?.totales?.grasas || 0).toFixed(0)}g</span>
                       <span className="macro-label">Grasas</span>
                     </div>
@@ -796,27 +1012,27 @@ const Nutricion = () => {
 
                 {/* Comidas del plan - Diseño mejorado */}
                 <section className="recetas-list-section">
-                  <h3>🍽️ Tu Menú del Día</h3>
+                  <h3><LucideIcon name="utensils" size={20} /> Tu Menú del Día</h3>
                   {planAsignado.contenido?.comidas?.length > 0 ? (
                     <div className="comidas-timeline-paciente">
                       {planAsignado.contenido.comidas.map((comida, idx) => {
                         const tipoLabels = {
-                          desayuno: { icon: '🌅', label: 'Desayuno' },
-                          almuerzo: { icon: '🍽️', label: 'Almuerzo' },
-                          cena: { icon: '🌙', label: 'Cena' },
-                          snack: { icon: '🥜', label: 'Snack' },
-                          merienda: { icon: '🍪', label: 'Merienda' }
+                          desayuno: { icon: 'sunrise', label: 'Desayuno' },
+                          almuerzo: { icon: 'utensils', label: 'Almuerzo' },
+                          cena: { icon: 'moon', label: 'Cena' },
+                          snack: { icon: 'apple', label: 'Snack' },
+                          merienda: { icon: 'cookie', label: 'Merienda' }
                         };
-                        const tipoInfo = tipoLabels[comida.tipo_comida] || { icon: '🍴', label: comida.nombre_original || comida.tipo_comida };
+                        const tipoInfo = tipoLabels[comida.tipo_comida] || { icon: 'utensils', label: comida.nombre_original || comida.tipo_comida };
 
                         return (
                           <div key={idx} className="comida-card-paciente">
                             <div className="comida-card-header">
                               <div className="comida-tipo-info">
-                                <span className="comida-icono">{tipoInfo.icon}</span>
+                                <span className="comida-icono"><LucideIcon name={tipoInfo.icon} size={20} /></span>
                                 <div className="comida-tipo-text">
                                   <span className="comida-tipo-label">{tipoInfo.label}</span>
-                                  {comida.horario && <span className="comida-hora">⏰ {comida.horario}</span>}
+                                  {comida.horario && <span className="comida-hora"><LucideIcon name="alarm-clock" size={14} /> {comida.horario}</span>}
                                 </div>
                               </div>
                               {comida.calorias > 0 && (
@@ -846,9 +1062,9 @@ const Nutricion = () => {
                                     </p>
                                     {opcion.calorias_estimadas > 0 && (
                                       <div className="opcion-macros-paciente">
-                                        <span className="macro proteinas">🥩 {opcion.proteinas_estimadas}g</span>
-                                        <span className="macro carbos">🍞 {opcion.carbohidratos_estimados}g</span>
-                                        <span className="macro grasas">🥑 {opcion.grasas_estimadas}g</span>
+                                        <span className="macro proteinas"><LucideIcon name="target" size={14} /> {opcion.proteinas_estimadas}g</span>
+                                        <span className="macro carbos"><LucideIcon name="sprout" size={14} /> {opcion.carbohidratos_estimados}g</span>
+                                        <span className="macro grasas"><LucideIcon name="droplet" size={14} /> {opcion.grasas_estimadas}g</span>
                                       </div>
                                     )}
                                   </div>
@@ -865,7 +1081,7 @@ const Nutricion = () => {
                     </div>
                   ) : (
                     <div className="empty-state">
-                      <span className="empty-icon">📋</span>
+                      <span className="empty-icon"><LucideIcon name="clipboard" size={32} /></span>
                       <p>El plan no tiene comidas estructuradas</p>
                       <p className="help-text">Consulta con tu nutriólogo para más detalles</p>
                     </div>
@@ -875,7 +1091,7 @@ const Nutricion = () => {
                 {/* Indicaciones generales */}
                 {planAsignado.contenido?.indicaciones_generales?.length > 0 && (
                   <section className="indicaciones-section">
-                    <h3>📝 Indicaciones Generales</h3>
+                    <h3><LucideIcon name="pen-line" size={20} /> Indicaciones Generales</h3>
                     <ul className="indicaciones-list-paciente">
                       {planAsignado.contenido.indicaciones_generales.map((ind, idx) => (
                         <li key={idx}>{ind}</li>
@@ -887,7 +1103,7 @@ const Nutricion = () => {
                 {/* Recomendaciones */}
                 {planAsignado.contenido?.recomendaciones?.length > 0 && (
                   <section className="recomendaciones-section">
-                    <h3>💡 Recomendaciones</h3>
+                    <h3><LucideIcon name="lightbulb" size={20} /> Recomendaciones</h3>
                     <ul className="recomendaciones-list">
                       {planAsignado.contenido.recomendaciones.map((rec, idx) => (
                         <li key={idx}>{rec}</li>
@@ -899,7 +1115,7 @@ const Nutricion = () => {
                 {/* Gráficas e imágenes informativas */}
                 {(planAsignado.contenido?.graficas?.length > 0 || planAsignado.contenido?.imagenes?.length > 0) && (
                   <section className="graficas-section-paciente">
-                    <h3>📊 Material Informativo</h3>
+                    <h3><LucideIcon name="bar-chart" size={20} /> Material Informativo</h3>
                     <div className="graficas-scroll">
                       {(planAsignado.contenido.graficas || planAsignado.contenido.imagenes || []).map((item, idx) => {
                         const imagen = item.imagen || item;
@@ -925,17 +1141,22 @@ const Nutricion = () => {
                   </section>
                 )}
               </>
+              )
             ) : (
-              <section className="recetas-list-section">
-                <h3>Recetas recomendadas</h3>
-                <div className="empty-state">
-                  <span className="empty-icon">📋</span>
-                  <p>No tienes recetas asignadas aún</p>
-                  <p className="help-text">Tu nutriólogo te asignará recetas personalizadas</p>
-                </div>
+              <section className="plan-empty-section">
+                <div className="plan-empty-icon"><LucideIcon name="clipboard-list" size={40} /></div>
+                <h3>Sin plan nutricional asignado</h3>
+                <p>Tu nutriólogo te asignará un plan personalizado para apoyar tu recuperación.</p>
               </section>
             )}
           </>
+        )}
+
+        {activeTab === 'peso' && (
+          <SeguimientoPeso
+            pacienteId={pacienteId}
+            onBack={() => setActiveTab('diario')}
+          />
         )}
       </div>
 
@@ -946,7 +1167,7 @@ const Nutricion = () => {
             <div className="calendar-header">
               <button className="modal-close" onClick={() => setShowCalendar(false)}>×</button>
               <h2>{selectedDate.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}</h2>
-              <button className="calendar-icon-btn">📅</button>
+              <button className="calendar-icon-btn"><LucideIcon name="calendar" size={18} /></button>
             </div>
 
             <div className="calendar-nav">
@@ -991,7 +1212,7 @@ const Nutricion = () => {
               {/* Sección de alimentos del plan */}
               {planAsignado?.tiene_plan && getAlimentosDelPlan().filter(a => a.esRelevante).length > 0 && (
                 <div className="plan-foods-section">
-                  <h4>📋 De tu plan nutricional</h4>
+                  <h4><LucideIcon name="clipboard" size={18} /> De tu plan nutricional</h4>
                   <div className="food-list plan-foods">
                     {getAlimentosDelPlan().filter(a => a.esRelevante).slice(0, alimentosBusqueda ? undefined : 5).map((alimento) => (
                       <div key={alimento.id} className="food-suggestion-item plan-food">
@@ -1021,7 +1242,7 @@ const Nutricion = () => {
               )}
 
               {/* Sección de otros alimentos */}
-              <h4>🍴 Otros alimentos</h4>
+              <h4><LucideIcon name="utensils" size={18} /> Otros alimentos</h4>
               <div className="food-list">
                 {getAlimentosFiltrados().filter(a => !a.esDelPlan || !a.esRelevante).map((alimento) => (
                   <div key={alimento.id} className={`food-suggestion-item ${alimento.esDelPlan ? 'from-plan' : ''}`}>
@@ -1059,7 +1280,7 @@ const Nutricion = () => {
               {showRecetaDetail.imagen ? (
                 <img src={showRecetaDetail.imagen} alt={showRecetaDetail.titulo} />
               ) : (
-                <div className="receta-detail-placeholder">🍽️</div>
+                <div className="receta-detail-placeholder"><LucideIcon name="utensils" size={32} /></div>
               )}
             </div>
 
@@ -1067,8 +1288,8 @@ const Nutricion = () => {
               <h2>{showRecetaDetail.titulo}</h2>
 
               <div className="receta-detail-meta">
-                <span>⏱️ {showRecetaDetail.tiempo} min</span>
-                <span>🔥 {showRecetaDetail.calorias} kcal</span>
+                <span><LucideIcon name="alarm-clock" size={16} /> {showRecetaDetail.tiempo} min</span>
+                <span><LucideIcon name="zap" size={16} /> {showRecetaDetail.calorias} kcal</span>
               </div>
 
               <div className="receta-detail-section">

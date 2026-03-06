@@ -3,6 +3,7 @@
 namespace App\Controllers;
 
 use App\Services\DatabaseService;
+use App\Models\ChecklistProtesis;
 use App\Utils\Response;
 use App\Utils\Validator;
 
@@ -333,12 +334,12 @@ class OrtesisController
     {
         try {
             $dispositivo = $this->db->query(
-                "SELECT dp.*, td.nombre as tipo_protesis_nombre, td.categoria, td.cuidados_especificos,
-                        nk.nombre as nivel_k_nombre, nk.descripcion as nivel_k_descripcion
+                "SELECT dp.*, td.nombre as tipo_protesis_nombre, td.categoria,
+                        td.cuidados_especificos, td.componentes, td.ventajas, td.desventajas
                  FROM dispositivos_paciente dp
                  LEFT JOIN tipos_dispositivo td ON dp.tipo_dispositivo_id = td.id
-                 LEFT JOIN niveles_k nk ON dp.nivel_k = nk.nivel
-                 WHERE dp.paciente_id = ?",
+                 WHERE dp.paciente_id = ? AND dp.activo = 1
+                 LIMIT 1",
                 [$pacienteId]
             )->fetch();
 
@@ -353,8 +354,14 @@ class OrtesisController
             if (!empty($dispositivo['cuidados_especificos'])) {
                 $dispositivo['cuidados_especificos'] = json_decode($dispositivo['cuidados_especificos'], true);
             }
-            if (!empty($dispositivo['componentes_actuales'])) {
-                $dispositivo['componentes_actuales'] = json_decode($dispositivo['componentes_actuales'], true);
+            if (!empty($dispositivo['componentes'])) {
+                $dispositivo['componentes'] = json_decode($dispositivo['componentes'], true);
+            }
+            if (!empty($dispositivo['ventajas'])) {
+                $dispositivo['ventajas'] = json_decode($dispositivo['ventajas'], true);
+            }
+            if (!empty($dispositivo['desventajas'])) {
+                $dispositivo['desventajas'] = json_decode($dispositivo['desventajas'], true);
             }
 
             $dispositivo['tiene_dispositivo'] = true;
@@ -394,6 +401,16 @@ class OrtesisController
     }
 
     // =====================================================
+    // CHECKLIST DE PRÓTESIS
+    // =====================================================
+
+    public function getChecklist($pacienteId, $fecha = null)
+    {
+        $checklist = ChecklistProtesis::getByPaciente($pacienteId, $fecha);
+        return Response::success($checklist);
+    }
+
+    // =====================================================
     // HISTORIAL DE AJUSTES
     // =====================================================
 
@@ -401,11 +418,12 @@ class OrtesisController
     {
         try {
             $ajustes = $this->db->query(
-                "SELECT ao.*, u.nombre_completo as especialista_nombre
-                 FROM ajustes_ortesis ao
-                 LEFT JOIN usuarios u ON ao.realizado_por = u.id
-                 WHERE ao.paciente_id = ?
-                 ORDER BY ao.created_at DESC",
+                "SELECT ha.*, u.nombre_completo as especialista_nombre
+                 FROM historial_ajustes ha
+                 INNER JOIN dispositivos_paciente dp ON ha.dispositivo_id = dp.id
+                 LEFT JOIN usuarios u ON ha.realizado_por = u.id
+                 WHERE dp.paciente_id = ?
+                 ORDER BY ha.fecha_ajuste DESC",
                 [$pacienteId]
             )->fetchAll();
 
@@ -413,6 +431,53 @@ class OrtesisController
         } catch (\Exception $e) {
             error_log('Error getting ajustes: ' . $e->getMessage());
             return Response::error('Error al obtener ajustes', 500);
+        }
+    }
+
+    /**
+     * Crear un nuevo ajuste (solo especialista)
+     */
+    public function crearAjuste($pacienteId, $data)
+    {
+        try {
+            $validator = new Validator($data);
+            $validator->required(['tipo_ajuste', 'descripcion']);
+
+            if (!$validator->passes()) {
+                return Response::error($validator->errors(), 422);
+            }
+
+            // Obtener dispositivo del paciente
+            $dispositivo = $this->db->query(
+                "SELECT id FROM dispositivos_paciente WHERE paciente_id = ? AND activo = 1 LIMIT 1",
+                [$pacienteId]
+            )->fetch();
+
+            if (!$dispositivo) {
+                return Response::error('El paciente no tiene un dispositivo registrado', 404);
+            }
+
+            $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+
+            $this->db->query(
+                "INSERT INTO historial_ajustes (dispositivo_id, tipo_ajuste, descripcion, realizado_por, fecha_ajuste, notas)
+                 VALUES (?, ?, ?, ?, ?, ?)",
+                [
+                    $dispositivo['id'],
+                    $data['tipo_ajuste'],
+                    $data['descripcion'],
+                    $user['id'],
+                    $data['fecha_ajuste'] ?? date('Y-m-d'),
+                    $data['notas'] ?? null
+                ]
+            );
+
+            $id = $this->db->lastInsertId();
+
+            return Response::success(['id' => $id], 'Ajuste registrado exitosamente', 201);
+        } catch (\Exception $e) {
+            error_log('Error creating ajuste: ' . $e->getMessage());
+            return Response::error('Error al registrar ajuste', 500);
         }
     }
 
@@ -424,9 +489,11 @@ class OrtesisController
     {
         try {
             $problemas = $this->db->query(
-                "SELECT * FROM problemas_ortesis
-                 WHERE paciente_id = ?
-                 ORDER BY created_at DESC",
+                "SELECT rp.*, u.nombre_completo as atendido_por_nombre
+                 FROM reportes_problemas rp
+                 LEFT JOIN usuarios u ON rp.atendido_por = u.id
+                 WHERE rp.paciente_id = ?
+                 ORDER BY rp.created_at DESC",
                 [$pacienteId]
             )->fetchAll();
 
@@ -441,20 +508,26 @@ class OrtesisController
     {
         try {
             $validator = new Validator($data);
-            $validator->required(['paciente_id', 'tipo', 'descripcion']);
+            $validator->required(['paciente_id', 'descripcion', 'severidad']);
 
             if (!$validator->passes()) {
                 return Response::error($validator->errors(), 422);
             }
 
+            // Obtener dispositivo del paciente
+            $dispositivo = $this->db->query(
+                "SELECT id FROM dispositivos_paciente WHERE paciente_id = ? AND activo = 1 LIMIT 1",
+                [$data['paciente_id']]
+            )->fetch();
+
             $this->db->query(
-                "INSERT INTO problemas_ortesis (paciente_id, tipo, descripcion, urgencia, estado, created_at)
-                 VALUES (?, ?, ?, ?, 'pendiente', NOW())",
+                "INSERT INTO reportes_problemas (dispositivo_id, paciente_id, descripcion, severidad, estado, fecha_reporte)
+                 VALUES (?, ?, ?, ?, 'pendiente', CURDATE())",
                 [
+                    $dispositivo['id'] ?? null,
                     $data['paciente_id'],
-                    $data['tipo'],
                     $data['descripcion'],
-                    $data['urgencia'] ?? 'media'
+                    $data['severidad'] ?? 'leve'
                 ]
             );
 
@@ -464,6 +537,53 @@ class OrtesisController
         } catch (\Exception $e) {
             error_log('Error reporting problema: ' . $e->getMessage());
             return Response::error('Error al reportar problema', 500);
+        }
+    }
+
+    /**
+     * Resolver un problema reportado (solo especialista)
+     */
+    public function resolverProblema($problemaId, $data)
+    {
+        try {
+            $user = \App\Middleware\AuthMiddleware::getCurrentUser();
+
+            $this->db->query(
+                "UPDATE reportes_problemas
+                 SET estado = 'resuelto', fecha_resolucion = CURDATE(), notas_resolucion = ?, atendido_por = ?, updated_at = NOW()
+                 WHERE id = ?",
+                [
+                    $data['notas_resolucion'] ?? null,
+                    $user['id'],
+                    $problemaId
+                ]
+            );
+
+            return Response::success(null, 'Problema marcado como resuelto');
+        } catch (\Exception $e) {
+            error_log('Error resolving problema: ' . $e->getMessage());
+            return Response::error('Error al resolver problema', 500);
+        }
+    }
+
+    /**
+     * Obtener historial de checklist de un paciente
+     */
+    public function getChecklistHistorial($pacienteId)
+    {
+        try {
+            $checklist = $this->db->query(
+                "SELECT * FROM checklist_protesis
+                 WHERE paciente_id = ?
+                 ORDER BY fecha DESC
+                 LIMIT 30",
+                [$pacienteId]
+            )->fetchAll();
+
+            return Response::success($checklist);
+        } catch (\Exception $e) {
+            error_log('Error getting checklist historial: ' . $e->getMessage());
+            return Response::error('Error al obtener historial de checklist', 500);
         }
     }
 

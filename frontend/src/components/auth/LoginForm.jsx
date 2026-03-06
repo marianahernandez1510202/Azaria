@@ -5,6 +5,7 @@ import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice } from '../VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../accessibility/AccessibilityPanel';
 import PINKeyboard from './PINKeyboard';
+import LucideIcon from '../LucideIcon';
 import './LoginForm.css';
 
 const LoginForm = () => {
@@ -57,11 +58,7 @@ const LoginForm = () => {
         if (settings.voiceNavigation) {
           speak('Sesión iniciada correctamente. Redirigiendo al panel principal.');
         }
-        if (result.firstLogin) {
-          navigate('/onboarding');
-        } else {
-          navigate('/');
-        }
+        navigate('/');
       } else {
         setError(result.message || 'Credenciales incorrectas');
       }
@@ -93,7 +90,7 @@ const LoginForm = () => {
         {/* Header */}
         <header className="login-header">
           <div className="login-brand">
-            <span className="brand-icon" aria-hidden="true">💚</span>
+            <span className="brand-icon" aria-hidden="true"><LucideIcon name="heart" size={24} color="#00589c" /></span>
             <h1 id="login-title">Bienvenido a Azaria</h1>
           </div>
           <p className="login-subtitle" id="login-description">
@@ -109,7 +106,7 @@ const LoginForm = () => {
               aria-label={isSpeaking ? 'Detener audio' : 'Escuchar instrucciones'}
               title="Escuchar instrucciones"
             >
-              {isSpeaking ? '⏹️' : '🔊'}
+              <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
             </button>
 
             <button
@@ -131,7 +128,7 @@ const LoginForm = () => {
             role="alert"
             aria-live="assertive"
           >
-            <span className="alert-icon" aria-hidden="true">⚠️</span>
+            <span className="alert-icon" aria-hidden="true"><LucideIcon name="alert-triangle" size={18} /></span>
             <span>{error}</span>
           </div>
         )}
@@ -197,7 +194,7 @@ const LoginForm = () => {
                 aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                 aria-pressed={showPassword}
               >
-                {showPassword ? '🙈' : '👁️'}
+                <LucideIcon name={showPassword ? 'eye-off' : 'eye'} size={20} />
               </button>
             </div>
             <p id="credential-help" className="sr-only">
@@ -216,7 +213,7 @@ const LoginForm = () => {
               aria-expanded={showPINKeyboard}
               aria-controls="pin-keyboard"
             >
-              {showPINKeyboard ? '⌨️ Ocultar teclado virtual' : '⌨️ Mostrar teclado virtual'}
+              <LucideIcon name="keyboard" size={18} /> {showPINKeyboard ? 'Ocultar teclado virtual' : 'Mostrar teclado virtual'}
             </button>
           </div>
 
@@ -286,6 +283,29 @@ const LoginForm = () => {
               ¿Olvidaste tu contraseña o PIN?
             </a>
           </div>
+
+          {/* Solicitud de Admisión */}
+          <div className="login-solicitud-cta">
+            <p className="solicitud-cta-text">¿Eres nuevo y necesitas atención?</p>
+            <div className="solicitud-cta-buttons">
+              <a
+                href="/solicitud"
+                className="btn-solicitud-admision"
+                onFocus={() => handleFieldFocus('solicitud', 'Enlace para solicitar admisión como paciente nuevo')}
+              >
+                <LucideIcon name="clipboard-list" size={20} />
+                Solicitar Admisión
+              </a>
+              <a
+                href="/admisiones/estatus"
+                className="btn-consultar-estatus"
+                onFocus={() => handleFieldFocus('estatus', 'Enlace para consultar el estatus de tu solicitud')}
+              >
+                <LucideIcon name="search" size={20} />
+                Consultar Estatus
+              </a>
+            </div>
+          </div>
         </form>
 
         {/* Footer */}
@@ -295,12 +315,12 @@ const LoginForm = () => {
               <strong>¿Necesitas ayuda?</strong>
             </p>
             <p className="help-item">
-              <span aria-hidden="true">📞</span>
-              <a href="tel:+524421234567" className="link-accessible">442-XXX-XXXX</a>
+              <span aria-hidden="true"><LucideIcon name="phone" size={16} /></span>
+              <a href="tel:+5214424369592" className="link-accessible">+52 1 442 436 9592</a>
             </p>
             <p className="help-item">
-              <span aria-hidden="true">✉️</span>
-              <a href="mailto:ayuda@azaria.app" className="link-accessible">ayuda@azaria.app</a>
+              <span aria-hidden="true"><LucideIcon name="mail" size={18} /></span>
+              <a href="mailto:unidadinvestigacionoyp_enesj@unam.mx" className="link-accessible">unidadinvestigacionoyp_enesj@unam.mx</a>
             </p>
             <p className="help-hours">Lunes a Viernes, 9:00 - 18:00</p>
           </div>

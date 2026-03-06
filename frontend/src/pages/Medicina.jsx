@@ -3,8 +3,13 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import { useVoice, Speakable } from '../components/VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Filler, Title, Tooltip, Legend } from 'chart.js';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Medicina.css';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Filler, Title, Tooltip, Legend);
 
 /**
  * Medicina - Módulo de control de salud
@@ -23,9 +28,16 @@ const Medicina = () => {
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState('');
   const [saving, setSaving] = useState(false);
+  const [medicamentos, setMedicamentos] = useState([]);
+  const [showInactivos, setShowInactivos] = useState(false);
 
   // Obtener paciente_id con fallback al user.id
   const pacienteId = user?.paciente_id || user?.id;
+
+  const VIAS_MAP = {
+    oral: 'Oral', inyectable: 'Inyectable', topica: 'Tópica',
+    inhalada: 'Inhalada', sublingual: 'Sublingual', otra: 'Otra'
+  };
 
   // Estados para los formularios
   const [glucosaForm, setGlucosaForm] = useState({
@@ -48,6 +60,12 @@ const Medicina = () => {
     notas: ''
   });
 
+  const [hba1cForm, setHba1cForm] = useState({
+    valor: '',
+    fecha: new Date().toISOString().split('T')[0],
+    notas: ''
+  });
+
   useEffect(() => {
     cargarDatos();
   }, [activeTab]);
@@ -55,23 +73,28 @@ const Medicina = () => {
   // Bienvenida por voz al entrar al módulo
   useEffect(() => {
     if (settings.voiceNavigation) {
-      speak('Bienvenido al módulo de Control de Salud. Aquí puedes registrar tus niveles de glucosa, presión arterial y dolor.');
+      speak('Bienvenido al módulo de Control de Salud. Aquí puedes registrar tus niveles de glucosa, presión arterial, dolor, y ver tus medicamentos.');
     }
   }, []);
 
   const cargarDatos = async () => {
     setLoading(true);
     try {
-      const endpoint = `/medicina/${activeTab}/${pacienteId}`;
-      const response = await api.get(endpoint);
-      setRegistros(response.data || []);
+      if (activeTab === 'medicamentos') {
+        const medResponse = await api.get(`/medicina/medicamentos/${pacienteId}`);
+        setMedicamentos(medResponse?.data || medResponse || []);
+        setRegistros([]);
+      } else {
+        const endpoint = `/medicina/${activeTab}/${pacienteId}`;
+        const response = await api.get(endpoint);
+        setRegistros(response.data || []);
+      }
 
       // Cargar estadísticas
       const statsResponse = await api.get(`/medicina/resumen/${pacienteId}`);
       setEstadisticas(statsResponse.data);
     } catch (err) {
       console.error('Error al cargar datos médicos:', err);
-      // Datos de ejemplo para desarrollo
       setEstadisticas({
         glucosa: { ultimo: 105, promedio: 110 },
         presion: { ultima_sistolica: 120, ultima_diastolica: 80 },
@@ -91,7 +114,8 @@ const Medicina = () => {
       const nombres = {
         glucosa: 'glucosa',
         presion: 'presión arterial',
-        dolor: 'dolor'
+        dolor: 'dolor',
+        hba1c: 'hemoglobina glicosilada'
       };
       speak(`Formulario para registrar ${nombres[tipo]}`);
     }
@@ -156,12 +180,18 @@ const Medicina = () => {
 
   const handleSubmitDolor = async (e) => {
     e.preventDefault();
+    if (!dolorForm.ubicacion.trim()) {
+      if (settings.voiceNavigation) {
+        speak('Por favor indica dónde te duele.');
+      }
+      return;
+    }
     setSaving(true);
     try {
       await api.post('/medicina/dolor', {
         paciente_id: pacienteId,
         nivel_dolor: dolorForm.nivel_dolor,
-        ubicacion: dolorForm.ubicacion,
+        ubicacion: dolorForm.ubicacion.trim(),
         tipo_dolor: dolorForm.tipo_dolor,
         notas: dolorForm.notas,
         fecha_hora: new Date().toISOString()
@@ -183,6 +213,44 @@ const Medicina = () => {
     }
   };
 
+  const handleSubmitHba1c = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.post('/medicina/hba1c', {
+        paciente_id: pacienteId,
+        valor: hba1cForm.valor,
+        fecha: hba1cForm.fecha,
+        notas: hba1cForm.notas
+      });
+      setShowModal(false);
+      setHba1cForm({ valor: '', fecha: new Date().toISOString().split('T')[0], notas: '' });
+      if (settings.voiceNavigation) {
+        speak('Registro de hemoglobina glicosilada guardado correctamente.');
+      }
+      cargarDatos();
+    } catch (err) {
+      console.error('Error al registrar HbA1c:', err);
+      if (settings.voiceNavigation) {
+        speak('Error al guardar el registro. Intenta de nuevo.');
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getHba1cColor = (valor) => {
+    if (valor < 5.7) return '#4CAF50';
+    if (valor < 6.5) return '#FF9800';
+    return '#EF5350';
+  };
+
+  const getHba1cTexto = (valor) => {
+    if (valor < 5.7) return 'Normal';
+    if (valor < 6.5) return 'Prediabético';
+    return 'Diabético';
+  };
+
   const handleTabChange = (tab) => {
     setActiveTab(tab);
 
@@ -190,9 +258,11 @@ const Medicina = () => {
       const nombres = {
         glucosa: 'Glucosa',
         presion: 'Presión arterial',
-        dolor: 'Dolor'
+        dolor: 'Dolor',
+        hba1c: 'Hemoglobina Glicosilada',
+        medicamentos: 'Mis Medicamentos'
       };
-      speak(`Mostrando registros de ${nombres[tab]}`);
+      speak(`Mostrando ${nombres[tab]}`);
     }
   };
 
@@ -221,17 +291,17 @@ const Medicina = () => {
   };
 
   const getDolorEmoji = (nivel) => {
-    if (nivel <= 2) return '😊';
-    if (nivel <= 4) return '😐';
-    if (nivel <= 6) return '😣';
-    if (nivel <= 8) return '😖';
-    return '😫';
+    if (nivel <= 2) return <LucideIcon name="smile" size={20} />;
+    if (nivel <= 4) return <LucideIcon name="meh" size={20} />;
+    if (nivel <= 6) return <LucideIcon name="frown" size={20} />;
+    if (nivel <= 8) return <LucideIcon name="frown" size={20} />;
+    return <LucideIcon name="angry" size={20} />;
   };
 
   const getDolorColor = (nivel) => {
-    if (nivel <= 3) return '#4CAF50';
-    if (nivel <= 6) return '#FF9800';
-    return '#f44336';
+    if (nivel <= 3) return '#2E7D32';
+    if (nivel <= 6) return '#E65100';
+    return '#C62828';
   };
 
   const formatFechaRelativa = (fecha) => {
@@ -249,6 +319,23 @@ const Medicina = () => {
     return fechaRegistro.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
   };
 
+  const formatFechaMedicamento = (fecha) => {
+    if (!fecha) return 'No especificada';
+    try {
+      return new Date(fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' });
+    } catch { return fecha; }
+  };
+
+  const speakMedicamento = (med) => {
+    const estado = (med.activo == 1) ? 'activo' : 'finalizado';
+    const via = VIAS_MAP[med.via_administracion] || med.via_administracion;
+    let texto = `Medicamento ${estado}: ${med.nombre_comercial}`;
+    if (med.nombre_generico) texto += `, nombre genérico ${med.nombre_generico}`;
+    texto += `. Dosis: ${med.dosis}. Frecuencia: ${med.frecuencia}. Vía: ${via}.`;
+    if (med.instrucciones_especiales) texto += ` Instrucciones: ${med.instrucciones_especiales}.`;
+    speak(texto);
+  };
+
   const speakRegistro = (registro, tipo) => {
     let texto = '';
     if (tipo === 'glucosa') {
@@ -262,9 +349,11 @@ const Medicina = () => {
   };
 
   const tabInfo = {
-    glucosa: { icon: '🩸', label: 'Glucosa', color: '#2196F3' },
-    presion: { icon: '💓', label: 'Presión', color: '#E91E63' },
-    dolor: { icon: '🩹', label: 'Dolor', color: '#FF9800' }
+    glucosa: { icon: 'heart-pulse', label: 'Glucosa', color: '#1976D2' },
+    presion: { icon: 'heart', label: 'Presión', color: '#AD1457' },
+    dolor: { icon: 'heart-pulse', label: 'Dolor', color: '#E65100' },
+    hba1c: { icon: 'droplet', label: 'HbA1c', color: '#FF6F00' },
+    medicamentos: { icon: 'pill', label: 'Medicamentos', color: '#7B1FA2' }
   };
 
   return (
@@ -288,7 +377,7 @@ const Medicina = () => {
       <header className="medicina-header">
         <div className="header-content">
           <div className="header-left">
-            <div className="header-icon" aria-hidden="true">💊</div>
+            <div className="header-icon" aria-hidden="true"><LucideIcon name="pill" size={24} /></div>
             <div className="header-text">
               <h1 id="page-title">Control de Salud</h1>
               <p className="subtitle">Monitorea tus signos vitales</p>
@@ -303,7 +392,7 @@ const Medicina = () => {
               aria-label={isSpeaking ? 'Detener audio' : 'Escuchar ayuda del módulo'}
               aria-pressed={isSpeaking}
             >
-              {isSpeaking ? '⏹️' : '🔊'}
+              <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
             </button>
 
             {/* Botón de accesibilidad */}
@@ -312,7 +401,7 @@ const Medicina = () => {
               onClick={togglePanel}
               aria-label="Abrir configuración de accesibilidad"
             >
-              ♿
+              <LucideIcon name="accessibility" size={20} />
             </button>
           </div>
         </div>
@@ -328,7 +417,7 @@ const Medicina = () => {
               onClick={() => handleTabChange('glucosa')}
               aria-label={`Ver registros de glucosa. Último valor: ${estadisticas?.glucosa?.ultimo || 'sin datos'} mg/dL`}
             >
-              <div className="stat-icon" aria-hidden="true">🩸</div>
+              <div className="stat-icon" aria-hidden="true"><LucideIcon name="heart-pulse" size={22} /></div>
               <div className="stat-content">
                 <span className="stat-label">Glucosa</span>
                 <span className="stat-value-big">
@@ -350,7 +439,7 @@ const Medicina = () => {
               onClick={() => handleTabChange('presion')}
               aria-label={`Ver registros de presión. Último valor: ${estadisticas?.presion?.ultima_sistolica || 'sin datos'}/${estadisticas?.presion?.ultima_diastolica || 'sin datos'} mmHg`}
             >
-              <div className="stat-icon" aria-hidden="true">💓</div>
+              <div className="stat-icon" aria-hidden="true"><LucideIcon name="heart" size={22} /></div>
               <div className="stat-content">
                 <span className="stat-label">Presión Arterial</span>
                 <span className="stat-value-big">
@@ -373,7 +462,7 @@ const Medicina = () => {
               aria-label={`Ver registros de dolor. Promedio: ${estadisticas?.dolor?.promedio ? Number(estadisticas.dolor.promedio).toFixed(1) : 'sin datos'} de 10`}
             >
               <div className="stat-icon" aria-hidden="true">
-                {estadisticas?.dolor?.promedio ? getDolorEmoji(estadisticas.dolor.promedio) : '🩹'}
+                {estadisticas?.dolor?.promedio ? getDolorEmoji(estadisticas.dolor.promedio) : <LucideIcon name="heart-pulse" size={22} />}
               </div>
               <div className="stat-content">
                 <span className="stat-label">Dolor Promedio</span>
@@ -407,23 +496,256 @@ const Medicina = () => {
               onFocus={() => settings.autoSpeak && speak(info.label)}
               style={activeTab === key ? { '--tab-color': info.color } : {}}
             >
-              <span className="tab-icon" aria-hidden="true">{info.icon}</span>
+              <span className="tab-icon" aria-hidden="true"><LucideIcon name={info.icon} size={18} /></span>
               <span className="tab-label">{info.label}</span>
             </button>
           ))}
         </div>
       </nav>
 
-      {/* Botón de nuevo registro flotante */}
-      <button
-        className="fab-button"
-        onClick={() => abrirModal(activeTab)}
-        style={{ '--fab-color': tabInfo[activeTab].color }}
-        aria-label={`Agregar nuevo registro de ${tabInfo[activeTab].label}`}
-      >
-        <span className="fab-icon" aria-hidden="true">+</span>
-        <span className="fab-text">Nuevo registro</span>
-      </button>
+      {/* Gráfica de tendencia */}
+      {!loading && registros.length >= 3 && activeTab !== 'medicamentos' && (
+        <section className="medicina-chart-section">
+          <div className="medicina-chart-card">
+            <h3 className="medicina-chart-title">
+              {activeTab === 'glucosa' && 'Tendencia de Glucosa'}
+              {activeTab === 'presion' && 'Tendencia de Presión Arterial'}
+              {activeTab === 'dolor' && 'Tendencia de Dolor'}
+              {activeTab === 'hba1c' && 'Tendencia de HbA1c'}
+            </h3>
+            <div className="medicina-chart-wrapper">
+              {activeTab === 'glucosa' && (
+                <Line
+                  data={{
+                    labels: [...registros].reverse().slice(-20).map(r => {
+                      const f = new Date(r.fecha_hora);
+                      return `${f.getDate()}/${f.getMonth() + 1}`;
+                    }),
+                    datasets: [{
+                      label: 'Glucosa (mg/dL)',
+                      data: [...registros].reverse().slice(-20).map(r => r.nivel_glucosa),
+                      borderColor: '#1976D2',
+                      backgroundColor: 'rgba(25, 118, 210, 0.1)',
+                      pointBackgroundColor: [...registros].reverse().slice(-20).map(r => {
+                        if (r.nivel_glucosa < 70) return '#E65100';
+                        if (r.nivel_glucosa > 140) return '#C62828';
+                        return '#2E7D32';
+                      }),
+                      pointBorderColor: '#fff',
+                      pointBorderWidth: 2,
+                      pointRadius: 5,
+                      tension: 0.3,
+                      fill: true,
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        ticks: { color: 'var(--text-secondary, #6B6B6B)', font: { size: 11 } },
+                        grid: { color: 'rgba(0,0,0,0.06)' }
+                      },
+                      x: {
+                        ticks: { color: 'var(--text-secondary, #6B6B6B)', font: { size: 10 }, maxRotation: 45 },
+                        grid: { display: false }
+                      }
+                    },
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 10 },
+                      annotation: undefined
+                    }
+                  }}
+                />
+              )}
+
+              {activeTab === 'presion' && (
+                <Line
+                  data={{
+                    labels: [...registros].reverse().slice(-20).map(r => {
+                      const f = new Date(r.fecha_hora);
+                      return `${f.getDate()}/${f.getMonth() + 1}`;
+                    }),
+                    datasets: [
+                      {
+                        label: 'Sistólica',
+                        data: [...registros].reverse().slice(-20).map(r => r.sistolica),
+                        borderColor: '#AD1457',
+                        backgroundColor: 'rgba(173, 20, 87, 0.08)',
+                        pointBackgroundColor: '#AD1457',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        tension: 0.3,
+                        fill: true,
+                      },
+                      {
+                        label: 'Diastólica',
+                        data: [...registros].reverse().slice(-20).map(r => r.diastolica),
+                        borderColor: '#F48FB1',
+                        backgroundColor: 'rgba(244, 143, 177, 0.08)',
+                        pointBackgroundColor: '#F48FB1',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        tension: 0.3,
+                        fill: true,
+                      }
+                    ]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        ticks: { color: 'var(--text-secondary, #6B6B6B)', font: { size: 11 } },
+                        grid: { color: 'rgba(0,0,0,0.06)' }
+                      },
+                      x: {
+                        ticks: { color: 'var(--text-secondary, #6B6B6B)', font: { size: 10 }, maxRotation: 45 },
+                        grid: { display: false }
+                      }
+                    },
+                    plugins: {
+                      legend: {
+                        display: true,
+                        position: 'top',
+                        labels: { boxWidth: 12, padding: 16, font: { size: 12 }, color: 'var(--text-primary, #1A1A1A)' }
+                      },
+                      tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', padding: 10 }
+                    }
+                  }}
+                />
+              )}
+
+              {activeTab === 'dolor' && (
+                <Line
+                  data={{
+                    labels: [...registros].reverse().slice(-20).map(r => {
+                      const f = new Date(r.fecha_hora);
+                      return `${f.getDate()}/${f.getMonth() + 1}`;
+                    }),
+                    datasets: [{
+                      label: 'Intensidad del dolor',
+                      data: [...registros].reverse().slice(-20).map(r => r.nivel_dolor),
+                      borderColor: '#E65100',
+                      backgroundColor: 'rgba(230, 81, 0, 0.1)',
+                      pointBackgroundColor: [...registros].reverse().slice(-20).map(r => {
+                        if (r.nivel_dolor <= 3) return '#2E7D32';
+                        if (r.nivel_dolor <= 6) return '#E65100';
+                        return '#C62828';
+                      }),
+                      pointBorderColor: '#fff',
+                      pointBorderWidth: 2,
+                      pointRadius: 5,
+                      tension: 0.3,
+                      fill: true,
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        min: 0,
+                        max: 10,
+                        ticks: {
+                          stepSize: 2,
+                          color: 'var(--text-secondary, #6B6B6B)',
+                          font: { size: 11 }
+                        },
+                        grid: { color: 'rgba(0,0,0,0.06)' }
+                      },
+                      x: {
+                        ticks: { color: 'var(--text-secondary, #6B6B6B)', font: { size: 10 }, maxRotation: 45 },
+                        grid: { display: false }
+                      }
+                    },
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 10,
+                        callbacks: {
+                          label: (ctx) => `Dolor: ${ctx.raw}/10`
+                        }
+                      }
+                    }
+                  }}
+                />
+              )}
+
+              {activeTab === 'hba1c' && (
+                <Line
+                  data={{
+                    labels: [...registros].reverse().slice(-20).map(r => {
+                      const f = new Date(r.fecha);
+                      return `${f.getDate()}/${f.getMonth() + 1}`;
+                    }),
+                    datasets: [{
+                      label: 'HbA1c (%)',
+                      data: [...registros].reverse().slice(-20).map(r => r.valor),
+                      borderColor: '#FF6F00',
+                      backgroundColor: 'rgba(255, 111, 0, 0.1)',
+                      pointBackgroundColor: [...registros].reverse().slice(-20).map(r => getHba1cColor(r.valor)),
+                      pointBorderColor: '#fff',
+                      pointBorderWidth: 2,
+                      pointRadius: 6,
+                      tension: 0.3,
+                      fill: true,
+                    }]
+                  }}
+                  options={{
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                      y: {
+                        min: 3,
+                        max: 14,
+                        ticks: {
+                          stepSize: 1,
+                          color: 'var(--text-secondary, #6B6B6B)',
+                          font: { size: 11 },
+                          callback: (v) => v + '%'
+                        },
+                        grid: { color: 'rgba(0,0,0,0.06)' }
+                      },
+                      x: {
+                        ticks: { color: 'var(--text-secondary, #6B6B6B)', font: { size: 10 }, maxRotation: 45 },
+                        grid: { display: false }
+                      }
+                    },
+                    plugins: {
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: 'rgba(0,0,0,0.8)',
+                        padding: 10,
+                        callbacks: {
+                          label: (ctx) => `HbA1c: ${ctx.raw}%`
+                        }
+                      }
+                    }
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Botón de nuevo registro flotante - solo para tabs de registro */}
+      {activeTab !== 'medicamentos' && (
+        <button
+          className="fab-button"
+          onClick={() => abrirModal(activeTab)}
+          style={{ '--fab-color': tabInfo[activeTab]?.color }}
+          aria-label={`Agregar nuevo registro de ${tabInfo[activeTab]?.label}`}
+        >
+          <span className="fab-icon" aria-hidden="true">+</span>
+          <span className="fab-text">Nuevo registro</span>
+        </button>
+      )}
 
       {/* Contenido principal */}
       <main id="main-content" ref={mainContentRef} tabIndex="-1">
@@ -449,7 +771,7 @@ const Medicina = () => {
                   >
                     <div className="registro-left">
                       <div className="registro-icon-circle glucosa" aria-hidden="true">
-                        🩸
+                        <LucideIcon name="heart-pulse" size={20} />
                       </div>
                     </div>
                     <div className="registro-center">
@@ -472,13 +794,13 @@ const Medicina = () => {
                         onClick={() => speakRegistro(registro, 'glucosa')}
                         aria-label="Escuchar registro"
                       >
-                        🔊
+                        <LucideIcon name="volume" size={16} />
                       </button>
                     </div>
                   </article>
                 )) : (
                   <div className="empty-state-new" role="status">
-                    <div className="empty-icon" aria-hidden="true">🩸</div>
+                    <div className="empty-icon" aria-hidden="true"><LucideIcon name="heart-pulse" size={32} /></div>
                     <h3>Sin registros de glucosa</h3>
                     <p>Registra tu nivel de glucosa para llevar un control de tu salud</p>
                     <button
@@ -508,7 +830,7 @@ const Medicina = () => {
                   >
                     <div className="registro-left">
                       <div className="registro-icon-circle presion" aria-hidden="true">
-                        💓
+                        <LucideIcon name="heart" size={20} />
                       </div>
                     </div>
                     <div className="registro-center">
@@ -520,7 +842,7 @@ const Medicina = () => {
                           <span className="unit">mmHg</span>
                         </div>
                         <div className="pulso-badge">
-                          <span className="pulso-heart" aria-hidden="true">❤️</span>
+                          <span className="pulso-heart" aria-hidden="true"><LucideIcon name="heart" size={16} /></span>
                           <span>{registro.pulso} bpm</span>
                         </div>
                       </div>
@@ -538,13 +860,13 @@ const Medicina = () => {
                         onClick={() => speakRegistro(registro, 'presion')}
                         aria-label="Escuchar registro"
                       >
-                        🔊
+                        <LucideIcon name="volume" size={16} />
                       </button>
                     </div>
                   </article>
                 )) : (
                   <div className="empty-state-new" role="status">
-                    <div className="empty-icon" aria-hidden="true">💓</div>
+                    <div className="empty-icon" aria-hidden="true"><LucideIcon name="heart" size={32} /></div>
                     <h3>Sin registros de presión</h3>
                     <p>Monitorea tu presión arterial regularmente</p>
                     <button
@@ -601,7 +923,7 @@ const Medicina = () => {
                       </div>
                       <div className="registro-meta">
                         <span className="ubicacion-badge">
-                          <span aria-hidden="true">📍</span> {registro.ubicacion}
+                          <LucideIcon name="map-pin" size={14} /> {registro.ubicacion}
                         </span>
                         <span className="tipo-badge">{registro.tipo_dolor}</span>
                       </div>
@@ -614,13 +936,13 @@ const Medicina = () => {
                         onClick={() => speakRegistro(registro, 'dolor')}
                         aria-label="Escuchar registro"
                       >
-                        🔊
+                        <LucideIcon name="volume" size={16} />
                       </button>
                     </div>
                   </article>
                 )) : (
                   <div className="empty-state-new" role="status">
-                    <div className="empty-icon" aria-hidden="true">🩹</div>
+                    <div className="empty-icon" aria-hidden="true"><LucideIcon name="heart-pulse" size={32} /></div>
                     <h3>Sin registros de dolor</h3>
                     <p>Lleva un diario de dolor para ayudar a tu médico</p>
                     <button
@@ -632,6 +954,265 @@ const Medicina = () => {
                     </button>
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Panel de HbA1c */}
+            {activeTab === 'hba1c' && (
+              <div
+                role="tabpanel"
+                id="panel-hba1c"
+                aria-labelledby="tab-hba1c"
+                className="registros-list"
+              >
+                {/* Referencia de rangos */}
+                <div className="hba1c-ranges-info">
+                  <span className="hba1c-range normal"><LucideIcon name="circle-check" size={14} /> Normal: 4.0 - 5.6%</span>
+                  <span className="hba1c-range warning"><LucideIcon name="alert-triangle" size={14} /> Prediabético: 5.7 - 6.4%</span>
+                  <span className="hba1c-range danger"><LucideIcon name="circle-x" size={14} /> Diabético: ≥ 6.5%</span>
+                </div>
+
+                {registros.length > 0 ? registros.map(registro => (
+                  <article
+                    key={registro.id}
+                    className="registro-card-new hba1c"
+                    aria-label={`HbA1c ${registro.valor}%, ${getHba1cTexto(registro.valor)}`}
+                  >
+                    <div className="registro-left">
+                      <div className="registro-icon-circle hba1c" style={{ background: `${getHba1cColor(registro.valor)}20`, color: getHba1cColor(registro.valor) }}>
+                        <LucideIcon name="droplet" size={22} />
+                      </div>
+                    </div>
+                    <div className="registro-center">
+                      <div className="hba1c-value-display">
+                        <span className="hba1c-valor" style={{ color: getHba1cColor(registro.valor) }}>
+                          {registro.valor}%
+                        </span>
+                        <span className="hba1c-estado" style={{ color: getHba1cColor(registro.valor) }}>
+                          {getHba1cTexto(registro.valor)}
+                        </span>
+                      </div>
+                      <div className="registro-meta">
+                        <span className="fecha-estudio">
+                          <LucideIcon name="calendar" size={14} /> {new Date(registro.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' })}
+                        </span>
+                      </div>
+                      {registro.notas && <p className="registro-notas">{registro.notas}</p>}
+                    </div>
+                    <div className="registro-right">
+                      <span className="tiempo-relativo">{formatFechaRelativa(registro.fecha)}</span>
+                      <button
+                        className="btn-voice-small"
+                        onClick={() => speak(`Hemoglobina glicosilada ${registro.valor} por ciento, nivel ${getHba1cTexto(registro.valor)}, fecha ${new Date(registro.fecha).toLocaleDateString('es-MX', { day: 'numeric', month: 'long' })}`)}
+                        aria-label="Escuchar registro"
+                      >
+                        <LucideIcon name="volume" size={16} />
+                      </button>
+                    </div>
+                  </article>
+                )) : (
+                  <div className="empty-state-new" role="status">
+                    <div className="empty-icon" aria-hidden="true"><LucideIcon name="droplet" size={32} /></div>
+                    <h3>Sin registros de HbA1c</h3>
+                    <p>Registra tus resultados de hemoglobina glicosilada cada 3 meses</p>
+                    <button
+                      className="btn-empty"
+                      onClick={() => abrirModal('hba1c')}
+                      aria-label="Registrar HbA1c ahora"
+                    >
+                      Registrar ahora
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Panel de Medicamentos */}
+            {activeTab === 'medicamentos' && (
+              <div
+                role="tabpanel"
+                id="panel-medicamentos"
+                aria-labelledby="tab-medicamentos"
+                className="medicamentos-panel"
+              >
+                {(() => {
+                  const activos = (Array.isArray(medicamentos) ? medicamentos : []).filter(m => m.activo == 1);
+                  const inactivos = (Array.isArray(medicamentos) ? medicamentos : []).filter(m => m.activo == 0);
+
+                  return (
+                    <>
+                      {/* Medicamentos activos */}
+                      {activos.length > 0 && (
+                        <div className="medicamentos-seccion">
+                          <h3 className="medicamentos-seccion-titulo">
+                            <LucideIcon name="circle-check" size={18} />
+                            <span>Medicamentos Activos ({activos.length})</span>
+                          </h3>
+                          <div className="medicamentos-list">
+                            {activos.map(med => (
+                              <article key={med.id} className="medicamento-card activo">
+                                <div className="medicamento-header">
+                                  <div className="medicamento-icon-circle" aria-hidden="true">
+                                    <LucideIcon name="pill" size={20} />
+                                  </div>
+                                  <div className="medicamento-titulo">
+                                    <span className="medicamento-nombre">{med.nombre_comercial}</span>
+                                    {med.nombre_generico && (
+                                      <span className="medicamento-generico">({med.nombre_generico})</span>
+                                    )}
+                                  </div>
+                                  <span className="medicamento-estado-badge activo">Activo</span>
+                                </div>
+
+                                <div className="medicamento-detalles">
+                                  <div className="medicamento-detalle-item">
+                                    <LucideIcon name="target" size={14} />
+                                    <span className="detalle-label">Dosis:</span>
+                                    <span className="detalle-valor">{med.dosis}</span>
+                                  </div>
+                                  <div className="medicamento-detalle-item">
+                                    <LucideIcon name="clock" size={14} />
+                                    <span className="detalle-label">Frecuencia:</span>
+                                    <span className="detalle-valor">{med.frecuencia}</span>
+                                  </div>
+                                  <div className="medicamento-detalle-item">
+                                    <LucideIcon name="syringe" size={14} />
+                                    <span className="detalle-label">Vía:</span>
+                                    <span className="detalle-valor">{VIAS_MAP[med.via_administracion] || med.via_administracion}</span>
+                                  </div>
+                                  <div className="medicamento-detalle-item">
+                                    <LucideIcon name="calendar" size={14} />
+                                    <span className="detalle-label">Desde:</span>
+                                    <span className="detalle-valor">{formatFechaMedicamento(med.fecha_inicio)}</span>
+                                  </div>
+                                  {med.fecha_fin && (
+                                    <div className="medicamento-detalle-item">
+                                      <LucideIcon name="calendar" size={14} />
+                                      <span className="detalle-label">Hasta:</span>
+                                      <span className="detalle-valor">{formatFechaMedicamento(med.fecha_fin)}</span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {med.instrucciones_especiales && (
+                                  <div className="medicamento-instrucciones">
+                                    <LucideIcon name="info" size={14} />
+                                    <span>{med.instrucciones_especiales}</span>
+                                  </div>
+                                )}
+
+                                {med.notas_medico && (
+                                  <div className="medicamento-notas">
+                                    <LucideIcon name="stethoscope" size={14} />
+                                    <span>{med.notas_medico}</span>
+                                  </div>
+                                )}
+
+                                <div className="medicamento-footer">
+                                  {med.prescrito_por_nombre && (
+                                    <span className="medicamento-prescriptor">
+                                      <LucideIcon name="user" size={12} /> Dr(a). {med.prescrito_por_nombre}
+                                    </span>
+                                  )}
+                                  <button
+                                    className="btn-voice-small"
+                                    onClick={() => speakMedicamento(med)}
+                                    aria-label={`Escuchar información de ${med.nombre_comercial}`}
+                                  >
+                                    <LucideIcon name="volume" size={16} />
+                                  </button>
+                                </div>
+                              </article>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Medicamentos finalizados */}
+                      {inactivos.length > 0 && (
+                        <div className="medicamentos-seccion inactivos">
+                          <button
+                            className="medicamentos-seccion-toggle"
+                            onClick={() => setShowInactivos(!showInactivos)}
+                            aria-expanded={showInactivos}
+                          >
+                            <LucideIcon name="clock" size={18} />
+                            <span>Medicamentos Finalizados ({inactivos.length})</span>
+                            <LucideIcon
+                              name={showInactivos ? 'chevron-up' : 'chevron-down'}
+                              size={18}
+                              className="toggle-chevron"
+                            />
+                          </button>
+
+                          {showInactivos && (
+                            <div className="medicamentos-list">
+                              {inactivos.map(med => (
+                                <article key={med.id} className="medicamento-card inactivo">
+                                  <div className="medicamento-header">
+                                    <div className="medicamento-icon-circle inactivo" aria-hidden="true">
+                                      <LucideIcon name="pill" size={20} />
+                                    </div>
+                                    <div className="medicamento-titulo">
+                                      <span className="medicamento-nombre">{med.nombre_comercial}</span>
+                                      {med.nombre_generico && (
+                                        <span className="medicamento-generico">({med.nombre_generico})</span>
+                                      )}
+                                    </div>
+                                    <span className="medicamento-estado-badge inactivo">Finalizado</span>
+                                  </div>
+                                  <div className="medicamento-detalles">
+                                    <div className="medicamento-detalle-item">
+                                      <LucideIcon name="target" size={14} />
+                                      <span className="detalle-label">Dosis:</span>
+                                      <span className="detalle-valor">{med.dosis}</span>
+                                    </div>
+                                    <div className="medicamento-detalle-item">
+                                      <LucideIcon name="clock" size={14} />
+                                      <span className="detalle-label">Frecuencia:</span>
+                                      <span className="detalle-valor">{med.frecuencia}</span>
+                                    </div>
+                                    <div className="medicamento-detalle-item">
+                                      <LucideIcon name="calendar" size={14} />
+                                      <span className="detalle-label">Periodo:</span>
+                                      <span className="detalle-valor">
+                                        {formatFechaMedicamento(med.fecha_inicio)}
+                                        {med.fecha_fin ? ` — ${formatFechaMedicamento(med.fecha_fin)}` : ''}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <div className="medicamento-footer">
+                                    {med.prescrito_por_nombre && (
+                                      <span className="medicamento-prescriptor">
+                                        <LucideIcon name="user" size={12} /> Dr(a). {med.prescrito_por_nombre}
+                                      </span>
+                                    )}
+                                    <button
+                                      className="btn-voice-small"
+                                      onClick={() => speakMedicamento(med)}
+                                      aria-label={`Escuchar información de ${med.nombre_comercial}`}
+                                    >
+                                      <LucideIcon name="volume" size={16} />
+                                    </button>
+                                  </div>
+                                </article>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Estado vacío */}
+                      {activos.length === 0 && inactivos.length === 0 && (
+                        <div className="empty-state-new" role="status">
+                          <div className="empty-icon" aria-hidden="true"><LucideIcon name="pill" size={32} /></div>
+                          <h3>Sin medicamentos asignados</h3>
+                          <p>Tu médico aún no te ha asignado medicamentos. Cuando lo haga, aparecerán aquí.</p>
+                        </div>
+                      )}
+                    </>
+                  );
+                })()}
               </div>
             )}
           </div>
@@ -659,7 +1240,7 @@ const Medicina = () => {
             {modalType === 'glucosa' && (
               <>
                 <div className="modal-header">
-                  <div className="modal-icon glucosa" aria-hidden="true">🩸</div>
+                  <div className="modal-icon glucosa" aria-hidden="true"><LucideIcon name="heart-pulse" size={24} /></div>
                   <h2 id="modal-title">Registrar Glucosa</h2>
                 </div>
                 <form onSubmit={handleSubmitGlucosa}>
@@ -688,10 +1269,10 @@ const Medicina = () => {
                     <label id="momento-label">Momento de la medición</label>
                     <div className="pill-selector" role="radiogroup" aria-labelledby="momento-label">
                       {[
-                        { value: 'ayunas', label: 'En ayunas', icon: '🌅' },
-                        { value: 'antes_comida', label: 'Antes de comer', icon: '🍽️' },
-                        { value: 'despues_comida', label: 'Después de comer', icon: '⏰' },
-                        { value: 'antes_dormir', label: 'Antes de dormir', icon: '🌙' }
+                        { value: 'ayunas', label: 'En ayunas', icon: 'sunrise' },
+                        { value: 'antes_comida', label: 'Antes de comer', icon: 'utensils' },
+                        { value: 'despues_comida', label: 'Después de comer', icon: 'alarm-clock' },
+                        { value: 'antes_dormir', label: 'Antes de dormir', icon: 'moon' }
                       ].map(opt => (
                         <button
                           key={opt.value}
@@ -701,7 +1282,7 @@ const Medicina = () => {
                           className={`pill ${glucosaForm.momento === opt.value ? 'active' : ''}`}
                           onClick={() => setGlucosaForm({...glucosaForm, momento: opt.value})}
                         >
-                          <span aria-hidden="true">{opt.icon}</span> {opt.label}
+                          <LucideIcon name={opt.icon} size={16} /> {opt.label}
                         </button>
                       ))}
                     </div>
@@ -732,7 +1313,7 @@ const Medicina = () => {
             {modalType === 'presion' && (
               <>
                 <div className="modal-header">
-                  <div className="modal-icon presion" aria-hidden="true">💓</div>
+                  <div className="modal-icon presion" aria-hidden="true"><LucideIcon name="heart" size={24} /></div>
                   <h2 id="modal-title">Registrar Presión Arterial</h2>
                 </div>
                 <form onSubmit={handleSubmitPresion}>
@@ -789,7 +1370,7 @@ const Medicina = () => {
                         max="200"
                         required
                       />
-                      <span className="input-unit"><span aria-hidden="true">❤️</span> bpm</span>
+                      <span className="input-unit"><LucideIcon name="heart" size={14} /> bpm</span>
                     </div>
                   </div>
                   <div className="form-group-new">
@@ -818,7 +1399,7 @@ const Medicina = () => {
             {modalType === 'dolor' && (
               <>
                 <div className="modal-header">
-                  <div className="modal-icon dolor" aria-hidden="true">{getDolorEmoji(dolorForm.nivel_dolor)}</div>
+                  <div className="modal-icon dolor" aria-hidden="true">{getDolorEmoji(dolorForm.nivel_dolor || 5)}</div>
                   <h2 id="modal-title">Registrar Dolor</h2>
                 </div>
                 <form onSubmit={handleSubmitDolor}>
@@ -835,11 +1416,11 @@ const Medicina = () => {
                         className="dolor-slider-new"
                         aria-valuetext={`${dolorForm.nivel_dolor} de 10`}
                         style={{
-                          background: `linear-gradient(90deg, #4CAF50 0%, #FFEB3B 50%, #f44336 100%)`
+                          background: `linear-gradient(90deg, #2E7D32 0%, #F57F17 50%, #C62828 100%)`
                         }}
                       />
                       <div className="dolor-value-display" style={{ color: getDolorColor(dolorForm.nivel_dolor) }}>
-                        <span className="dolor-emoji" aria-hidden="true">{getDolorEmoji(dolorForm.nivel_dolor)}</span>
+                        <span className="dolor-emoji" aria-hidden="true">{getDolorEmoji(dolorForm.nivel_dolor || 5)}</span>
                         <span className="dolor-number">{dolorForm.nivel_dolor}</span>
                       </div>
                     </div>
@@ -864,12 +1445,12 @@ const Medicina = () => {
                     <label id="tipo-dolor-label">Tipo de dolor</label>
                     <div className="pill-selector wrap" role="radiogroup" aria-labelledby="tipo-dolor-label">
                       {[
-                        { value: 'agudo', label: 'Punzante', icon: '⚡' },
-                        { value: 'sordo', label: 'Constante', icon: '〰️' },
-                        { value: 'pulsante', label: 'Pulsante', icon: '💫' },
-                        { value: 'quemante', label: 'Quemante', icon: '🔥' },
-                        { value: 'hormigueo', label: 'Hormigueo', icon: '✨' },
-                        { value: 'fantasma', label: 'Fantasma', icon: '👻' }
+                        { value: 'agudo', label: 'Punzante', icon: 'zap' },
+                        { value: 'sordo', label: 'Constante', icon: 'activity' },
+                        { value: 'pulsante', label: 'Pulsante', icon: 'heart-pulse' },
+                        { value: 'quemante', label: 'Quemante', icon: 'thermometer' },
+                        { value: 'hormigueo', label: 'Hormigueo', icon: 'sparkles' },
+                        { value: 'fantasma', label: 'Fantasma', icon: 'circle-help' }
                       ].map(opt => (
                         <button
                           key={opt.value}
@@ -879,7 +1460,7 @@ const Medicina = () => {
                           className={`pill small ${dolorForm.tipo_dolor === opt.value ? 'active' : ''}`}
                           onClick={() => setDolorForm({...dolorForm, tipo_dolor: opt.value})}
                         >
-                          <span aria-hidden="true">{opt.icon}</span> {opt.label}
+                          <LucideIcon name={opt.icon} size={16} /> {opt.label}
                         </button>
                       ))}
                     </div>
@@ -900,6 +1481,72 @@ const Medicina = () => {
                       Cancelar
                     </button>
                     <button type="submit" className="btn-submit dolor" disabled={saving}>
+                      {saving ? 'Guardando...' : 'Guardar registro'}
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
+
+            {modalType === 'hba1c' && (
+              <>
+                <div className="modal-header">
+                  <div className="modal-icon hba1c" aria-hidden="true"><LucideIcon name="droplet" size={24} /></div>
+                  <h2 id="modal-title">Registrar HbA1c</h2>
+                </div>
+                <form onSubmit={handleSubmitHba1c}>
+                  <div className="form-group-new">
+                    <label htmlFor="hba1c-valor">Hemoglobina Glicosilada (HbA1c)</label>
+                    <div className="input-with-unit">
+                      <input
+                        type="number"
+                        id="hba1c-valor"
+                        value={hba1cForm.valor}
+                        onChange={e => setHba1cForm({...hba1cForm, valor: e.target.value})}
+                        className="input-large"
+                        placeholder="6.5"
+                        min="3"
+                        max="20"
+                        step="0.1"
+                        required
+                        aria-describedby="hba1c-helper"
+                      />
+                      <span className="input-unit" aria-hidden="true">%</span>
+                    </div>
+                    <div id="hba1c-helper" className="input-helper">
+                      <span className="helper-item normal"><LucideIcon name="circle-check" size={12} /> 4.0-5.6%: Normal</span>
+                      <span className="helper-item warning"><LucideIcon name="alert-triangle" size={12} /> 5.7-6.4%: Prediabético</span>
+                      <span className="helper-item danger"><LucideIcon name="circle-x" size={12} /> ≥6.5%: Diabético</span>
+                    </div>
+                  </div>
+                  <div className="form-group-new">
+                    <label htmlFor="hba1c-fecha">Fecha del estudio</label>
+                    <input
+                      type="date"
+                      id="hba1c-fecha"
+                      value={hba1cForm.fecha}
+                      onChange={e => setHba1cForm({...hba1cForm, fecha: e.target.value})}
+                      className="input-full"
+                      max={new Date().toISOString().split('T')[0]}
+                      required
+                    />
+                  </div>
+                  <div className="form-group-new">
+                    <label htmlFor="hba1c-notas">Notas (opcional)</label>
+                    <textarea
+                      id="hba1c-notas"
+                      value={hba1cForm.notas}
+                      onChange={e => setHba1cForm({...hba1cForm, notas: e.target.value})}
+                      className="textarea-new"
+                      rows="2"
+                      placeholder="Laboratorio, condiciones del estudio..."
+                    />
+                  </div>
+                  <div className="modal-actions-new">
+                    <button type="button" className="btn-cancel" onClick={() => setShowModal(false)}>
+                      Cancelar
+                    </button>
+                    <button type="submit" className="btn-submit hba1c" disabled={saving} style={{ background: '#FF6F00' }}>
                       {saving ? 'Guardando...' : 'Guardar registro'}
                     </button>
                   </div>

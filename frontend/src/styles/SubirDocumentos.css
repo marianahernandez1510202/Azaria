@@ -1,0 +1,452 @@
+/* =============================================
+   Subir Documentos - Página Pública (Token)
+   ============================================= */
+
+.subir-docs-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background-primary, #0D1117);
+}
+
+.subir-docs-content {
+  flex: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px;
+  width: 100%;
+}
+
+.subir-docs-header {
+  margin-bottom: 24px;
+}
+
+.subir-docs-header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 8px 0;
+}
+
+.subir-docs-header p {
+  font-size: 15px;
+  color: var(--text-secondary, #8B949E);
+  margin: 0;
+}
+
+.subir-docs-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(0, 151, 167, 0.1);
+  border: 1px solid rgba(0, 151, 167, 0.3);
+  border-radius: var(--radius-sm, 8px);
+  margin-top: 12px;
+  font-size: 14px;
+  color: #0097A7;
+}
+
+.subir-docs-expira {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: rgba(255, 193, 7, 0.1);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: var(--radius-sm, 8px);
+  margin-top: 8px;
+  font-size: 14px;
+  color: #FFC107;
+}
+
+/* Categorías de documentos */
+.docs-categorias {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.doc-categoria-card {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 20px;
+  transition: border-color 0.2s ease;
+}
+
+.doc-categoria-card.tiene-archivo {
+  border-color: rgba(46, 160, 67, 0.5);
+}
+
+.doc-categoria-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.doc-categoria-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doc-categoria-title h3 {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0;
+}
+
+.doc-categoria-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.doc-categoria-check {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2ea043;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.doc-categoria-desc {
+  font-size: 14px;
+  color: var(--text-secondary, #8B949E);
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+}
+
+/* Upload Zone */
+.doc-upload-zone {
+  border: 2px dashed var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.doc-upload-zone:hover {
+  border-color: #0097A7;
+  background: rgba(0, 151, 167, 0.05);
+}
+
+.doc-upload-zone.uploading {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.doc-upload-zone svg {
+  color: var(--text-muted, #6E7681);
+}
+
+.doc-upload-zone p {
+  font-size: 15px;
+  color: var(--text-secondary, #8B949E);
+  margin: 0;
+}
+
+.doc-upload-zone span {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+}
+
+.doc-upload-zone input[type="file"] {
+  display: none;
+}
+
+/* Lista de archivos subidos */
+.doc-archivos-lista {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.doc-archivo-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+}
+
+.doc-archivo-item svg {
+  color: #2ea043;
+  flex-shrink: 0;
+}
+
+.doc-archivo-nombre {
+  flex: 1;
+  color: var(--text-primary, #E6EDF3);
+  word-break: break-word;
+}
+
+.doc-archivo-tamano {
+  font-size: 13px;
+  color: var(--text-muted, #6E7681);
+  white-space: nowrap;
+}
+
+/* Documentos Oficiales */
+.docs-oficiales-section {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+
+.docs-oficiales-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.doc-oficial-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-sm, 8px);
+  margin-bottom: 8px;
+}
+
+.doc-oficial-item:last-child {
+  margin-bottom: 0;
+}
+
+.doc-oficial-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doc-oficial-info svg {
+  color: #f85149;
+  flex-shrink: 0;
+}
+
+.doc-oficial-nombre {
+  font-size: 15px;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.doc-oficial-ver {
+  padding: 8px 16px;
+  background: var(--surface-tertiary, #30363D);
+  color: var(--text-primary, #E6EDF3);
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+  cursor: pointer;
+  min-height: 40px;
+  white-space: nowrap;
+}
+
+.doc-oficial-ver:hover {
+  background: var(--border-color, #484f58);
+}
+
+/* Error / Expirado */
+.subir-docs-error {
+  text-align: center;
+  padding: 48px 20px;
+}
+
+.subir-docs-error svg {
+  color: #f85149;
+  margin-bottom: 16px;
+}
+
+.subir-docs-error h2 {
+  font-size: 22px;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 8px 0;
+}
+
+.subir-docs-error p {
+  font-size: 16px;
+  color: var(--text-secondary, #8B949E);
+}
+
+/* Upload message */
+.upload-msg {
+  padding: 10px 14px;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.upload-msg.success {
+  background: rgba(46, 160, 67, 0.1);
+  border: 1px solid rgba(46, 160, 67, 0.3);
+  color: #2ea043;
+}
+
+.upload-msg.error {
+  background: rgba(248, 81, 73, 0.1);
+  border: 1px solid rgba(248, 81, 73, 0.3);
+  color: #f85149;
+}
+
+/* Loading */
+.subir-docs-loading {
+  text-align: center;
+  padding: 48px 20px;
+  color: var(--text-secondary, #8B949E);
+}
+
+.subir-docs-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--surface-tertiary, #30363D);
+  border-top: 3px solid #0097A7;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Enviar documentos */
+.docs-enviar-section {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-lg, 16px);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.docs-resumen h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 12px 0;
+}
+
+.docs-resumen-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.resumen-check-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  color: var(--text-secondary, #8B949E);
+}
+
+.resumen-check-item.ok {
+  color: #2ea043;
+}
+
+.resumen-check-item.ok svg {
+  color: #2ea043;
+}
+
+.resumen-check-item.falta svg {
+  color: var(--text-muted, #6E7681);
+}
+
+.btn-enviar-docs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px 24px;
+  background: #0097A7;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 56px;
+}
+
+.btn-enviar-docs:hover {
+  background: #00838F;
+}
+
+.docs-enviado-confirmacion {
+  text-align: center;
+  padding: 32px 20px;
+  background: rgba(46, 160, 67, 0.08);
+  border: 1px solid rgba(46, 160, 67, 0.25);
+  border-radius: var(--radius-lg, 16px);
+  margin-bottom: 20px;
+}
+
+.docs-enviado-confirmacion h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2ea043;
+  margin: 12px 0 8px;
+}
+
+.docs-enviado-confirmacion p {
+  font-size: 15px;
+  color: var(--text-secondary, #8B949E);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .subir-docs-content {
+    padding: 16px 12px;
+  }
+
+  .doc-categoria-card {
+    padding: 14px;
+  }
+
+  .doc-upload-zone {
+    padding: 16px;
+  }
+
+  .doc-oficial-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .doc-oficial-ver {
+    width: 100%;
+    text-align: center;
+  }
+}

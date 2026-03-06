@@ -1,0 +1,177 @@
+.hist-alim-container {
+  --hist-color: #4CAF50;
+  --hist-color-rgb: 76, 175, 80;
+  padding: var(--spacing-md, 16px);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hist-alim-header {
+  background: linear-gradient(135deg, #4CAF50, #388E3C);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  margin-bottom: var(--spacing-lg, 24px);
+  color: white;
+}
+.hist-alim-header-top {
+  display: flex; align-items: center; gap: var(--spacing-md, 16px);
+}
+.hist-alim-back-btn {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15); color: white;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.hist-alim-back-btn:hover { background: rgba(255,255,255,0.25); }
+.hist-alim-header-title { display: flex; align-items: center; gap: 8px; }
+.hist-alim-header-title h2 { font-size: 1.4rem; font-weight: 700; margin: 0; color: white; }
+
+/* DATE NAV */
+.hist-alim-date-nav {
+  display: flex; align-items: center; justify-content: space-between;
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-md, 12px);
+  padding: 8px; margin-bottom: var(--spacing-lg, 24px);
+}
+.hist-alim-date-btn {
+  width: 48px; height: 48px; border-radius: var(--radius-sm, 8px);
+  border: none; background: transparent;
+  color: var(--text-primary, #1A1A1A); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.hist-alim-date-btn:hover { background: var(--surface-tertiary, #E8E8E8); }
+.hist-alim-date-btn:disabled { opacity: 0.3; cursor: default; }
+
+.hist-alim-date-display {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  position: relative;
+}
+.hist-alim-date-input {
+  position: absolute; opacity: 0; width: 100%; height: 100%;
+  cursor: pointer; top: 0; left: 0;
+}
+.hist-alim-date-text {
+  font-size: 1rem; font-weight: 600;
+  color: var(--text-primary, #1A1A1A);
+  text-transform: capitalize;
+}
+
+/* LOADING */
+.hist-alim-loading {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; min-height: 200px; gap: 12px;
+}
+.hist-alim-loading p { color: var(--text-secondary, #666); }
+.hist-alim-spinner {
+  width: 36px; height: 36px;
+  border: 4px solid var(--border-color, #E0E0E0);
+  border-top-color: var(--hist-color);
+  border-radius: 50%;
+  animation: hist-alim-spin 0.8s linear infinite;
+}
+@keyframes hist-alim-spin { to { transform: rotate(360deg); } }
+
+/* SUMMARY */
+.hist-alim-summary-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 10px; margin-bottom: var(--spacing-lg, 24px);
+}
+.hist-alim-summary-card {
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-md, 12px);
+  padding: 14px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.hist-alim-summary-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.hist-alim-summary-icon.cal { background: rgba(255,152,0,0.15); color: #FF9800; }
+.hist-alim-summary-icon.prot { background: rgba(244,67,54,0.15); color: #F44336; }
+.hist-alim-summary-icon.carb { background: rgba(33,150,243,0.15); color: #2196F3; }
+.hist-alim-summary-icon.fat { background: rgba(156,39,176,0.15); color: #9C27B0; }
+.hist-alim-summary-value {
+  font-size: 1.2rem; font-weight: 700; color: var(--text-primary, #1A1A1A);
+}
+.hist-alim-summary-label {
+  font-size: 0.75rem; color: var(--text-muted, #9E9E9E);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* EMPTY STATE */
+.hist-alim-empty {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 48px 16px; gap: 8px;
+  color: var(--text-muted, #9E9E9E); text-align: center;
+}
+.hist-alim-empty h3 { color: var(--text-primary, #1A1A1A); margin: 0; }
+.hist-alim-empty p { margin: 0; }
+
+/* MEAL SECTIONS */
+.hist-alim-meals { display: flex; flex-direction: column; gap: 16px; }
+
+.hist-alim-meal-header {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; font-weight: 700; font-size: 1rem;
+  color: var(--meal-color, var(--hist-color));
+  border-bottom: 2px solid var(--meal-color, var(--hist-color));
+  margin-bottom: 8px;
+}
+.hist-alim-meal-count {
+  background: var(--meal-color); color: white;
+  padding: 1px 8px; border-radius: 10px;
+  font-size: 0.75rem; font-weight: 700;
+}
+
+.hist-alim-meal-cards { display: flex; flex-direction: column; gap: 8px; }
+
+.hist-alim-meal-card {
+  background: var(--surface-secondary, #F5F5F5);
+  border-radius: var(--radius-sm, 8px);
+  border-left: 4px solid var(--meal-color, var(--hist-color));
+  padding: 12px 14px;
+}
+.hist-alim-meal-info h4 {
+  margin: 0 0 4px; font-size: 1rem;
+  color: var(--text-primary, #1A1A1A);
+}
+.hist-alim-meal-desc {
+  font-size: 0.85rem; color: var(--text-secondary, #666);
+  margin: 0 0 8px; line-height: 1.4;
+}
+.hist-alim-meal-macros {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.hist-alim-macro {
+  font-size: 0.75rem; font-weight: 600;
+  padding: 3px 8px; border-radius: 6px;
+}
+.hist-alim-macro.cal { background: rgba(255,152,0,0.15); color: #FF9800; }
+.hist-alim-macro.prot { background: rgba(244,67,54,0.15); color: #F44336; }
+.hist-alim-macro.carb { background: rgba(33,150,243,0.15); color: #2196F3; }
+.hist-alim-macro.fat { background: rgba(156,39,176,0.15); color: #9C27B0; }
+
+/* AGUA */
+.hist-alim-agua {
+  background: rgba(33,150,243,0.1);
+  border: 1px solid rgba(33,150,243,0.3);
+  border-radius: var(--radius-md, 12px);
+  padding: 12px 16px; margin-top: 16px;
+  display: flex; align-items: center; gap: 8px;
+  color: #2196F3; font-size: 1rem;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .hist-alim-date-nav,
+[data-theme="light"] .hist-alim-summary-card,
+[data-theme="light"] .hist-alim-meal-card {
+  background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .hist-alim-summary-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 480px) {
+  .hist-alim-date-text { font-size: 0.85rem; }
+}

@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Chat.css';
 
 const Chat = () => {
@@ -50,7 +51,9 @@ const Chat = () => {
     try {
       const userId = user?.id;
       const response = await api.get(`/mensajes/conversaciones/${userId}`);
-      const convs = response.data?.conversaciones || [];
+      // response ya es response.data por el interceptor
+      // Backend retorna: { success, data: { conversaciones: [...] } }
+      const convs = response?.data?.conversaciones || response?.conversaciones || [];
       setConversaciones(convs);
 
       // Si hay un ID de conversación en la URL, seleccionar esa
@@ -79,8 +82,8 @@ const Chat = () => {
       // Cargar especialistas asignados al paciente
       const pacienteId = user?.paciente_id || user?.id;
       const response = await api.get(`/pacientes/${pacienteId}/especialistas`);
-      const especialistasData = response.data || [];
-      setEspecialistas(especialistasData);
+      const especialistasData = response?.data || response || [];
+      setEspecialistas(Array.isArray(especialistasData) ? especialistasData : []);
     } catch (err) {
       console.error('Error al cargar especialistas:', err);
       setEspecialistas([]);
@@ -91,8 +94,10 @@ const Chat = () => {
     try {
       const userId = user?.id;
       const response = await api.get(`/mensajes/conversacion/${conversacionId}/${userId}`);
-      setMensajes(response.data?.mensajes || []);
-      setOtroUsuario(response.data?.otro_usuario || null);
+      // response ya es response.data por el interceptor
+      const data = response?.data || response;
+      setMensajes(data?.mensajes || []);
+      setOtroUsuario(data?.otro_usuario || null);
     } catch (err) {
       if (!silencioso) {
         console.error('Error al cargar mensajes:', err);
@@ -141,7 +146,8 @@ const Chat = () => {
   const iniciarConversacion = async (especialistaId) => {
     try {
       const response = await api.post(`/mensajes/iniciar/${user.id}/${especialistaId}`);
-      const { conversacion_id, otro_usuario } = response.data;
+      const respData = response?.data || response;
+      const { conversacion_id, otro_usuario } = respData;
 
       // Crear objeto de conversación
       const nuevaConv = {
@@ -251,7 +257,7 @@ const Chat = () => {
           </div>
 
           <div className="aviso-expiracion">
-            <span className="aviso-icon">&#9200;</span>
+            <span className="aviso-icon"><LucideIcon name="alarm-clock" size={18} /></span>
             <span>Los mensajes expiran en 24 horas</span>
           </div>
 
@@ -418,7 +424,7 @@ const Chat = () => {
             </>
           ) : (
             <div className="no-chat-selected">
-              <div className="no-chat-icon">&#128172;</div>
+              <div className="no-chat-icon"><LucideIcon name="message" size={32} /></div>
               <h3>Selecciona una conversación</h3>
               <p>Elige una conversación de la lista para ver los mensajes</p>
             </div>

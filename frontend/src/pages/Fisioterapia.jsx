@@ -4,6 +4,7 @@ import { useAccessibility } from '../context/AccessibilityContext';
 import { useVoice, Speakable } from '../components/VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Fisioterapia.css';
 
 /**
@@ -16,9 +17,9 @@ const Fisioterapia = () => {
   const { speak, isSpeaking, stop, speakModule } = useVoice();
   const mainContentRef = useRef(null);
 
-  const [activeTab, setActiveTab] = useState('rutina');
-  const [videos, setVideos] = useState([]);
+  const [activeTab, setActiveTab] = useState('videos');
   const [rutinaDiaria, setRutinaDiaria] = useState([]);
+  const [videos, setVideos] = useState([]);
   const [progreso, setProgreso] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -37,26 +38,24 @@ const Fisioterapia = () => {
   const cargarDatos = async () => {
     setLoading(true);
     try {
-      if (activeTab === 'rutina') {
-        const response = await api.get(`/fisioterapia/rutina/${user.paciente_id}`);
-        setRutinaDiaria(response.data || []);
-      } else if (activeTab === 'videos') {
+      if (activeTab === 'videos') {
         const response = await api.get('/fisioterapia/videos');
         setVideos(response.data || []);
       } else if (activeTab === 'progreso') {
-        const response = await api.get(`/fisioterapia/progreso/${user.paciente_id}`);
-        setProgreso(response.data || []);
+        // Cargar rutina para calcular progreso
+        const rutinaRes = await api.get(`/fisioterapia/rutina/${user.paciente_id}`);
+        setRutinaDiaria(rutinaRes.data || []);
+        const progresoRes = await api.get(`/fisioterapia/progreso/${user.paciente_id}`);
+        const raw = progresoRes.data || [];
+        setProgreso(raw.map(d => ({
+          ...d,
+          fecha: d.fecha || d.created_at || new Date().toISOString(),
+          porcentaje: d.porcentaje ?? d.percentage ?? 0,
+          ejercicios_completados: d.ejercicios_completados ?? d.total_items ?? 0
+        })));
       }
     } catch (err) {
       console.error('Error al cargar datos de fisioterapia:', err);
-      // Datos de ejemplo para desarrollo
-      if (activeTab === 'rutina') {
-        setRutinaDiaria([
-          { id: 1, nombre: 'Estiramiento de pierna', descripcion: 'Estira la pierna hacia arriba manteniéndola recta', repeticiones: 10, series: 3, duracion: 5, completado: false },
-          { id: 2, nombre: 'Flexión de rodilla', descripcion: 'Dobla la rodilla llevando el talón hacia el glúteo', repeticiones: 15, series: 2, duracion: 3, completado: true },
-          { id: 3, nombre: 'Elevación de cadera', descripcion: 'Acostado boca arriba, eleva la cadera del suelo', repeticiones: 12, series: 3, duracion: 4, completado: false },
-        ]);
-      }
     } finally {
       setLoading(false);
     }
@@ -93,20 +92,6 @@ const Fisioterapia = () => {
     if (rutinaDiaria.length === 0) return 0;
     const completados = rutinaDiaria.filter(ej => ej.completado).length;
     return Math.round((completados / rutinaDiaria.length) * 100);
-  };
-
-  const handleTabChange = (tab) => {
-    setActiveTab(tab);
-
-    // Anunciar cambio de pestaña por voz
-    if (settings.voiceNavigation) {
-      const tabNames = {
-        rutina: 'Mi Rutina de ejercicios',
-        videos: 'Videos explicativos',
-        progreso: 'Mi Progreso'
-      };
-      speak(`Mostrando ${tabNames[tab]}`);
-    }
   };
 
   const speakEjercicio = (ejercicio) => {
@@ -146,7 +131,7 @@ const Fisioterapia = () => {
               aria-label={isSpeaking ? 'Detener audio' : 'Escuchar ayuda del módulo'}
               aria-pressed={isSpeaking}
             >
-              {isSpeaking ? '⏹️' : '🔊'}
+              <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
             </button>
 
             {/* Botón de accesibilidad */}
@@ -155,88 +140,30 @@ const Fisioterapia = () => {
               onClick={togglePanel}
               aria-label="Abrir configuración de accesibilidad"
             >
-              ♿
+              <LucideIcon name="accessibility" size={20} />
             </button>
           </div>
         </div>
       </header>
 
-      {/* Progreso del día */}
-      <Speakable text={`Progreso de hoy: ${calcularProgresoRutina()} por ciento. ${rutinaDiaria.filter(e => e.completado).length} de ${rutinaDiaria.length} ejercicios completados.`}>
-        <section className="progreso-header" aria-labelledby="progreso-title">
-          <h2 id="progreso-title" className="sr-only">Progreso del día</h2>
-          <div
-            className="progreso-circle"
-            role="progressbar"
-            aria-valuenow={calcularProgresoRutina()}
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-label={`Progreso de hoy: ${calcularProgresoRutina()}%`}
-          >
-            <svg viewBox="0 0 36 36" aria-hidden="true">
-              <path
-                d="M18 2.0845
-                  a 15.9155 15.9155 0 0 1 0 31.831
-                  a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none"
-                stroke="var(--border-color, #eee)"
-                strokeWidth="3"
-              />
-              <path
-                d="M18 2.0845
-                  a 15.9155 15.9155 0 0 1 0 31.831
-                  a 15.9155 15.9155 0 0 1 0 -31.831"
-                fill="none"
-                stroke="var(--color-success, #4CAF50)"
-                strokeWidth="3"
-                strokeDasharray={`${calcularProgresoRutina()}, 100`}
-              />
-            </svg>
-            <span className="progreso-text" aria-hidden="true">{calcularProgresoRutina()}%</span>
-          </div>
-          <div className="progreso-info">
-            <h3>Progreso de hoy</h3>
-            <p>{rutinaDiaria.filter(e => e.completado).length} de {rutinaDiaria.length} ejercicios</p>
-          </div>
-        </section>
-      </Speakable>
-
       {/* Navegación por pestañas */}
       <nav className="tabs" role="tablist" aria-label="Secciones de fisioterapia">
         <button
           role="tab"
-          id="tab-rutina"
-          aria-selected={activeTab === 'rutina'}
-          aria-controls="panel-rutina"
-          className={`tab ${activeTab === 'rutina' ? 'active' : ''}`}
-          onClick={() => handleTabChange('rutina')}
-          onFocus={() => settings.autoSpeak && speak('Mi Rutina')}
-        >
-          <span className="tab-icon" aria-hidden="true">🏃</span>
-          <span className="tab-text">Mi Rutina</span>
-        </button>
-        <button
-          role="tab"
-          id="tab-videos"
           aria-selected={activeTab === 'videos'}
-          aria-controls="panel-videos"
           className={`tab ${activeTab === 'videos' ? 'active' : ''}`}
-          onClick={() => handleTabChange('videos')}
-          onFocus={() => settings.autoSpeak && speak('Videos')}
+          onClick={() => setActiveTab('videos')}
         >
-          <span className="tab-icon" aria-hidden="true">🎬</span>
+          <span className="tab-icon" aria-hidden="true"><LucideIcon name="play" size={18} /></span>
           <span className="tab-text">Videos</span>
         </button>
         <button
           role="tab"
-          id="tab-progreso"
           aria-selected={activeTab === 'progreso'}
-          aria-controls="panel-progreso"
           className={`tab ${activeTab === 'progreso' ? 'active' : ''}`}
-          onClick={() => handleTabChange('progreso')}
-          onFocus={() => settings.autoSpeak && speak('Mi Progreso')}
+          onClick={() => setActiveTab('progreso')}
         >
-          <span className="tab-icon" aria-hidden="true">📊</span>
+          <span className="tab-icon" aria-hidden="true"><LucideIcon name="bar-chart" size={18} /></span>
           <span className="tab-text">Mi Progreso</span>
         </button>
       </nav>
@@ -250,106 +177,9 @@ const Fisioterapia = () => {
           </div>
         ) : (
           <div className="tab-content">
-            {/* Panel de Rutina */}
-            {activeTab === 'rutina' && (
-              <div
-                role="tabpanel"
-                id="panel-rutina"
-                aria-labelledby="tab-rutina"
-                className="rutina-section"
-              >
-                {rutinaDiaria.length > 0 ? (
-                  <div id="ejercicios-list" className="ejercicios-list" role="list" aria-label="Lista de ejercicios">
-                    {rutinaDiaria.map((ejercicio, index) => (
-                      <article
-                        key={ejercicio.id}
-                        className={`ejercicio-card ${ejercicio.completado ? 'completado' : ''}`}
-                        role="listitem"
-                        aria-label={`Ejercicio ${index + 1}: ${ejercicio.nombre}${ejercicio.completado ? ', completado' : ', pendiente'}`}
-                      >
-                        <div className="ejercicio-number" aria-hidden="true">{index + 1}</div>
-                        <div className="ejercicio-content">
-                          <h3>{ejercicio.nombre}</h3>
-                          <p className="ejercicio-descripcion">{ejercicio.descripcion}</p>
-                          <div className="ejercicio-detalles" aria-label="Detalles del ejercicio">
-                            <span aria-label={`${ejercicio.repeticiones} repeticiones`}>
-                              <span aria-hidden="true">🔄</span> {ejercicio.repeticiones} repeticiones
-                            </span>
-                            <span aria-label={`${ejercicio.series} series`}>
-                              <span aria-hidden="true">📊</span> {ejercicio.series} series
-                            </span>
-                            {ejercicio.duracion && (
-                              <span aria-label={`Duración ${ejercicio.duracion} minutos`}>
-                                <span aria-hidden="true">⏱️</span> {ejercicio.duracion} min
-                              </span>
-                            )}
-                          </div>
-                          <div className="ejercicio-actions">
-                            {ejercicio.video_url && (
-                              <button
-                                className="btn btn-outline btn-sm"
-                                onClick={() => setSelectedVideo(ejercicio)}
-                                aria-label={`Ver video explicativo de ${ejercicio.nombre}`}
-                              >
-                                <span aria-hidden="true">▶️</span> Ver video
-                              </button>
-                            )}
-                            <button
-                              className="btn btn-voice btn-sm"
-                              onClick={() => speakEjercicio(ejercicio)}
-                              aria-label={`Escuchar descripción de ${ejercicio.nombre}`}
-                            >
-                              <span aria-hidden="true">🔊</span>
-                            </button>
-                          </div>
-                        </div>
-                        <button
-                          className={`btn-check ${ejercicio.completado ? 'checked' : ''}`}
-                          onClick={() => !ejercicio.completado && marcarEjercicioCompletado(ejercicio.id)}
-                          disabled={ejercicio.completado}
-                          aria-label={ejercicio.completado ? `${ejercicio.nombre} ya completado` : `Marcar ${ejercicio.nombre} como completado`}
-                          aria-pressed={ejercicio.completado}
-                        >
-                          <span className="check-icon" aria-hidden="true">
-                            {ejercicio.completado ? '✓' : '○'}
-                          </span>
-                          <span className="sr-only">
-                            {ejercicio.completado ? 'Completado' : 'Marcar como completado'}
-                          </span>
-                        </button>
-                      </article>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="empty-state" role="status">
-                    <span className="empty-icon" aria-hidden="true">📋</span>
-                    <p>No tienes ejercicios asignados para hoy</p>
-                    <p className="help-text">Tu especialista te asignará una rutina personalizada</p>
-                  </div>
-                )}
-
-                <aside className="tips-section" aria-labelledby="tips-title">
-                  <h4 id="tips-title">
-                    <span aria-hidden="true">💡</span> Recomendaciones
-                  </h4>
-                  <ul className="tips-list">
-                    <li>Realiza los ejercicios en un lugar seguro y con espacio</li>
-                    <li>Si sientes dolor intenso, detente y consulta a tu especialista</li>
-                    <li>Mantente hidratado durante la rutina</li>
-                    <li>Calienta antes de comenzar los ejercicios</li>
-                  </ul>
-                </aside>
-              </div>
-            )}
-
             {/* Panel de Videos */}
             {activeTab === 'videos' && (
-              <div
-                role="tabpanel"
-                id="panel-videos"
-                aria-labelledby="tab-videos"
-                className="videos-section"
-              >
+              <div className="videos-section">
                 <div className="videos-grid" role="list" aria-label="Lista de videos de ejercicios">
                   {videos.length > 0 ? videos.map(video => (
                     <article
@@ -359,11 +189,11 @@ const Fisioterapia = () => {
                       onClick={() => setSelectedVideo(video)}
                       onKeyDown={(e) => e.key === 'Enter' && setSelectedVideo(video)}
                       tabIndex="0"
-                      aria-label={`Video: ${video.titulo}. Fase ${video.fase}. Duración ${video.duracion} minutos.`}
+                      aria-label={`Video: ${video.titulo}. Duración ${video.duracion} minutos.`}
                     >
                       <div className="video-thumbnail">
                         <img
-                          src={`https://img.youtube.com/vi/${video.youtube_id}/mqdefault.jpg`}
+                          src={`https://img.youtube.com/vi/${video.youtube_video_id}/mqdefault.jpg`}
                           alt=""
                           aria-hidden="true"
                         />
@@ -373,17 +203,18 @@ const Fisioterapia = () => {
                         <h3>{video.titulo}</h3>
                         <p className="video-descripcion">{video.descripcion}</p>
                         <div className="video-meta">
-                          <span className="video-fase">Fase: {video.fase}</span>
+                          {video.fase && <span className="video-fase">Fase: {video.fase}</span>}
                           <span className="video-duracion">
-                            <span aria-hidden="true">⏱️</span> {video.duracion} min
+                            <LucideIcon name="alarm-clock" size={14} /> {video.duracion} min
                           </span>
                         </div>
                       </div>
                     </article>
                   )) : (
                     <div className="empty-state" role="status">
-                      <span className="empty-icon" aria-hidden="true">🎬</span>
+                      <span className="empty-icon" aria-hidden="true"><LucideIcon name="play" size={32} /></span>
                       <p>No hay videos disponibles</p>
+                      <p className="help-text">Tu especialista agregará videos de ejercicios para ti</p>
                     </div>
                   )}
                 </div>
@@ -392,62 +223,84 @@ const Fisioterapia = () => {
 
             {/* Panel de Progreso */}
             {activeTab === 'progreso' && (
-              <div
-                role="tabpanel"
-                id="panel-progreso"
-                aria-labelledby="tab-progreso"
-                className="progreso-section"
-              >
+              <div className="progreso-section">
+                {/* Progreso del día */}
+                <Speakable text={`Progreso de hoy: ${calcularProgresoRutina()} por ciento. ${rutinaDiaria.filter(e => e.completado).length} de ${rutinaDiaria.length} ejercicios completados.`}>
+                  <section className="progreso-header" aria-labelledby="progreso-title">
+                    <div
+                      className="progreso-circle"
+                      role="progressbar"
+                      aria-valuenow={calcularProgresoRutina()}
+                      aria-valuemin="0"
+                      aria-valuemax="100"
+                      aria-label={`Progreso de hoy: ${calcularProgresoRutina()}%`}
+                    >
+                      <svg viewBox="0 0 36 36" aria-hidden="true">
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="var(--border-color, #eee)"
+                          strokeWidth="3"
+                        />
+                        <path
+                          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                          fill="none"
+                          stroke="var(--color-success, #2E7D32)"
+                          strokeWidth="3"
+                          strokeDasharray={`${calcularProgresoRutina()}, 100`}
+                        />
+                      </svg>
+                      <span className="progreso-text" aria-hidden="true">{calcularProgresoRutina()}%</span>
+                    </div>
+                    <div className="progreso-info">
+                      <h3>Progreso de hoy</h3>
+                      <p>{rutinaDiaria.filter(e => e.completado).length} de {rutinaDiaria.length} ejercicios</p>
+                    </div>
+                  </section>
+                </Speakable>
+
+                {/* Calendario últimos 7 días */}
                 <div className="calendario-progreso" aria-labelledby="calendario-title">
                   <h3 id="calendario-title">Últimos 7 días</h3>
                   <div className="dias-semana" role="list" aria-label="Progreso de los últimos 7 días">
-                    {(progreso.length > 0 ? progreso.slice(-7) : generateDummyProgress()).map((dia, index) => (
-                      <div
-                        key={index}
-                        className="dia-progreso"
-                        role="listitem"
-                        aria-label={`${new Date(dia.fecha).toLocaleDateString('es-MX', { weekday: 'long' })}: ${dia.porcentaje}% completado`}
-                      >
-                        <span className="dia-nombre">
-                          {new Date(dia.fecha).toLocaleDateString('es-MX', { weekday: 'short' })}
-                        </span>
-                        <div
-                          className={`dia-indicador ${dia.porcentaje >= 100 ? 'completo' : dia.porcentaje > 0 ? 'parcial' : 'vacio'}`}
-                          aria-hidden="true"
-                        >
-                          {dia.porcentaje >= 100 ? '✓' : `${dia.porcentaje}%`}
+                    {generateWeekDays(progreso).map((dia, index) => {
+                      const pct = dia.porcentaje ?? 0;
+                      return (
+                        <div key={index} className="dia-progreso" role="listitem">
+                          <span className="dia-nombre">{dia.diaCorto}</span>
+                          <div className={`dia-indicador ${pct >= 100 ? 'completo' : pct > 0 ? 'parcial' : 'vacio'}`}>
+                            {pct >= 100 ? '✓' : `${pct}%`}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
-                <div className="estadisticas-progreso" role="region" aria-labelledby="stats-title">
-                  <h3 id="stats-title" className="sr-only">Estadísticas</h3>
-                  <Speakable text={`Ejercicios completados esta semana: ${progreso.reduce((acc, d) => acc + (d.ejercicios_completados || 0), 0)}. Racha actual: ${calcularRacha(progreso)} días. Promedio semanal: ${calcularPromedioSemanal(progreso)}%.`}>
-                    <div className="stats-grid">
-                      <div className="stat-item">
-                        <span className="stat-icon" aria-hidden="true">💪</span>
-                        <span className="stat-value">{progreso.reduce((acc, d) => acc + (d.ejercicios_completados || 0), 0)}</span>
-                        <span className="stat-label">Ejercicios esta semana</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-icon" aria-hidden="true">🔥</span>
-                        <span className="stat-value">{calcularRacha(progreso)} días</span>
-                        <span className="stat-label">Racha actual</span>
-                      </div>
-                      <div className="stat-item">
-                        <span className="stat-icon" aria-hidden="true">📈</span>
-                        <span className="stat-value">{calcularPromedioSemanal(progreso)}%</span>
-                        <span className="stat-label">Promedio semanal</span>
-                      </div>
+                {/* Estadísticas */}
+                <div className="estadisticas-progreso" role="region">
+                  <div className="stats-grid">
+                    <div className="stat-item">
+                      <span className="stat-icon" aria-hidden="true"><LucideIcon name="zap" size={20} /></span>
+                      <span className="stat-value">{progreso.reduce((acc, d) => acc + (d.ejercicios_completados || 0), 0)}</span>
+                      <span className="stat-label">Ejercicios esta semana</span>
                     </div>
-                  </Speakable>
+                    <div className="stat-item">
+                      <span className="stat-icon" aria-hidden="true"><LucideIcon name="zap" size={20} /></span>
+                      <span className="stat-value">{calcularRacha(progreso)} días</span>
+                      <span className="stat-label">Racha actual</span>
+                    </div>
+                    <div className="stat-item">
+                      <span className="stat-icon" aria-hidden="true"><LucideIcon name="trending-up" size={20} /></span>
+                      <span className="stat-value">{calcularPromedioSemanal(progreso)}%</span>
+                      <span className="stat-label">Promedio semanal</span>
+                    </div>
+                  </div>
                 </div>
 
                 {progreso.length === 0 && (
                   <div className="empty-state" role="status">
-                    <span className="empty-icon" aria-hidden="true">📊</span>
+                    <span className="empty-icon" aria-hidden="true"><LucideIcon name="bar-chart" size={32} /></span>
                     <p>Aún no hay historial de progreso</p>
                     <p className="help-text">Completa tu primera rutina para comenzar a ver tu progreso</p>
                   </div>
@@ -498,7 +351,7 @@ const Fisioterapia = () => {
                 onClick={() => speak(`${selectedVideo.titulo || selectedVideo.nombre}. ${selectedVideo.descripcion}. ${selectedVideo.instrucciones || ''}`)}
                 aria-label="Escuchar descripción del video"
               >
-                <span aria-hidden="true">🔊</span> Escuchar descripción
+                <LucideIcon name="volume" size={16} /> Escuchar descripción
               </button>
             </div>
           </div>
@@ -514,18 +367,13 @@ const Fisioterapia = () => {
   );
 };
 
-// Funciones auxiliares
 const calcularRacha = (progreso) => {
   if (!progreso || progreso.length === 0) return 0;
   let racha = 0;
   const ordenado = [...progreso].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-
   for (const dia of ordenado) {
-    if (dia.porcentaje >= 100) {
-      racha++;
-    } else {
-      break;
-    }
+    if ((dia.porcentaje || 0) >= 100) racha++;
+    else break;
   }
   return racha;
 };
@@ -537,16 +385,17 @@ const calcularPromedioSemanal = (progreso) => {
   return Math.round(suma / ultimos7.length);
 };
 
-// Generar datos de ejemplo para desarrollo
-const generateDummyProgress = () => {
+const generateWeekDays = (progreso) => {
   const days = [];
   for (let i = 6; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
+    const fechaStr = date.toISOString().split('T')[0];
+    const diaData = (progreso || []).find(d => (d.fecha || '').split('T')[0] === fechaStr);
     days.push({
-      fecha: date.toISOString(),
-      porcentaje: Math.floor(Math.random() * 101),
-      ejercicios_completados: Math.floor(Math.random() * 5)
+      diaCorto: date.toLocaleDateString('es-MX', { weekday: 'short' }),
+      porcentaje: diaData?.porcentaje ?? 0,
+      ejercicios_completados: diaData?.ejercicios_completados ?? 0
     });
   }
   return days;

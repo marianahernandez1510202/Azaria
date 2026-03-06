@@ -1,5 +1,6 @@
 import React from 'react';
 import BaseLayout from './BaseLayout';
+import LucideIcon from '../LucideIcon';
 
 /**
  * EspecialistaLayout - Layout para el rol Especialista
@@ -7,16 +8,16 @@ import BaseLayout from './BaseLayout';
  */
 
 const ESPECIALISTA_NAV_ITEMS = [
-  { path: '/especialista', icon: '🏠', label: 'Inicio' },
-  { path: '/especialista/pacientes', icon: '👥', label: 'Mis Pacientes' },
-  { path: '/especialista/citas', icon: '📅', label: 'Mis Citas' },
-  { path: '/especialista/agenda', icon: '📆', label: 'Agenda' },
-  { path: '/especialista/chat', icon: '💬', label: 'Mensajes' },
-  { path: '/especialista/seguimientos', icon: '📋', label: 'Seguimientos' },
-  { path: '/especialista/reportes', icon: '📊', label: 'Reportes' },
-  { path: '/especialista/recursos', icon: '📚', label: 'Recursos' },
-  { path: '/perfil', icon: '👤', label: 'Mi Perfil' },
-  { path: '/configuracion', icon: '⚙️', label: 'Configuración' },
+  { path: '/especialista', icon: 'home', label: 'Inicio' },
+  { path: '/especialista/pacientes', icon: 'users', label: 'Mis Pacientes' },
+  { path: '/especialista/citas', icon: 'calendar', label: 'Mis Citas' },
+  { path: '/especialista/agenda', icon: 'calendar-days', label: 'Agenda' },
+  { path: '/especialista/chat', icon: 'message', label: 'Mensajes' },
+  { path: '/especialista/seguimientos', icon: 'clipboard', label: 'Seguimientos' },
+  { path: '/especialista/reportes', icon: 'bar-chart', label: 'Reportes' },
+  { path: '/especialista/recursos', icon: 'book-open', label: 'Recursos' },
+  { path: '/perfil', icon: 'user', label: 'Mi Perfil' },
+  { path: '/configuracion', icon: 'settings', label: 'Configuración' },
 ];
 
 const EspecialistaLayout = ({
@@ -35,7 +36,7 @@ const EspecialistaLayout = ({
         {pendingTasks.slice(0, 5).map((task, index) => (
           <li key={index} className={`task-item priority-${task.priority || 'normal'}`}>
             <span className="task-icon" aria-hidden="true">
-              {task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢'}
+              <LucideIcon name="circle" size={12} color={task.priority === 'high' ? '#C62828' : task.priority === 'medium' ? '#F57F17' : '#2E7D32'} />
             </span>
             <div className="task-content">
               <span className="task-title">{task.title}</span>

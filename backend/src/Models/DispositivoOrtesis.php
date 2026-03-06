@@ -140,11 +140,11 @@ class DispositivoOrtesis {
 
         try {
             return $db->query(
-                "SELECT e.*, u.email, u.nombre_completo
-                 FROM especialistas e
-                 JOIN usuarios u ON e.usuario_id = u.id
-                 JOIN paciente_especialista pe ON e.id = pe.especialista_id
-                 WHERE pe.paciente_id = ? AND e.area = 'ortesis'",
+                "SELECT u.nombre_completo, u.email, am.nombre as area
+                 FROM asignaciones_especialista ae
+                 JOIN usuarios u ON ae.especialista_id = u.id
+                 LEFT JOIN areas_medicas am ON ae.area_medica_id = am.id
+                 WHERE ae.paciente_id = ? AND am.nombre LIKE '%ortesis%'",
                 [$pacienteId]
             )->fetchAll();
         } catch (\Exception $e) {

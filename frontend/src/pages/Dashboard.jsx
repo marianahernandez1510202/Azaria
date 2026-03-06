@@ -6,6 +6,8 @@ import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibilit
 import api from '../services/api';
 import VoiceHelper, { useVoice } from '../components/VoiceHelper';
 import ModuleIcon from '../components/ModuleIcon';
+import LucideIcon from '../components/LucideIcon';
+import { Volume2 } from 'lucide-react';
 import '../styles/Dashboard.css';
 
 const Dashboard = () => {
@@ -139,28 +141,28 @@ const Dashboard = () => {
       {/* Resumen rápido */}
       <div className="resumen-cards">
         <Link to="/citas" className="resumen-card">
-          <span className="resumen-icon">📅</span>
+          <span className="resumen-icon"><LucideIcon name="calendar" size={18} /></span>
           <div className="resumen-info">
             <span className="resumen-numero">{resumen?.citas_proximas || 0}</span>
             <span className="resumen-label">Citas próximas</span>
           </div>
         </Link>
         <Link to="/recordatorios" className="resumen-card">
-          <span className="resumen-icon">🔔</span>
+          <span className="resumen-icon"><LucideIcon name="bell" size={18} /></span>
           <div className="resumen-info">
             <span className="resumen-numero">{resumen?.recordatorios_hoy || 0}</span>
             <span className="resumen-label">Recordatorios hoy</span>
           </div>
         </Link>
         <Link to="/fisioterapia" className="resumen-card">
-          <span className="resumen-icon">🏃</span>
+          <span className="resumen-icon"><LucideIcon name="dumbbell" size={18} /></span>
           <div className="resumen-info">
             <span className="resumen-numero">{resumen?.ejercicios_pendientes || 0}</span>
             <span className="resumen-label">Ejercicios</span>
           </div>
         </Link>
         <Link to="/chat" className="resumen-card">
-          <span className="resumen-icon">💬</span>
+          <span className="resumen-icon"><LucideIcon name="message" size={18} /></span>
           <div className="resumen-info">
             <span className="resumen-numero">{resumen?.mensajes_no_leidos || 0}</span>
             <span className="resumen-label">Mensajes</span>
@@ -194,8 +196,7 @@ const Dashboard = () => {
                 }}
                 aria-label={`Escuchar descripción de ${modulo.nombre}`}
               >
-                <i className="fi fi-rr-volume"></i>
-                <span className="voice-fallback">🔊</span>
+                <Volume2 size={20} />
               </button>
             </Link>
           ))}

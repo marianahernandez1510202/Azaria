@@ -6,85 +6,86 @@
 :root {
   /* ===== COLORES POR MÓDULO ===== */
 
-  /* Dashboard - Azul Confianza */
-  --color-dashboard: #2196F3;
-  --color-dashboard-light: #BBDEFB;
-  --color-dashboard-dark: #1565C0;
+  /* Dashboard - Azul Institucional */
+  --color-dashboard: #1976D2;
+  --color-dashboard-light: #E3F2FD;
+  --color-dashboard-dark: #0D47A1;
 
   /* Nutrición - Verde Salud */
-  --color-nutricion: #4CAF50;
-  --color-nutricion-light: #C8E6C9;
-  --color-nutricion-dark: #2E7D32;
+  --color-nutricion: #2E7D32;
+  --color-nutricion-light: #F1F8F1;
+  --color-nutricion-dark: #1B5E20;
 
   /* Fisioterapia - Naranja Energía */
-  --color-fisioterapia: #FF9800;
-  --color-fisioterapia-light: #FFE0B2;
-  --color-fisioterapia-dark: #EF6C00;
+  --color-fisioterapia: #E65100;
+  --color-fisioterapia-light: #FFF3EE;
+  --color-fisioterapia-dark: #BF360C;
 
   /* Medicina - Rojo Atención */
-  --color-medicina: #F44336;
-  --color-medicina-light: #FFCDD2;
-  --color-medicina-dark: #C62828;
+  --color-medicina: #C62828;
+  --color-medicina-light: #FFF0F0;
+  --color-medicina-dark: #B71C1C;
 
   /* Neuropsicología - Púrpura Mente */
-  --color-neuropsicologia: #9C27B0;
-  --color-neuropsicologia-light: #E1BEE7;
-  --color-neuropsicologia-dark: #6A1B9A;
+  --color-neuropsicologia: #6A1B9A;
+  --color-neuropsicologia-light: #F8F0FF;
+  --color-neuropsicologia-dark: #4A148C;
 
-  /* Ortesis/Prótesis - Cian Tecnología */
-  --color-ortesis: #00BCD4;
-  --color-ortesis-light: #B2EBF2;
-  --color-ortesis-dark: #00838F;
+  /* Ortesis/Prótesis - Azul Tecnología */
+  --color-ortesis: #1565C0;
+  --color-ortesis-light: #EEF4FF;
+  --color-ortesis-dark: #0D47A1;
 
   /* Comunidad - Rosa Empatía */
-  --color-comunidad: #E91E63;
-  --color-comunidad-light: #F8BBD9;
-  --color-comunidad-dark: #AD1457;
+  --color-comunidad: #AD1457;
+  --color-comunidad-light: #FCE4EC;
+  --color-comunidad-dark: #880E4F;
 
   /* Citas - Teal Organización */
-  --color-citas: #009688;
-  --color-citas-light: #B2DFDB;
-  --color-citas-dark: #00695C;
+  --color-citas: #00796B;
+  --color-citas-light: #E0F2F1;
+  --color-citas-dark: #004D40;
 
   /* Recordatorios - Ámbar Alerta */
-  --color-recordatorios: #FFC107;
+  --color-recordatorios: #F57F17;
   --color-recordatorios-light: #FFF8E1;
-  --color-recordatorios-dark: #FF8F00;
+  --color-recordatorios-dark: #E65100;
 
   /* Blog - Índigo Conocimiento */
-  --color-blog: #3F51B5;
-  --color-blog-light: #C5CAE9;
-  --color-blog-dark: #283593;
+  --color-blog: #283593;
+  --color-blog-light: #E8EAF6;
+  --color-blog-dark: #1A237E;
 
   /* ===== COLORES BASE ===== */
-  --color-primary: #00BFA5;
-  --color-primary-light: #B2F2E8;
-  --color-primary-dark: #00897B;
+  --color-primary: #0097A7;
+  --color-primary-light: #E0F7FA;
+  --color-primary-dark: #006064;
 
-  --color-success: #4CAF50;
-  --color-warning: #FFC107;
-  --color-error: #F44336;
-  --color-info: #2196F3;
+  --color-success: #2E7D32;
+  --color-warning: #F57F17;
+  --color-error: #C62828;
+  --color-info: #1565C0;
 
-  /* Fondos - Aliases para compatibilidad */
-  --bg-dark: #0D1117;
-  --bg-card: #161B22;
-  --bg-elevated: #21262D;
-  --bg-hover: #30363D;
+  /* Fondos - Tema claro */
+  --bg-dark: #F5F7F2;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F0F2ED;
+  --bg-hover: #E8E8E8;
 
   /* Aliases semánticos de fondos */
-  --background-primary: #0D1117;
-  --surface-primary: #161B22;
-  --surface-secondary: #21262D;
-  --surface-tertiary: #30363D;
+  --background-primary: #F5F7F2;
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F0F2ED;
+  --surface-tertiary: #E8E8E8;
 
   /* Texto */
-  --text-primary: #E6EDF3;
-  --text-secondary: #8B949E;
-  --text-muted: #6E7681;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9E9E9E;
 
   /* Bordes */
-  --border-color: #30363D;
+  --border-color: #E0E0E0;
+  --border-color-card: #E8E8E8;
   --border-radius-sm: 8px;
   --border-radius-md: 12px;
   --border-radius-lg: 16px;
@@ -100,24 +101,34 @@
   /* Line height */
   --line-height: 1.6;
 
-  /* Font family */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+  /* Font family - DGTIC UNAM: Open Sans para texto, Roboto para servicio */
+  --font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-heading: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family-service: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Colores institucionales DGTIC UNAM */
+  --inst-header: #00589c;
+  --inst-menu: #004179;
+  --inst-title: #0c71c3;
+  --inst-text: #666666;
+  --inst-footer-1: #00589c;
+  --inst-footer-2: #004179;
 
   /* Focus ring color */
-  --focus-ring: #58A6FF;
+  --focus-ring: #0097A7;
 
   /* Colores adicionales para utilidades */
-  --success: #4CAF50;
-  --warning: #FF9800;
-  --error: #F44336;
-  --link-color: #58A6FF;
-  --link-hover: #79C0FF;
-  --primary-color: #2196F3;
+  --success: #2E7D32;
+  --warning: #F57F17;
+  --error: #C62828;
+  --link-color: #0097A7;
+  --link-hover: #006064;
+  --primary-color: #0097A7;
 
   /* Colores adicionales de módulos */
-  --color-chat: #00BCD4;
-  --color-faqs: #607D8B;
-  --color-config: #607D8B;
+  --color-chat: #00838F;
+  --color-faqs: #455A64;
+  --color-config: #455A64;
 
   /* ===== TAMAÑOS ACCESIBLES ===== */
 
@@ -149,10 +160,10 @@
   --icon-size-lg: 48px;
   --icon-size-xl: 64px;
 
-  /* Sombras */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.25);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.3);
+  /* Sombras - suaves para tema claro */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
 
   /* Transiciones */
   --transition-fast: 150ms ease;
@@ -160,63 +171,104 @@
   --transition-slow: 400ms ease;
 }
 
-/* ===== MODO CLARO - Colorimetría Médica Profesional ===== */
+/* ===== MODO CLARO (ya es el default, alias para compatibilidad) ===== */
 [data-theme="light"] {
-  /* Fondos - Tonos cálidos suaves (reduce fatiga visual) */
-  --bg-dark: #F8F9FA;
+  --bg-dark: #F5F7F2;
   --bg-card: #FFFFFF;
-  --bg-elevated: #F0F2F5;
-  --bg-hover: #E4E6EA;
-  --background-primary: #F8F9FA;
+  --bg-elevated: #F0F2ED;
+  --bg-hover: #E8E8E8;
+  --background-primary: #F5F7F2;
   --surface-primary: #FFFFFF;
-  --surface-secondary: #F0F2F5;
-  --surface-tertiary: #E4E6EA;
+  --surface-secondary: #F0F2ED;
+  --surface-tertiary: #E8E8E8;
+  --text-primary: #1A1A1A;
+  --text-secondary: #6B6B6B;
+  --text-muted: #9E9E9E;
+  --border-color: #E0E0E0;
+}
 
-  /* Texto - Alto contraste para legibilidad */
-  --text-primary: #1C1E21;
-  --text-secondary: #606770;
-  --text-muted: #8A8D91;
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] {
+  /* Fondos */
+  --bg-dark: #0D1117;
+  --bg-card: #161B22;
+  --bg-elevated: #21262D;
+  --bg-hover: #30363D;
+  --background-primary: #0D1117;
+  --surface-primary: #161B22;
+  --surface-secondary: #21262D;
+  --surface-tertiary: #30363D;
 
-  /* Bordes suaves */
-  --border-color: #DADDE1;
+  /* Texto */
+  --text-primary: #E6EDF3;
+  --text-secondary: #8B949E;
+  --text-muted: #6E7681;
 
-  /* Colores de módulos ajustados para modo claro */
-  --color-dashboard: #1877F2;
-  --color-nutricion: #31A24C;
-  --color-fisioterapia: #F5A623;
-  --color-medicina: #E4405F;
-  --color-neuropsicologia: #833AB4;
-  --color-ortesis: #0E76A8;
-  --color-comunidad: #E1306C;
-  --color-citas: #25D366;
-  --color-recordatorios: #F5C518;
-  --color-blog: #4267B2;
+  /* Bordes */
+  --border-color: #30363D;
+  --border-color-card: #30363D;
 
-  /* Links */
-  --link-color: #1877F2;
-  --link-hover: #0D6EFD;
+  /* Colores base oscuros */
+  --color-primary: #4DD0E1;
+  --color-primary-light: rgba(77, 208, 225, 0.15);
+  --color-primary-dark: #0097A7;
+  --color-success: #3FB950;
+  --color-warning: #D29922;
+  --color-error: #F85149;
+  --color-info: #58A6FF;
 
-  /* Sombras más suaves */
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-  --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+  /* Institucional */
+  --inst-header: #1F6FEB;
+  --inst-menu: #1158C7;
+  --inst-title: #58A6FF;
+  --inst-text: #8B949E;
+  --inst-footer-1: #1F6FEB;
+  --inst-footer-2: #1158C7;
+
+  /* Links y focus */
+  --link-color: #58A6FF;
+  --link-hover: #79C0FF;
+  --focus-ring: #58A6FF;
+
+  /* Aliases */
+  --success: #3FB950;
+  --warning: #D29922;
+  --error: #F85149;
+  --primary-color: #4DD0E1;
+
+  /* Sombras - mas fuertes en oscuro */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+
+  /* Fondos light de modulos (transparentes en dark) */
+  --color-dashboard-light: rgba(25, 118, 210, 0.15);
+  --color-nutricion-light: rgba(46, 125, 50, 0.15);
+  --color-fisioterapia-light: rgba(230, 81, 0, 0.15);
+  --color-medicina-light: rgba(198, 40, 40, 0.15);
+  --color-neuropsicologia-light: rgba(106, 27, 154, 0.15);
+  --color-ortesis-light: rgba(21, 101, 192, 0.15);
+  --color-comunidad-light: rgba(173, 20, 87, 0.15);
+  --color-citas-light: rgba(27, 94, 32, 0.15);
+  --color-recordatorios-light: rgba(245, 127, 23, 0.15);
+  --color-blog-light: rgba(40, 53, 147, 0.15);
 }
 
 /* ===== MODO ALTO CONTRASTE (Accesibilidad) ===== */
 [data-theme="high-contrast"] {
-  --bg-dark: #000000;
-  --bg-card: #0A0A0A;
-  --bg-elevated: #1A1A1A;
-  --bg-hover: #2A2A2A;
-  --background-primary: #000000;
-  --surface-primary: #0A0A0A;
-  --surface-secondary: #1A1A1A;
-  --surface-tertiary: #2A2A2A;
+  --bg-dark: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-elevated: #F5F5F5;
+  --bg-hover: #EEEEEE;
+  --background-primary: #FFFFFF;
+  --surface-primary: #FFFFFF;
+  --surface-secondary: #F5F5F5;
+  --surface-tertiary: #EEEEEE;
 
-  --text-primary: #FFFFFF;
-  --text-secondary: #E0E0E0;
-  --text-muted: #BDBDBD;
-  --border-color: #FFFFFF;
+  --text-primary: #000000;
+  --text-secondary: #212121;
+  --text-muted: #424242;
+  --border-color: #000000;
 
   /* Fuentes más grandes */
   --font-size-base: 20px;
@@ -224,16 +276,16 @@
   --font-size-xl: 28px;
 
   /* Colores más saturados para contraste */
-  --color-dashboard: #42A5F5;
-  --color-nutricion: #66BB6A;
-  --color-fisioterapia: #FFB74D;
-  --color-medicina: #EF5350;
-  --color-neuropsicologia: #BA68C8;
-  --color-ortesis: #26C6DA;
-  --color-comunidad: #EC407A;
-  --color-citas: #26A69A;
-  --color-recordatorios: #FFEE58;
-  --color-blog: #5C6BC0;
+  --color-dashboard: #0D47A1;
+  --color-nutricion: #1B5E20;
+  --color-fisioterapia: #BF360C;
+  --color-medicina: #B71C1C;
+  --color-neuropsicologia: #4A148C;
+  --color-ortesis: #0D47A1;
+  --color-comunidad: #880E4F;
+  --color-citas: #0D3B0D;
+  --color-recordatorios: #E65100;
+  --color-blog: #1A237E;
 
   /* Bordes más gruesos */
   --border-radius-sm: 4px;
@@ -381,9 +433,9 @@
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(0, 191, 165, 0.7); }
-  70% { box-shadow: 0 0 0 15px rgba(0, 191, 165, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(0, 191, 165, 0); }
+  0% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0.7); }
+  70% { box-shadow: 0 0 0 15px rgba(46, 125, 50, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(46, 125, 50, 0); }
 }
 
 /* Tooltip de ayuda */
@@ -401,7 +453,7 @@
 }
 
 .help-tooltip::before {
-  content: '💡';
+  content: '';
   margin-right: var(--spacing-sm);
 }
 
@@ -553,8 +605,8 @@
 /* Alto contraste del sistema */
 @media (prefers-contrast: high) {
   :root {
-    --border-color: #FFFFFF;
-    --text-primary: #FFFFFF;
-    --bg-dark: #000000;
+    --border-color: #000000;
+    --text-primary: #000000;
+    --bg-dark: #FFFFFF;
   }
 }

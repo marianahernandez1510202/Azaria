@@ -71,8 +71,11 @@ class PlanNutricionalController
                 return Response::error('Error al guardar el archivo', 500);
             }
 
-            // Extraer texto según el tipo de archivo
-            if ($isDocx || $extension === 'docx' || $extension === 'doc') {
+            // Use pre-extracted text from frontend (pdf.js) if available
+            // This is much more reliable than PHP native PDF extraction
+            if (!empty($_POST['texto_extraido']) && strlen($_POST['texto_extraido']) > 50) {
+                $textoExtraido = $_POST['texto_extraido'];
+            } elseif ($isDocx || $extension === 'docx' || $extension === 'doc') {
                 $textoExtraido = $this->extractTextFromDOCX($rutaArchivo);
             } else {
                 $textoExtraido = $this->extractTextFromPDF($rutaArchivo);
@@ -81,8 +84,15 @@ class PlanNutricionalController
             // Sanitizar texto a UTF-8 válido
             $textoExtraido = $this->sanitizeUtf8($textoExtraido);
 
-            // Procesar el texto y convertir a JSON estructurado
-            $contenidoJSON = $this->procesarTextoAJSON($textoExtraido);
+            // Detectar formato del plan y procesar según corresponda
+            $formatoPlan = $this->detectarFormatoPlan($textoExtraido);
+            if ($formatoPlan === 'equivalentes') {
+                $contenidoJSON = $this->procesarTextoEquivalentes($textoExtraido);
+            } elseif ($formatoPlan === 'recetas') {
+                $contenidoJSON = $this->procesarTextoRecetas($textoExtraido);
+            } else {
+                $contenidoJSON = $this->procesarTextoAJSON($textoExtraido);
+            }
 
             // Obtener datos del formulario
             $nombre = $_POST['nombre'] ?? 'Plan Nutricional ' . date('d/m/Y');
@@ -1126,14 +1136,36 @@ class PlanNutricionalController
             ]);
         }
 
-        // Obtener comidas del plan
+        // Obtener comidas del plan (con datos de recetas si tienen receta_id)
         $comidas = $this->db->query(
-            "SELECT * FROM plan_comidas WHERE plan_id = ? ORDER BY
-             FIELD(dia_semana, 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'),
-             FIELD(tipo_comida, 'desayuno', 'media_manana', 'almuerzo', 'merienda', 'cena', 'snack'),
-             orden",
+            "SELECT pc.*, r.titulo AS receta_titulo, r.imagen_url AS receta_imagen,
+                    r.ingredientes AS receta_ingredientes, r.instrucciones AS receta_instrucciones,
+                    r.tiempo_preparacion AS receta_tiempo
+             FROM plan_comidas pc
+             LEFT JOIN recetas r ON pc.receta_id = r.id
+             WHERE pc.plan_id = ?
+             ORDER BY FIELD(pc.dia_semana, 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'),
+             FIELD(pc.tipo_comida, 'desayuno', 'media_manana', 'almuerzo', 'merienda', 'cena', 'snack'),
+             pc.orden",
             [$asignacion['plan_id']]
         )->fetchAll();
+
+        // Decodificar JSON de recetas en cada comida
+        foreach ($comidas as &$comida) {
+            if (!empty($comida['receta_ingredientes'])) {
+                $comida['receta_ingredientes'] = json_decode($comida['receta_ingredientes'], true);
+            }
+            if (!empty($comida['receta_instrucciones'])) {
+                $comida['receta_instrucciones'] = json_decode($comida['receta_instrucciones'], true);
+            }
+            if (!empty($comida['ingredientes']) && is_string($comida['ingredientes'])) {
+                $comida['ingredientes'] = json_decode($comida['ingredientes'], true);
+            }
+            if (!empty($comida['instrucciones_json']) && is_string($comida['instrucciones_json'])) {
+                $comida['instrucciones_json'] = json_decode($comida['instrucciones_json'], true);
+            }
+        }
+        unset($comida);
 
         // Obtener seguimiento del día actual
         $hoy = date('Y-m-d');
@@ -1266,5 +1298,1334 @@ class PlanNutricionalController
         }
 
         return $text ?: '';
+    }
+
+    /**
+     * Detectar el formato del plan nutricional basándose en el texto extraído
+     */
+    private function detectarFormatoPlan($texto)
+    {
+        // --- Check for "equivalentes" format ---
+        $keywordsEquiv = [
+            'Cuadro de Equivalentes',
+            'Grupo de Alimentos',
+            'PROTEINAS 1',
+            'Proteínas 1',
+            'Leguminosas',
+            'Grasas con prote',
+            'ALIMENTOS LIBRES',
+            'Alimentos Libres',
+            'EQUIVALENTE',
+            'ALIMENTO EQUIVALENTE'
+        ];
+
+        $scoreEquiv = 0;
+        foreach ($keywordsEquiv as $kw) {
+            if (mb_stripos($texto, $kw) !== false) {
+                $scoreEquiv++;
+            }
+        }
+
+        if ($scoreEquiv >= 3) {
+            return 'equivalentes';
+        }
+
+        // --- Check for "recetas" format (recipe cards with ingredients + preparation) ---
+        $keywordsRecetas = [
+            'Recetas para',
+            'Opción 1',
+            'Opci\u00f3n 1',
+            'Ingredientes',
+            'Preparación',
+            'Preparacion',
+            'pieza ',
+            'cucharada ',
+            'cucharadita ',
+        ];
+
+        $scoreRecetas = 0;
+        foreach ($keywordsRecetas as $kw) {
+            if (mb_stripos($texto, $kw) !== false) {
+                $scoreRecetas++;
+            }
+        }
+
+        // Also check for the specific pattern of "Opción N" + "Ingredientes" near each other
+        if (preg_match('/Opci[oó]n\s*\d/iu', $texto) && mb_stripos($texto, 'Ingredientes') !== false) {
+            $scoreRecetas += 2;
+        }
+
+        // Check for numbered preparation steps like "1.Guisa" or "1. Mezcla"
+        if (preg_match('/\d+\.\s*[A-ZÁÉÍÓÚÑ]/u', $texto)) {
+            $scoreRecetas++;
+        }
+
+        if ($scoreRecetas >= 4) {
+            return 'recetas';
+        }
+
+        return 'clasico';
+    }
+
+    /**
+     * Procesar texto con formato de recetas (Ingredientes + Preparación por tiempo de comida)
+     * Output compatible with VistaPlan.jsx: comidas[] → opciones[] → ingredientes[], instrucciones[]
+     *
+     * The PDF text from pdf.js uses:
+     * - "|||" to separate left/right columns (ingredients vs preparation)
+     * - "---PAGE_BREAK---" between pages
+     */
+    private function procesarTextoRecetas($texto)
+    {
+        $resultado = [
+            'generado_con_catalogo' => true, // triggers VistaPlan.jsx rendering
+            'tipo_formato' => 'recetas',
+            'titulo' => '',
+            'paciente' => '',
+            'fecha' => '',
+            'especialista' => '',
+            'cedula' => '',
+            'indicaciones_generales' => [],
+            'totales' => [
+                'calorias' => 0,
+                'proteinas' => 0,
+                'carbohidratos' => 0,
+                'grasas' => 0
+            ],
+            'comidas' => [],
+            'texto_original' => $texto
+        ];
+
+        if (empty($texto)) {
+            return $resultado;
+        }
+
+        try {
+            // --- Step 1: Extract header info from first occurrence ---
+            if (preg_match('/L\.?\s*N\.?\s+([A-ZÁÉÍÓÚÑ][a-záéíóúñA-ZÁÉÍÓÚÑ\s\.]+?)(?=\s{2,}|C[eé]dula|\|{3}|$)/u', $texto, $m)) {
+                $resultado['especialista'] = trim($m[1]);
+            }
+            if (preg_match('/C[eé]dula\s+profesional[:\s]*(\d+)/iu', $texto, $m)) {
+                $resultado['cedula'] = trim($m[1]);
+            }
+            if (preg_match('/Paciente[:\s]+([A-ZÁÉÍÓÚÑ][a-záéíóúñA-ZÁÉÍÓÚÑ\s]+?)(?=\s{2,}|Plan\s+asignado|\|{3}|$)/u', $texto, $m)) {
+                $resultado['paciente'] = trim($m[1]);
+            }
+            if (preg_match('/Plan\s+asignado[:\s]*(\d{1,2}\/\d{1,2}\/\d{2,4})/iu', $texto, $m)) {
+                $resultado['fecha'] = trim($m[1]);
+            }
+
+            // --- Step 2: Clean the text - remove repeated page headers ---
+            $texto = $this->limpiarHeadersPagina($texto);
+
+            // --- Step 3: Find all option blocks ---
+            // Each option block starts with a line containing "Opción N" and "Ingredientes"
+            // or simply "Opción N"
+            $bloques = $this->encontrarBloquesOpcion($texto);
+
+            // --- Step 4: Group by meal type and build comidas array ---
+            $comidasMap = []; // tipo_comida => opciones[]
+
+            foreach ($bloques as $bloque) {
+                $tipo = $bloque['tipo_comida'];
+                if (!isset($comidasMap[$tipo])) {
+                    $comidasMap[$tipo] = [];
+                }
+                $comidasMap[$tipo][] = $bloque['opcion'];
+            }
+
+            // Build final comidas array in order
+            $ordenComidas = ['desayuno', 'media_manana', 'almuerzo', 'merienda', 'cena'];
+            foreach ($ordenComidas as $tipo) {
+                if (isset($comidasMap[$tipo]) && !empty($comidasMap[$tipo])) {
+                    $resultado['comidas'][] = [
+                        'dia_semana' => 'lunes',
+                        'tipo_comida' => $tipo,
+                        'opciones' => $comidasMap[$tipo],
+                        'calorias' => 0,
+                        'proteinas_g' => 0,
+                        'carbohidratos_g' => 0,
+                        'grasas_g' => 0
+                    ];
+                }
+            }
+
+        } catch (\Exception $e) {
+            error_log('Error en procesarTextoRecetas: ' . $e->getMessage());
+        }
+
+        return $resultado;
+    }
+
+    /**
+     * Remove repeated page headers from the extracted text.
+     * Headers typically contain: specialist name, cédula, paciente, date.
+     * They repeat on every page.
+     */
+    private function limpiarHeadersPagina($texto)
+    {
+        $lineas = preg_split('/\r?\n/', $texto);
+        $resultado = [];
+
+        for ($i = 0; $i < count($lineas); $i++) {
+            $linea = $lineas[$i];
+            $lineaTrim = trim($linea);
+
+            // Skip page break markers (we don't need them after cleaning)
+            if ($lineaTrim === '---PAGE_BREAK---') {
+                continue;
+            }
+
+            // Skip lines containing "L. N." + "Cédula" (specialist header line)
+            if (preg_match('/L\.?\s*N\./i', $lineaTrim) && preg_match('/C[eé]dula|profesional/iu', $lineaTrim)) {
+                continue;
+            }
+
+            // Skip lines that contain a cedula number (5+ digits) AND a date (d/d/yyyy)
+            // These are the continuation of page headers: "Reséndiz    11460299    María..."
+            if (preg_match('/\d{5,}/', $lineaTrim) && preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $lineaTrim)) {
+                continue;
+            }
+
+            // Skip standalone "Recetas para<MealType>" lines (section markers we don't need)
+            if (preg_match('/^Recetas\s*para/iu', $lineaTrim) && mb_strlen($lineaTrim) < 50) {
+                continue;
+            }
+
+            // Skip lines that are ONLY "Preparación" or "Ingredientes" (column headers)
+            if (preg_match('/^(Preparaci[oó]n|Ingredientes)$/iu', $lineaTrim)) {
+                continue;
+            }
+
+            $resultado[] = $linea;
+        }
+
+        return implode("\n", $resultado);
+    }
+
+    /**
+     * Find all option blocks in the cleaned text.
+     * Returns array of: ['tipo_comida' => string, 'opcion' => array]
+     */
+    private function encontrarBloquesOpcion($texto)
+    {
+        $bloques = [];
+        $lineas = preg_split('/\r?\n/', $texto);
+
+        // State tracking
+        $tipoComidaActual = null;
+        $opcionActual = null;
+        $ingredientesActual = [];
+        $instruccionesActual = [];
+        $nombreRecetaActual = '';
+        $lineasSobrantes = [];
+        $enOpcion = false;
+
+        // Patterns
+        $unidades = 'piezas?|tazas?|cucharadas?|cucharaditas?|rebanadas?|gramos?|g(?=\s|$)|gr(?=\s|$)|ml(?=\s|$)|litros?|sobres?|latas?|vasos?|paquetes?|barras?|onzas?|cdas?|cdtas?|tz(?=\s|$)|porci[oó]n(?:es)?|racimos?';
+        $patronIngrediente = '/^(\d+(?:\/\d+)?(?:\s*[½¼¾⅓⅔⅛])?|[½¼¾⅓⅔⅛])\s+(' . $unidades . ')\s+(.+)/iu';
+        $patronPreparacion = '/^(\d+)\.\s*([A-ZÁÉÍÓÚÑ].*)/u';
+
+        for ($i = 0; $i < count($lineas); $i++) {
+            $linea = trim($lineas[$i]);
+            if (empty($linea)) continue;
+
+            // Detect meal type + option header line
+            // e.g. "Desayuno    Opción 1    Ingredientes"  or  "Desayuno    Opción 2    Ingredientes"
+            if (preg_match('/^(Desayuno|Comida|Cena|Colaci[oó]n\s*\d)\s+.*?Opci[oó]n\s*(\d+)/iu', $linea, $headerM)) {
+                // Save previous option if exists
+                if ($enOpcion) {
+                    $this->guardarOpcionReceta($bloques, $tipoComidaActual, $opcionActual, $ingredientesActual, $instruccionesActual, $lineasSobrantes);
+                }
+
+                // Start new option
+                $tipoComidaActual = $this->normalizarTipoComida($headerM[1]);
+                $opcionActual = (int)$headerM[2];
+                $ingredientesActual = [];
+                $instruccionesActual = [];
+                $lineasSobrantes = [];
+                $enOpcion = true;
+                continue;
+            }
+
+            // Also detect simpler pattern: just "Opción N" on its own line or with "Ingredientes"
+            if (preg_match('/^Opci[oó]n\s*(\d+)/iu', $linea, $opM) && !preg_match('/^\d+\s+(' . $unidades . ')/iu', $linea)) {
+                // Save previous option if exists
+                if ($enOpcion) {
+                    $this->guardarOpcionReceta($bloques, $tipoComidaActual, $opcionActual, $ingredientesActual, $instruccionesActual, $lineasSobrantes);
+                }
+
+                $opcionActual = (int)$opM[1];
+                $ingredientesActual = [];
+                $instruccionesActual = [];
+                $lineasSobrantes = [];
+                $enOpcion = true;
+                continue;
+            }
+
+            if (!$enOpcion) continue;
+
+            // Process line content within an option block
+            // The line may have "|||" separator from two-column layout: "ingredient ||| preparation"
+            $partes = preg_split('/\s*\|{3}\s*/', $linea, 2);
+            $parteIzq = trim($partes[0] ?? '');
+            $parteDer = isset($partes[1]) ? trim($partes[1]) : '';
+
+            // Process left part (usually ingredients)
+            if (!empty($parteIzq)) {
+                if (preg_match($patronIngrediente, $parteIzq, $ingM)) {
+                    $ingredientesActual[] = trim($ingM[1]) . ' ' . trim($ingM[2]) . ' ' . trim($ingM[3]);
+                } elseif (preg_match($patronPreparacion, $parteIzq, $prepM)) {
+                    $instruccionesActual[] = trim($prepM[2]);
+                } elseif (!empty($instruccionesActual) && preg_match('/^[a-záéíóúñ]/u', $parteIzq)) {
+                    // Continuation of previous instruction
+                    $instruccionesActual[count($instruccionesActual) - 1] .= ' ' . $parteIzq;
+                } elseif ($this->esLineaRecetaNombre($parteIzq)) {
+                    $lineasSobrantes[] = $parteIzq;
+                }
+            }
+
+            // Process right part (usually preparation steps)
+            if (!empty($parteDer)) {
+                if (preg_match($patronPreparacion, $parteDer, $prepM)) {
+                    $instruccionesActual[] = trim($prepM[2]);
+                } elseif (!empty($instruccionesActual) && (
+                    preg_match('/^[a-záéíóúñ]/u', $parteDer) ||
+                    preg_match('/^[A-ZÁÉÍÓÚÑ][a-záéíóúñ]/', $parteDer)
+                )) {
+                    // Continuation of previous instruction
+                    $instruccionesActual[count($instruccionesActual) - 1] .= ' ' . $parteDer;
+                } elseif (preg_match($patronIngrediente, $parteDer, $ingM)) {
+                    // Sometimes ingredients appear on the right too
+                    $ingredientesActual[] = trim($ingM[1]) . ' ' . trim($ingM[2]) . ' ' . trim($ingM[3]);
+                }
+            }
+        }
+
+        // Save last option
+        if ($enOpcion) {
+            $this->guardarOpcionReceta($bloques, $tipoComidaActual, $opcionActual, $ingredientesActual, $instruccionesActual, $lineasSobrantes);
+        }
+
+        return $bloques;
+    }
+
+    /**
+     * Save a parsed option into the bloques array
+     */
+    private function guardarOpcionReceta(&$bloques, $tipoComida, $numOpcion, $ingredientes, $instrucciones, $lineasSobrantes)
+    {
+        if (empty($ingredientes) && empty($instrucciones)) return;
+
+        // Recipe name = last sobrante line that looks like a name
+        $nombreReceta = '';
+        if (!empty($lineasSobrantes)) {
+            $nombreReceta = end($lineasSobrantes);
+        }
+
+        $bloques[] = [
+            'tipo_comida' => $tipoComida ?? 'almuerzo',
+            'opcion' => [
+                'numero' => $numOpcion ?? 1,
+                'nombre' => $nombreReceta ?: ('Opción ' . ($numOpcion ?? 1)),
+                'descripcion' => '',
+                'calorias' => 0,
+                'proteinas' => 0,
+                'carbohidratos' => 0,
+                'grasas' => 0,
+                'ingredientes' => $ingredientes,
+                'instrucciones' => $instrucciones,
+                'imagen_url' => null
+            ]
+        ];
+    }
+
+    /**
+     * Check if a line looks like a recipe name (not ingredient, not step, not header)
+     */
+    private function esLineaRecetaNombre($linea)
+    {
+        $linea = trim($linea);
+
+        // Too short or too long
+        if (mb_strlen($linea) < 4 || mb_strlen($linea) > 80) return false;
+
+        // Starts with a number (ingredient or step)
+        if (preg_match('/^\d/', $linea)) return false;
+
+        // Is a known header keyword
+        if (preg_match('/^(Opci[oó]n|Ingredientes|Preparaci[oó]n|Desayuno|Comida|Cena|Colaci[oó]n|Recetas|L\.?\s*N\.|C[eé]dula|Paciente|Plan\s+asignado)/iu', $linea)) {
+            return false;
+        }
+
+        // Contains cedula-like numbers or dates (page header debris)
+        if (preg_match('/\d{5,}/', $linea)) return false;
+        if (preg_match('/\d{1,2}\/\d{1,2}\/\d{2,4}/', $linea)) return false;
+
+        // Must contain at least 2 letters
+        if (!preg_match('/[a-záéíóúñ]{2,}/iu', $linea)) return false;
+
+        return true;
+    }
+
+    /**
+     * Normalize meal type name to internal key
+     */
+    private function normalizarTipoComida($nombre)
+    {
+        $n = mb_strtolower(trim($nombre));
+        $n = str_replace(['á','é','í','ó','ú'], ['a','e','i','o','u'], $n);
+
+        if (strpos($n, 'desayuno') !== false) return 'desayuno';
+        if (preg_match('/colacion\s*1/', $n)) return 'media_manana';
+        if (strpos($n, 'comida') !== false) return 'almuerzo';
+        if (preg_match('/colacion\s*2/', $n)) return 'merienda';
+        if (strpos($n, 'cena') !== false) return 'cena';
+
+        return 'almuerzo';
+    }
+
+    /**
+     * Procesar texto extraído de un plan con formato de Sistema de Equivalentes
+     */
+    private function procesarTextoEquivalentes($texto)
+    {
+        $resultado = [
+            'tipo' => 'equivalentes',
+            'datos_paciente' => [
+                'nombre' => '',
+                'peso' => '',
+                'grasa_corporal' => '',
+                'masa_muscular' => '',
+                'objetivo' => ''
+            ],
+            'especialista' => [
+                'nombre' => '',
+                'titulo' => '',
+                'email' => ''
+            ],
+            'cuadro_equivalentes' => [
+                'tiempos' => ['Desayuno', 'Colación 1', 'Comida', 'Colación 2', 'Cena'],
+                'grupos' => []
+            ],
+            'grupos_alimentos' => [],
+            'alimentos_libres' => [
+                'moderados' => [],
+                'libres' => []
+            ],
+            'recomendaciones' => [],
+            'totales' => [
+                'calorias' => 0,
+                'proteinas' => 0,
+                'carbohidratos' => 0,
+                'grasas' => 0
+            ],
+            'comidas' => [],
+            'texto_original' => $texto
+        ];
+
+        if (empty($texto)) {
+            return $resultado;
+        }
+
+        try {
+            // --- Datos del paciente ---
+            // Patterns work for both line-based (pdftotext) and concatenated (PHP native) text
+            if (preg_match('/PLAN DE ALIMENTACI[ÓO]N\s+(.+?)(?=\s*PESO\b|\s*%\s*Grasa|\n)/isu', $texto, $m)) {
+                $resultado['datos_paciente']['nombre'] = trim($m[1]);
+            }
+            if (preg_match('/PESO[:\s]*([\d.,]+\s*(?:kg|lb|libras)?)/i', $texto, $m)) {
+                $resultado['datos_paciente']['peso'] = trim($m[1]);
+            }
+            if (preg_match('/%\s*Grasa(?:\s+corporal)?[:\s]*([\d.,]+\s*%?)/i', $texto, $m)) {
+                $resultado['datos_paciente']['grasa_corporal'] = trim($m[1]);
+            }
+            if (preg_match('/Masa muscular[:\s]*([\d.,]+\s*(?:kg|lb)?)/i', $texto, $m)) {
+                $resultado['datos_paciente']['masa_muscular'] = trim($m[1]);
+            }
+            if (preg_match('/Objetivo[:\s]*(.+?)(?=\s*Cuadro|\s*Grupo de Alimentos|\s*L\.N\.|\s*Cereales|\n\n)/isu', $texto, $m)) {
+                $resultado['datos_paciente']['objetivo'] = trim($m[1]);
+            }
+
+            // --- Datos del especialista ---
+            if (preg_match('/L\.N\.\s+(.+?)(?=\s*Licenciada|\s*Especialista|\s*nutri_|\n)/isu', $texto, $m)) {
+                $resultado['especialista']['nombre'] = 'L.N. ' . trim($m[1]);
+            }
+            if (preg_match('/Licenciada en Nutrici[oó]n.+?(?=\s*nutri_|\s*[\w.-]+@|\n|$)/iu', $texto, $m)) {
+                $resultado['especialista']['titulo'] = trim($m[0]);
+            }
+            if (preg_match('/[\w.-]+@[\w.-]+\.\w+/i', $texto, $m)) {
+                $resultado['especialista']['email'] = trim($m[0]);
+            }
+
+            // --- Cuadro de Equivalentes ---
+            $resultado['cuadro_equivalentes']['grupos'] = $this->parsearCuadroEquivalentes($texto);
+
+            // --- Grupos de alimentos ---
+            $resultado['grupos_alimentos'] = $this->parsearGruposAlimentos($texto);
+
+            // --- Alimentos libres ---
+            $resultado['alimentos_libres'] = $this->parsearAlimentosLibres($texto);
+
+            // --- Recomendaciones ---
+            $resultado['recomendaciones'] = $this->parsearRecomendaciones($texto);
+
+        } catch (\Exception $e) {
+            error_log('Error en procesarTextoEquivalentes: ' . $e->getMessage());
+        }
+
+        return $resultado;
+    }
+
+    /**
+     * Parsear el Cuadro de Equivalentes del plan
+     */
+    private function parsearCuadroEquivalentes($texto)
+    {
+        $grupos = [];
+
+        // Method 0: Parse ||| separated format (e.g. "Verduras ||| 2 ||| - ||| 2 ||| - ||| 1")
+        if (mb_strpos($texto, '|||') !== false) {
+            $grupos = $this->parsearCuadroPorSeparador($texto);
+            if (!empty($grupos)) return $grupos;
+        }
+
+        // Definir los grupos esperados y sus patrones (whitespace-separated)
+        $gruposPatrones = [
+            'Verduras' => '/Verduras\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Frutas' => '/Frutas\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Cereales' => '/Cereales\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Leguminosas' => '/Leguminosas\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Proteínas 1' => '/Prote[ií]nas\s*1\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Proteínas 2' => '/Prote[ií]nas\s*2\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Proteínas 3' => '/Prote[ií]nas\s*3\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Lácteos' => '/L[aá]cteos\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Grasas' => '/(?<!con\s)Grasas\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i',
+            'Grasas con proteína' => '/Grasas\s+con\s+prote[ií]na\s+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)[\s]+([\d.,]+|-)/i'
+        ];
+
+        foreach ($gruposPatrones as $nombre => $patron) {
+            if (preg_match($patron, $texto, $m)) {
+                $equivalentes = [];
+                for ($i = 1; $i <= 5; $i++) {
+                    $val = trim($m[$i]);
+                    if ($val === '-' || $val === '') {
+                        $equivalentes[] = 0;
+                    } else {
+                        $equivalentes[] = (float) str_replace(',', '.', $val);
+                    }
+                }
+                $grupos[] = [
+                    'nombre' => $nombre,
+                    'equivalentes' => $equivalentes
+                ];
+            }
+        }
+
+        // Si el regex no capturó, intentar parseo por líneas en la zona del cuadro
+        if (empty($grupos)) {
+            $grupos = $this->parsearCuadroPorLineas($texto);
+        }
+
+        return $grupos;
+    }
+
+    /**
+     * Parse cuadro from ||| separated format
+     * e.g. "Verduras ||| 2 ||| - ||| 2 ||| - ||| 1"
+     */
+    private function parsearCuadroPorSeparador($texto)
+    {
+        $grupos = [];
+        $nombresGrupos = [
+            'verduras' => 'Verduras',
+            'frutas' => 'Frutas',
+            'cereales' => 'Cereales',
+            'leguminosas' => 'Leguminosas',
+            'proteínas 1' => 'Proteínas 1', 'proteinas 1' => 'Proteínas 1',
+            'proteínas 2' => 'Proteínas 2', 'proteinas 2' => 'Proteínas 2',
+            'proteínas 3' => 'Proteínas 3', 'proteinas 3' => 'Proteínas 3',
+            'lácteos' => 'Lácteos', 'lacteos' => 'Lácteos',
+            'grasas con proteína' => 'Grasas con proteína',
+            'grasas con proteina' => 'Grasas con proteína',
+            'grasas con' => 'Grasas con proteína',
+            'grasas' => 'Grasas',
+        ];
+        $yaAgregados = [];
+
+        $lineas = preg_split('/\r?\n/', $texto);
+        foreach ($lineas as $linea) {
+            $lineaClean = trim($linea);
+            if (mb_strpos($lineaClean, '|||') === false) continue;
+
+            $parts = array_map('trim', explode('|||', $lineaClean));
+            if (count($parts) < 2) continue;
+
+            $nombreRaw = mb_strtolower(trim($parts[0]));
+            $nombreBonito = null;
+
+            // Match longest key first (grasas con proteína before grasas)
+            foreach ($nombresGrupos as $key => $bonito) {
+                if (mb_strpos($nombreRaw, $key) !== false) {
+                    // Avoid matching "grasas" when it's "grasas con"
+                    if ($key === 'grasas' && mb_strpos($nombreRaw, 'grasas con') !== false) continue;
+                    $nombreBonito = $bonito;
+                    break;
+                }
+            }
+
+            if (!$nombreBonito || isset($yaAgregados[$nombreBonito])) continue;
+
+            $equivalentes = [];
+            for ($i = 1; $i < count($parts) && count($equivalentes) < 5; $i++) {
+                $val = trim($parts[$i]);
+                if ($val === '-' || $val === '') {
+                    $equivalentes[] = 0;
+                } else {
+                    $equivalentes[] = (float) str_replace(',', '.', $val);
+                }
+            }
+            // Pad to 5 columns
+            while (count($equivalentes) < 5) $equivalentes[] = 0;
+
+            $grupos[] = ['nombre' => $nombreBonito, 'equivalentes' => $equivalentes];
+            $yaAgregados[$nombreBonito] = true;
+        }
+
+        return $grupos;
+    }
+
+    /**
+     * Fallback: parse cuadro de equivalentes by lines or from concatenated text
+     */
+    private function parsearCuadroPorLineas($texto)
+    {
+        $grupos = [];
+
+        // ---- Method 1: Line-based ----
+        $lineas = preg_split('/\r?\n/', $texto);
+        $enCuadro = false;
+        $nombresGrupos = [
+            'verduras', 'frutas', 'cereales', 'leguminosas',
+            'proteínas 1', 'proteinas 1', 'proteínas 2', 'proteinas 2',
+            'proteínas 3', 'proteinas 3', 'lácteos', 'lacteos',
+            'grasas con', 'grasas'
+        ];
+
+        foreach ($lineas as $linea) {
+            $lineaClean = trim($linea);
+            $lineaLower = mb_strtolower($lineaClean);
+
+            if (mb_strpos($lineaLower, 'grupo de') !== false && mb_strpos($lineaLower, 'alimentos') !== false) {
+                $enCuadro = true;
+                continue;
+            }
+
+            if ($enCuadro && mb_strlen($lineaClean) > 100) {
+                $enCuadro = false;
+            }
+
+            if (!$enCuadro) continue;
+
+            foreach ($nombresGrupos as $nombreGrupo) {
+                if (mb_strpos($lineaLower, $nombreGrupo) !== false) {
+                    if (preg_match_all('/([\d.,]+|-)\s+/', $lineaClean . ' ', $numMatches)) {
+                        $vals = $numMatches[1];
+                        if (count($vals) >= 5) {
+                            $equivalentes = [];
+                            for ($i = 0; $i < 5; $i++) {
+                                $v = trim($vals[$i]);
+                                $equivalentes[] = ($v === '-') ? 0 : (float) str_replace(',', '.', $v);
+                            }
+                            $nombreBonito = $this->normalizarNombreGrupo($nombreGrupo);
+                            $grupos[] = ['nombre' => $nombreBonito, 'equivalentes' => $equivalentes];
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!empty($grupos)) return $grupos;
+
+        // ---- Method 2: Concatenated text - use group names as anchors ----
+        $textoNorm = preg_replace('/\s+/', ' ', $texto);
+        $grupoAnchors = [
+            ['nombre' => 'Verduras', 'patron' => '/Verduras\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Frutas', 'patron' => '/Frutas\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Cereales', 'patron' => '/Cereales\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Leguminosas', 'patron' => '/Leguminosas\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Proteínas 1', 'patron' => '/Prote[ií]nas\s*1\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Proteínas 2', 'patron' => '/Prote[ií]nas\s*2\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Proteínas 3', 'patron' => '/Prote[ií]nas\s*3\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Lácteos', 'patron' => '/L[aá]cteos\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Grasas', 'patron' => '/(?<!con\s)Grasas\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+            ['nombre' => 'Grasas con proteína', 'patron' => '/Grasas\s+con\s+prote[ií]na\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)\s+([\d.,]+|-)/i'],
+        ];
+
+        foreach ($grupoAnchors as $ga) {
+            if (preg_match($ga['patron'], $textoNorm, $m)) {
+                $equivalentes = [];
+                for ($i = 1; $i <= 5; $i++) {
+                    $v = trim($m[$i]);
+                    $equivalentes[] = ($v === '-') ? 0 : (float) str_replace(',', '.', $v);
+                }
+                $grupos[] = ['nombre' => $ga['nombre'], 'equivalentes' => $equivalentes];
+            }
+        }
+
+        return $grupos;
+    }
+
+    /**
+     * Normalize a food group name to its display form
+     */
+    private function normalizarNombreGrupo($nombreGrupo)
+    {
+        $mapa = [
+            'proteínas 1' => 'Proteínas 1', 'proteinas 1' => 'Proteínas 1',
+            'proteínas 2' => 'Proteínas 2', 'proteinas 2' => 'Proteínas 2',
+            'proteínas 3' => 'Proteínas 3', 'proteinas 3' => 'Proteínas 3',
+            'grasas con' => 'Grasas con proteína',
+            'lácteos' => 'Lácteos', 'lacteos' => 'Lácteos',
+        ];
+        return $mapa[$nombreGrupo] ?? ucfirst($nombreGrupo);
+    }
+
+    /**
+     * Parsear las tablas de grupos de alimentos con sus equivalentes
+     * Works with both line-based and concatenated text
+     */
+    private function parsearGruposAlimentos($texto)
+    {
+        $gruposResult = [];
+
+        // Each food group table starts with the group name followed by "ALIMENTO" header
+        // This pattern uniquely identifies food tables (not the cuadro de equivalentes rows)
+        $seccionesConfig = [
+            ['nombre' => 'Cereales', 'patron' => '/Cereales\s+ALIMENTO/iu'],
+            ['nombre' => 'Verduras', 'patron' => '/Verduras\s+ALIMENTO/iu'],
+            ['nombre' => 'Frutas', 'patron' => '/Frutas\s+ALIMENTO/iu'],
+            ['nombre' => 'Proteínas 1', 'patron' => '/PROTE[ÍI]NAS\s*1\s+ALIMENTO/iu'],
+            ['nombre' => 'Proteínas 2', 'patron' => '/PROTE[ÍI]NAS\s*2\s+ALIMENTO/iu'],
+            ['nombre' => 'Proteínas 3', 'patron' => '/PROTE[ÍI]NAS\s*3\s+ALIMENTO/iu'],
+            ['nombre' => 'Leguminosas', 'patron' => '/Leguminosas\s+ALIMENTO/iu'],
+            ['nombre' => 'Grasas', 'patron' => '/GRASAS\s+ALIMENTO(?!\s*\w*\s*CON)/iu'],
+            ['nombre' => 'Grasas con proteína', 'patron' => '/GRASAS\s+CON\s+PROTE[ÍI]NA\s+ALIMENTO/iu'],
+            ['nombre' => 'Lácteos', 'patron' => '/L[ÁA]CTEOS\s+ALIMENTO/iu'],
+        ];
+
+        // Find positions of all section headers
+        $secciones = [];
+        foreach ($seccionesConfig as $config) {
+            if (preg_match($config['patron'], $texto, $m, PREG_OFFSET_CAPTURE)) {
+                $secciones[] = [
+                    'nombre' => $config['nombre'],
+                    'pos' => $m[0][1],
+                    'headerEnd' => $m[0][1] + strlen($m[0][0])
+                ];
+            }
+        }
+
+        // Sort by position in text
+        usort($secciones, fn($a, $b) => $a['pos'] - $b['pos']);
+
+        // Extract content for each section
+        for ($i = 0; $i < count($secciones); $i++) {
+            $inicio = $secciones[$i]['headerEnd'];
+
+            // End at next section, or at known end markers
+            $fin = strlen($texto);
+            if ($i + 1 < count($secciones)) {
+                $fin = $secciones[$i + 1]['pos'];
+            }
+
+            // Also check for end markers that come before the next section
+            foreach (['ALIMENTOS\s+LIBRES', 'RECOMENDACIONES'] as $endMarker) {
+                if (preg_match('/' . $endMarker . '/iu', $texto, $mEnd, PREG_OFFSET_CAPTURE, $inicio)) {
+                    if ($mEnd[0][1] < $fin) {
+                        $fin = $mEnd[0][1];
+                    }
+                }
+            }
+
+            $seccionTexto = substr($texto, $inicio, $fin - $inicio);
+
+            // Remove "EQUIVALENTE" header that follows "ALIMENTO"
+            $seccionTexto = preg_replace('/^\s*EQUIVALENTE\s*/iu', '', $seccionTexto);
+
+            $alimentos = $this->parsearTablaAlimentos($seccionTexto);
+
+            if (!empty($alimentos)) {
+                $gruposResult[] = [
+                    'nombre' => $secciones[$i]['nombre'],
+                    'alimentos' => $alimentos
+                ];
+            }
+        }
+
+        // Fallback: try original line-based approach if no sections found with "ALIMENTO" header
+        if (empty($gruposResult)) {
+            $gruposResult = $this->parsearGruposAlimentosFallback($texto);
+        }
+
+        return $gruposResult;
+    }
+
+    /**
+     * Fallback: find food group sections using group names with \n markers
+     */
+    private function parsearGruposAlimentosFallback($texto)
+    {
+        $gruposResult = [];
+
+        $secciones = [
+            'Cereales' => ['inicio' => '/(?:^|\n)\s*Cereales\b/iu', 'fin' => '/(?:^|\n)\s*(?:Verduras|VERDURAS)\b/iu'],
+            'Verduras' => ['inicio' => '/(?:^|\n)\s*Verduras\b/iu', 'fin' => '/(?:^|\n)\s*(?:Frutas|FRUTAS)\b/iu'],
+            'Frutas' => ['inicio' => '/(?:^|\n)\s*Frutas\b/iu', 'fin' => '/(?:^|\n)\s*(?:PROTEINAS|Prote[ií]nas)\s*1/iu'],
+            'Proteínas 1' => ['inicio' => '/(?:^|\n)\s*PROTE[ÍI]NAS\s*1/iu', 'fin' => '/(?:^|\n)\s*PROTE[ÍI]NAS\s*2/iu'],
+            'Proteínas 2' => ['inicio' => '/(?:^|\n)\s*PROTE[ÍI]NAS\s*2/iu', 'fin' => '/(?:^|\n)\s*PROTE[ÍI]NAS\s*3/iu'],
+            'Proteínas 3' => ['inicio' => '/(?:^|\n)\s*PROTE[ÍI]NAS\s*3/iu', 'fin' => '/(?:^|\n)\s*(?:Leguminosas|LEGUMINOSAS)/iu'],
+            'Leguminosas' => ['inicio' => '/(?:^|\n)\s*Leguminosas\b/iu', 'fin' => '/(?:^|\n)\s*(?:GRASAS|Grasas)\b/iu'],
+            'Grasas' => ['inicio' => '/(?:^|\n)\s*GRASAS\b(?!\s+CON)/iu', 'fin' => '/(?:^|\n)\s*GRASAS\s+CON/iu'],
+            'Grasas con proteína' => ['inicio' => '/(?:^|\n)\s*GRASAS\s+CON\s+PROTE/iu', 'fin' => '/(?:^|\n)\s*L[ÁA]CTEOS/iu'],
+            'Lácteos' => ['inicio' => '/(?:^|\n)\s*L[ÁA]CTEOS/iu', 'fin' => '/(?:^|\n)\s*(?:ALIMENTOS\s+LIBRES|RECOMENDACIONES)/iu']
+        ];
+
+        foreach ($secciones as $nombre => $markers) {
+            if (preg_match($markers['inicio'], $texto, $matchInicio, PREG_OFFSET_CAPTURE)) {
+                $posInicio = $matchInicio[0][1] + strlen($matchInicio[0][0]);
+                $posFin = strlen($texto);
+                if (preg_match($markers['fin'], $texto, $matchFin, PREG_OFFSET_CAPTURE, $posInicio)) {
+                    $posFin = $matchFin[0][1];
+                }
+                $seccionTexto = substr($texto, $posInicio, $posFin - $posInicio);
+                $alimentos = $this->parsearTablaAlimentos($seccionTexto);
+                if (!empty($alimentos)) {
+                    $gruposResult[] = ['nombre' => $nombre, 'alimentos' => $alimentos];
+                }
+            }
+        }
+
+        return $gruposResult;
+    }
+
+    /**
+     * Parsear una tabla de alimentos individual (nombre + equivalente)
+     * Handles both line-based text (pdftotext -layout) and concatenated text (PHP native)
+     */
+    private function parsearTablaAlimentos($textoSeccion)
+    {
+        $alimentos = [];
+        $alimentosEncontrados = [];
+
+        // Clean headers
+        $textoLimpio = preg_replace('/ALIMENTO\s+EQUIVALENTE/iu', '', $textoSeccion);
+        $textoLimpio = preg_replace('/(?:L\.N\.|Licenciada|nutri_|Especialista)[^\n]*/i', '', $textoLimpio);
+
+        // ---- METHOD 1: Line-by-line (works with pdftotext -layout) ----
+        $lineas = preg_split('/\r?\n/', $textoLimpio);
+        foreach ($lineas as $linea) {
+            $linea = trim($linea);
+            if (empty($linea) || mb_strlen($linea) < 5) continue;
+
+            // Multi-space or tab separator: "Nombre alimento    ½ taza"
+            if (preg_match('/^(.+?)(?:\s{2,}|\t+)(.+)$/u', $linea, $m)) {
+                $nombre = trim($m[1]);
+                $equivalente = trim($m[2]);
+                if ($this->esAlimentoValido($nombre, $equivalente)) {
+                    $key = mb_strtolower($nombre);
+                    if (!isset($alimentosEncontrados[$key])) {
+                        $alimentosEncontrados[$key] = true;
+                        $alimentos[] = ['nombre' => $nombre, 'equivalente' => $equivalente];
+                    }
+                }
+            }
+        }
+
+        // If line-by-line found enough results, return them
+        if (count($alimentos) >= 3) {
+            return $alimentos;
+        }
+
+        // ---- METHOD 2: Pattern-matching for concatenated text ----
+        $alimentos = [];
+        $alimentosEncontrados = [];
+
+        // Normalize whitespace to single spaces
+        $texto = preg_replace('/\s+/', ' ', trim($textoLimpio));
+
+        // Units commonly used in the Mexican Equivalent System
+        $unidades = 'tazas?|piezas?|cucharadas?|cucharaditas?|rebanadas?|sobres?|latas?|vasos?|paquetes?|barras?|segundos|onzas?|gramos|g(?=[\s,.\)]|$)|gr(?=[\s,.]|$)|ml(?=[\s,.]|$)';
+        $modificadores = '(?:\s+(?:chicas?|medianas?|grandes?|pequeñas?|delgadas?|medias?))?';
+
+        // Pattern: quantity (number/fraction) + optional "de" + unit + optional size modifier
+        $patronEquiv = '/(\d+(?:[.,]\d+)?(?:\s*[\/]\s*\d+)?(?:\s*[½¼¾⅓⅔⅛])?|[½¼¾⅓⅔⅛])\s*(?:de\s+)?(' . $unidades . ')' . $modificadores . '/iu';
+
+        // Find all quantity+unit matches with their byte positions
+        if (preg_match_all($patronEquiv, $texto, $matches, PREG_OFFSET_CAPTURE)) {
+            for ($i = 0; $i < count($matches[0]); $i++) {
+                $fullMatch = $matches[0][$i][0];
+                $posMatch = $matches[0][$i][1];
+
+                // Food name = text from end of previous match to start of this quantity
+                if ($i === 0) {
+                    $nombre = substr($texto, 0, $posMatch);
+                } else {
+                    $prevEnd = $matches[0][$i - 1][1] + strlen($matches[0][$i - 1][0]);
+                    $nombre = substr($texto, $prevEnd, $posMatch - $prevEnd);
+                }
+
+                $nombre = trim($nombre);
+                $equivalente = trim($fullMatch);
+
+                if ($this->esAlimentoValido($nombre, $equivalente)) {
+                    $key = mb_strtolower($nombre);
+                    if (!isset($alimentosEncontrados[$key])) {
+                        $alimentosEncontrados[$key] = true;
+                        $alimentos[] = [
+                            'nombre' => $nombre,
+                            'equivalente' => $equivalente
+                        ];
+                    }
+                }
+            }
+        }
+
+        return $alimentos;
+    }
+
+    /**
+     * Validate that a parsed food name and equivalent look legitimate
+     */
+    private function esAlimentoValido($nombre, $equivalente)
+    {
+        if (mb_strlen($nombre) < 2 || mb_strlen($equivalente) < 1) return false;
+        if (!preg_match('/[a-záéíóúñ]/iu', $nombre)) return false;
+        if (preg_match('/^(ALIMENTO|EQUIVALENTE|L\.N|Licenciada|Especialista|nutri_|PROTE[IÍ]NAS|Cuadro|Grupo|Desayuno|Colaci[oó]n|Comida|Cena|GRASAS\s+CON|L[ÁA]CTEOS|MODERADOS|LIBRES)/iu', $nombre)) return false;
+        return true;
+    }
+
+    /**
+     * Parsear sección de alimentos libres
+     * Handles both line-based and concatenated text
+     */
+    private function parsearAlimentosLibres($texto)
+    {
+        $resultado = ['moderados' => [], 'libres' => []];
+
+        // Find the ALIMENTOS LIBRES section
+        if (!preg_match('/ALIMENTOS\s+LIBRES(.+?)(?=RECOMENDACIONES|L\.N\.\s|$)/isu', $texto, $m)) {
+            return $resultado;
+        }
+
+        $seccion = $m[1];
+
+        // ---- METHOD 1: Line-based (pdftotext -layout) ----
+        $lineas = preg_split('/\r?\n/', $seccion);
+        $tieneLineas = count(array_filter($lineas, fn($l) => mb_strlen(trim($l)) > 2)) > 3;
+
+        if ($tieneLineas) {
+            $columna = '';
+            foreach ($lineas as $linea) {
+                $linea = trim($linea);
+                if (empty($linea) || mb_strlen($linea) < 2) continue;
+                $lineaLower = mb_strtolower($linea);
+
+                if (mb_strpos($lineaLower, 'moderado') !== false) { $columna = 'moderados'; continue; }
+                if ($lineaLower === 'libres' || mb_strpos($lineaLower, 'libres') === 0) { $columna = 'libres'; continue; }
+                if (preg_match('/^(ALIMENTO|L\.N|Licenciada|Especialista|nutri_)/i', $linea)) continue;
+                if (preg_match('/menos de 10|sin calor|En general condimentos/i', $linea)) continue;
+
+                // Two-column layout with multi-space separator
+                if (preg_match('/^(.+?)\s{3,}(.+)$/u', $linea, $cols)) {
+                    $col1 = trim($cols[1]);
+                    $col2 = trim($cols[2]);
+                    if (mb_strlen($col1) >= 2 && preg_match('/[a-záéíóúñ]/iu', $col1)
+                        && !preg_match('/menos de 10|sin calor|En general/i', $col1)) {
+                        $resultado['moderados'][] = $col1;
+                    }
+                    if (mb_strlen($col2) >= 2 && preg_match('/[a-záéíóúñ]/iu', $col2)
+                        && !preg_match('/sin calor|En general/i', $col2)) {
+                        $resultado['libres'][] = $col2;
+                    }
+                } elseif (!empty($columna) && preg_match('/[a-záéíóúñ]/iu', $linea)) {
+                    $resultado[$columna][] = $linea;
+                }
+            }
+
+            if (!empty($resultado['moderados']) || !empty($resultado['libres'])) {
+                return $resultado;
+            }
+        }
+
+        // ---- METHOD 2: Concatenated text ----
+        $textoNorm = preg_replace('/\s+/', ' ', trim($seccion));
+
+        // Remove description texts
+        $textoNorm = preg_replace('/Alimentos con menos de 10\s*K?calor[ií]as/iu', '', $textoNorm);
+        $textoNorm = preg_replace('/Alimentos sin calor[ií]as/iu', '', $textoNorm);
+        $textoNorm = preg_replace('/En general condimentos y especias/iu', '', $textoNorm);
+
+        // Known "libres" items (zero-calorie items)
+        $itemsLibres = [
+            'Agua', 'Agua mineral', 'Café americano', 'Café instantáneo sin azúcar',
+            'Café de grano', 'Té', 'Infusiones', 'Hierbas de olor', 'Especias',
+            'Vinagre', 'Limón', 'Ajo', 'Cebolla', 'Mostaza', 'Salsa picante',
+            'Chile', 'Pimienta'
+        ];
+
+        // Find MODERADOS and LIBRES markers
+        $posModerados = mb_stripos($textoNorm, 'MODERADOS');
+        $posLibres = mb_stripos($textoNorm, 'LIBRES');
+
+        if ($posModerados !== false && $posLibres !== false) {
+            // Extract text between MODERADOS and LIBRES
+            $startMod = $posModerados + mb_strlen('MODERADOS');
+            $textoModerados = mb_substr($textoNorm, $startMod, $posLibres - $startMod);
+
+            // Extract text after LIBRES
+            $startLib = $posLibres + mb_strlen('LIBRES');
+            $textoLibres = mb_substr($textoNorm, $startLib);
+
+            // In interleaved column extraction, items alternate between columns
+            // Try to split by capitalized food names
+            $resultado['moderados'] = $this->extraerNombresAlimentosLibres($textoModerados);
+            $resultado['libres'] = $this->extraerNombresAlimentosLibres($textoLibres);
+        } elseif ($posModerados !== false || $posLibres !== false) {
+            // Only one marker found - extract all items
+            $startPos = ($posModerados !== false) ? $posModerados + mb_strlen('MODERADOS') : $posLibres + mb_strlen('LIBRES');
+            $textoItems = mb_substr($textoNorm, $startPos);
+            $items = $this->extraerNombresAlimentosLibres($textoItems);
+
+            // Classify items using known libres list
+            foreach ($items as $item) {
+                $esLibre = false;
+                foreach ($itemsLibres as $libre) {
+                    if (mb_stripos($item, $libre) !== false) { $esLibre = true; break; }
+                }
+                $resultado[$esLibre ? 'libres' : 'moderados'][] = $item;
+            }
+        }
+
+        return $resultado;
+    }
+
+    /**
+     * Extract individual food names from a continuous text of free foods
+     */
+    private function extraerNombresAlimentosLibres($texto)
+    {
+        $items = [];
+        $texto = trim($texto);
+        if (empty($texto)) return $items;
+
+        // Try splitting by common separators
+        $partes = preg_split('/[,;]\s*/', $texto);
+        if (count($partes) > 2) {
+            foreach ($partes as $parte) {
+                $parte = trim($parte);
+                if (mb_strlen($parte) >= 2 && preg_match('/[a-záéíóúñ]/iu', $parte)
+                    && !preg_match('/^(ALIMENTO|L\.N|Licenciada|Especialista|nutri_|menos|sin calor|En general)/i', $parte)) {
+                    $items[] = $parte;
+                }
+            }
+            return $items;
+        }
+
+        // Split by capitalized word boundaries (each food name starts with uppercase)
+        // Pattern: split before each uppercase letter that follows a lowercase letter or space
+        $partes = preg_split('/(?<=[a-záéíóúñ])\s+(?=[A-ZÁÉÍÓÚÑ])/u', $texto);
+        foreach ($partes as $parte) {
+            $parte = trim($parte);
+            if (mb_strlen($parte) >= 2 && mb_strlen($parte) <= 60
+                && preg_match('/[a-záéíóúñ]/iu', $parte)
+                && !preg_match('/^(ALIMENTO|L\.N|Licenciada|Especialista|nutri_|MODERADOS|LIBRES)/i', $parte)
+                && !preg_match('/menos de 10|sin calor|En general condimentos/i', $parte)) {
+                $items[] = $parte;
+            }
+        }
+
+        return $items;
+    }
+
+    /**
+     * Parsear recomendaciones del plan de equivalentes
+     * Handles both line-based and concatenated text
+     */
+    private function parsearRecomendaciones($texto)
+    {
+        $recomendaciones = [];
+
+        // Find RECOMENDACIONES section - stop at specialist info, food tables, or end
+        if (!preg_match('/RECOMENDACIONES(.+?)(?=L\.N\.\s|Cereales\s+ALIMENTO|PROTE[ÍI]NAS|$)/isu', $texto, $m)) {
+            return $recomendaciones;
+        }
+
+        $seccion = trim($m[1]);
+
+        // Method 1: Split by bullet points (•, -, *, ✓)
+        if (preg_match_all('/[•\-\*✓]\s*(.+?)(?=[•\-\*✓]|\z)/su', $seccion, $items)) {
+            foreach ($items[1] as $item) {
+                $item = trim(preg_replace('/\s+/', ' ', $item));
+                if (mb_strlen($item) > 10
+                    && !preg_match('/^(L\.N|Licenciada|Especialista|nutri_)/i', $item)) {
+                    $recomendaciones[] = $item;
+                }
+            }
+        }
+
+        // Method 2: If no bullets found, try splitting by line breaks
+        if (empty($recomendaciones)) {
+            $lineas = preg_split('/\r?\n/', $seccion);
+            foreach ($lineas as $linea) {
+                $linea = trim($linea);
+                if (mb_strlen($linea) > 20 && preg_match('/[a-záéíóúñ]/iu', $linea)
+                    && !preg_match('/^(L\.N|Licenciada|Especialista|nutri_)/i', $linea)) {
+                    $recomendaciones[] = $linea;
+                }
+            }
+        }
+
+        // Method 3: For concatenated text, split by sentence patterns
+        if (empty($recomendaciones)) {
+            $textoNorm = preg_replace('/\s+/', ' ', $seccion);
+            // Remove footer text
+            $textoNorm = preg_replace('/L\.N\..*$/iu', '', $textoNorm);
+            $textoNorm = preg_replace('/Licenciada.*$/iu', '', $textoNorm);
+            $textoNorm = preg_replace('/nutri_.*$/iu', '', $textoNorm);
+
+            // Split by common recommendation starters
+            $verbos = 'Puede|Pesar|Realizar|Tomar|Beber|Evitar|Consumir|Incluir|Preferir|Cocinar|Preparar|Utilizar|Comer|No\s+(?:consumir|comer|agregar|utilizar)';
+            $partes = preg_split('/(?=' . $verbos . ')/iu', $textoNorm);
+            foreach ($partes as $parte) {
+                $parte = trim($parte);
+                if (mb_strlen($parte) > 15 && preg_match('/[a-záéíóúñ]/iu', $parte)) {
+                    // Limit length to a reasonable recommendation
+                    if (mb_strlen($parte) > 300) {
+                        $parte = mb_substr($parte, 0, 300) . '...';
+                    }
+                    $recomendaciones[] = $parte;
+                }
+            }
+        }
+
+        return $recomendaciones;
+    }
+
+    /**
+     * Agregar recetas del catálogo a un plan
+     * POST /api/nutricion/planes/{planId}/recetas
+     */
+    public function addRecetasToPlan($planId)
+    {
+        $user = \AuthMiddleware::getCurrentUser();
+        $data = json_decode(file_get_contents('php://input'), true);
+
+        if (empty($data['recetas']) || !is_array($data['recetas'])) {
+            return Response::error('Se requiere un array de recetas', 400);
+        }
+
+        // Verificar que el plan existe y pertenece al especialista
+        $plan = $this->db->query(
+            "SELECT id, especialista_id FROM planes_nutricionales WHERE id = ?",
+            [$planId]
+        )->fetch();
+
+        if (!$plan) {
+            return Response::error('Plan no encontrado', 404);
+        }
+
+        $insertados = 0;
+        $maxOrden = $this->db->query(
+            "SELECT COALESCE(MAX(orden), 0) as max_orden FROM plan_comidas WHERE plan_id = ?",
+            [$planId]
+        )->fetch()['max_orden'];
+
+        foreach ($data['recetas'] as $item) {
+            $recetaId = $item['receta_id'] ?? null;
+            $tipoComida = $item['tipo_comida'] ?? 'almuerzo';
+
+            if (!$recetaId) continue;
+
+            // Obtener datos de la receta
+            $receta = $this->db->query(
+                "SELECT * FROM recetas WHERE id = ?",
+                [$recetaId]
+            )->fetch();
+
+            if (!$receta) continue;
+
+            $maxOrden++;
+            $this->db->query(
+                "INSERT INTO plan_comidas
+                 (plan_id, tipo_comida, nombre_plato, descripcion, ingredientes,
+                  calorias, proteinas_g, carbohidratos_g, grasas_g, orden,
+                  receta_id, imagen_url, instrucciones_json)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    $planId,
+                    $tipoComida,
+                    $receta['titulo'],
+                    $receta['descripcion'] ?? '',
+                    $receta['ingredientes'] ?? '[]',
+                    $receta['calorias'] ?? 0,
+                    $receta['proteinas'] ?? 0,
+                    $receta['carbohidratos'] ?? 0,
+                    $receta['grasas'] ?? 0,
+                    $maxOrden,
+                    $recetaId,
+                    $receta['imagen_url'] ?? null,
+                    $receta['instrucciones'] ?? '[]'
+                ]
+            );
+            $insertados++;
+        }
+
+        // Obtener lista actualizada de comidas con receta
+        $comidas = $this->db->query(
+            "SELECT pc.*, r.titulo AS receta_titulo, r.imagen_url AS receta_imagen
+             FROM plan_comidas pc
+             LEFT JOIN recetas r ON pc.receta_id = r.id
+             WHERE pc.plan_id = ? AND pc.receta_id IS NOT NULL
+             ORDER BY pc.orden",
+            [$planId]
+        )->fetchAll();
+
+        return Response::success([
+            'insertados' => $insertados,
+            'comidas' => $comidas
+        ]);
+    }
+
+    /**
+     * Eliminar una receta (comida) de un plan
+     * DELETE /api/nutricion/planes/{planId}/recetas/{comidaId}
+     */
+    public function removeRecetaFromPlan($planId, $comidaId)
+    {
+        $user = \AuthMiddleware::getCurrentUser();
+
+        $this->db->query(
+            "DELETE FROM plan_comidas WHERE id = ? AND plan_id = ? AND receta_id IS NOT NULL",
+            [$comidaId, $planId]
+        );
+
+        return Response::success(['mensaje' => 'Receta eliminada del plan']);
+    }
+
+    /**
+     * Subir imagen al plan
+     * POST /api/nutricion/planes/{planId}/imagenes
+     */
+    public function uploadImagenPlan($planId)
+    {
+        $user = \AuthMiddleware::getCurrentUser();
+
+        // Verificar plan
+        $plan = $this->db->query(
+            "SELECT id, contenido_json FROM planes_nutricionales WHERE id = ?",
+            [$planId]
+        )->fetch();
+
+        if (!$plan) {
+            return Response::error('Plan no encontrado', 404);
+        }
+
+        if (empty($_FILES['imagen'])) {
+            return Response::error('No se recibió imagen', 400);
+        }
+
+        $file = $_FILES['imagen'];
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->file($file['tmp_name']);
+
+        if (!in_array($mimeType, $allowedTypes)) {
+            return Response::error('Tipo de archivo no permitido. Use JPEG, PNG, WebP o GIF', 400);
+        }
+
+        $ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $filename = 'plan_' . $planId . '_' . uniqid() . '.' . $ext;
+        $uploadDir = __DIR__ . '/../../uploads/planes_imagenes/';
+
+        if (!is_dir($uploadDir)) {
+            mkdir($uploadDir, 0755, true);
+        }
+
+        $destPath = $uploadDir . $filename;
+        if (!move_uploaded_file($file['tmp_name'], $destPath)) {
+            return Response::error('Error al guardar la imagen', 500);
+        }
+
+        $imagePath = '/uploads/planes_imagenes/' . $filename;
+        $titulo = $_POST['titulo'] ?? $file['name'];
+
+        // Actualizar contenido_json agregando la imagen
+        $contenido = json_decode($plan['contenido_json'] ?? '{}', true) ?: [];
+        if (!isset($contenido['imagenes'])) {
+            $contenido['imagenes'] = [];
+        }
+        $contenido['imagenes'][] = [
+            'path' => $imagePath,
+            'titulo' => $titulo,
+            'fecha' => date('Y-m-d H:i:s')
+        ];
+
+        $this->db->query(
+            "UPDATE planes_nutricionales SET contenido_json = ? WHERE id = ?",
+            [json_encode($contenido, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $planId]
+        );
+
+        return Response::success([
+            'imagen' => ['path' => $imagePath, 'titulo' => $titulo],
+            'imagenes' => $contenido['imagenes']
+        ]);
+    }
+
+    /**
+     * Eliminar imagen del plan
+     * DELETE /api/nutricion/planes/{planId}/imagenes
+     */
+    public function removeImagenPlan($planId)
+    {
+        $user = \AuthMiddleware::getCurrentUser();
+        $data = json_decode(file_get_contents('php://input'), true);
+        $pathToRemove = $data['path'] ?? '';
+
+        if (empty($pathToRemove)) {
+            return Response::error('Se requiere el path de la imagen', 400);
+        }
+
+        $plan = $this->db->query(
+            "SELECT id, contenido_json FROM planes_nutricionales WHERE id = ?",
+            [$planId]
+        )->fetch();
+
+        if (!$plan) {
+            return Response::error('Plan no encontrado', 404);
+        }
+
+        $contenido = json_decode($plan['contenido_json'] ?? '{}', true) ?: [];
+        $imagenes = $contenido['imagenes'] ?? [];
+
+        // Filtrar la imagen a eliminar
+        $contenido['imagenes'] = array_values(array_filter($imagenes, function ($img) use ($pathToRemove) {
+            $path = is_string($img) ? $img : ($img['path'] ?? '');
+            return $path !== $pathToRemove;
+        }));
+
+        $this->db->query(
+            "UPDATE planes_nutricionales SET contenido_json = ? WHERE id = ?",
+            [json_encode($contenido, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), $planId]
+        );
+
+        // Intentar eliminar archivo del disco
+        $fullPath = __DIR__ . '/../../' . ltrim($pathToRemove, '/');
+        if (file_exists($fullPath)) {
+            @unlink($fullPath);
+        }
+
+        return Response::success(['mensaje' => 'Imagen eliminada', 'imagenes' => $contenido['imagenes']]);
     }
 }

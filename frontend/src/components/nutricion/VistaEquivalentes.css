@@ -1,0 +1,1006 @@
+/* ==========================================
+   Vista Equivalentes - Sistema de Equivalentes
+   ========================================== */
+
+.vista-equiv {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg, 24px);
+}
+
+/* --- Header Paciente --- */
+.ve-paciente-header {
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-paciente-info {
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.ve-paciente-nombre {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  margin: 0 0 var(--spacing-sm, 8px) 0;
+}
+
+.ve-objetivo {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 8px);
+  color: var(--color-nutricion, #4CAF50);
+  font-size: 0.95rem;
+  font-style: italic;
+  margin: 0;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: rgba(76, 175, 80, 0.08);
+  border-radius: var(--radius-sm, 8px);
+  border-left: 3px solid var(--color-nutricion, #4CAF50);
+}
+
+.ve-objetivo svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.ve-medidas {
+  display: flex;
+  gap: var(--spacing-md, 16px);
+  flex-wrap: wrap;
+}
+
+.ve-medida-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface-tertiary, #30363D);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border-radius: var(--radius-md, 12px);
+  min-width: 90px;
+  flex: 1;
+}
+
+.ve-medida-item svg {
+  color: var(--color-nutricion, #4CAF50);
+}
+
+.ve-medida-valor {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.ve-medida-label {
+  font-size: 0.75rem;
+  color: var(--text-muted, #6E7681);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* --- Especialista --- */
+.ve-especialista {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  color: var(--text-secondary, #8B949E);
+  font-size: 0.9rem;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-primary, #161B22);
+  border-radius: var(--radius-sm, 8px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-esp-email {
+  color: var(--text-muted, #6E7681);
+  margin-left: auto;
+  font-size: 0.85rem;
+}
+
+/* --- Section Titles --- */
+.ve-section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 var(--spacing-md, 16px) 0;
+}
+
+.ve-section-title svg {
+  color: var(--color-nutricion, #4CAF50);
+}
+
+/* --- Cuadro de Equivalentes (tabla principal) --- */
+.ve-cuadro-section {
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--radius-md, 12px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-cuadro-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+  min-width: 500px;
+}
+
+.ve-cuadro-table th,
+.ve-cuadro-table td {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  text-align: center;
+  border-bottom: 1px solid var(--border-color, #30363D);
+}
+
+.ve-th-grupo,
+.ve-td-grupo {
+  text-align: left !important;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ve-cuadro-table thead th {
+  background: var(--surface-tertiary, #30363D);
+  color: var(--text-primary, #E6EDF3);
+  font-weight: 700;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  position: sticky;
+  top: 0;
+}
+
+.ve-td-grupo {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  color: var(--text-primary, #E6EDF3);
+}
+
+.ve-grupo-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ve-td-valor {
+  color: var(--text-muted, #6E7681);
+  font-weight: 500;
+}
+
+.ve-td-activo {
+  color: var(--text-primary, #E6EDF3);
+  font-weight: 700;
+  background: rgba(76, 175, 80, 0.06);
+}
+
+.ve-tr-totales td {
+  border-top: 2px solid var(--color-nutricion, #4CAF50);
+  background: rgba(76, 175, 80, 0.08);
+  font-weight: 700;
+}
+
+.ve-td-total {
+  color: var(--color-nutricion, #4CAF50) !important;
+}
+
+/* --- Buscador --- */
+.ve-busqueda {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  background: var(--surface-secondary, #21262D);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  transition: border-color 0.2s;
+}
+
+.ve-busqueda:focus-within {
+  border-color: var(--color-nutricion, #4CAF50);
+}
+
+.ve-busqueda svg {
+  color: var(--text-muted, #6E7681);
+  flex-shrink: 0;
+}
+
+.ve-busqueda-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-primary, #E6EDF3);
+  font-size: 1rem;
+  min-height: var(--touch-target-min, 48px);
+}
+
+.ve-busqueda-input::placeholder {
+  color: var(--text-muted, #6E7681);
+}
+
+.ve-busqueda-clear {
+  background: var(--surface-tertiary, #30363D);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary, #8B949E);
+  transition: background 0.2s;
+}
+
+.ve-busqueda-clear:hover {
+  background: var(--border-color, #30363D);
+}
+
+/* --- Grupos de Alimentos (cards colapsables) --- */
+.ve-grupos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.ve-grupo-card {
+  background: var(--surface-secondary, #21262D);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-md, 12px);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.ve-grupo-card[open] {
+  border-color: var(--text-muted, #6E7681);
+}
+
+.ve-grupo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md, 16px);
+  cursor: pointer;
+  list-style: none;
+  min-height: var(--touch-target-comfortable, 56px);
+  border-left: 4px solid transparent;
+  transition: background 0.2s;
+  gap: var(--spacing-sm, 8px);
+}
+
+.ve-grupo-header::-webkit-details-marker {
+  display: none;
+}
+
+.ve-grupo-header:hover {
+  background: var(--surface-tertiary, #30363D);
+}
+
+.ve-grupo-title {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  flex-shrink: 0;
+}
+
+.ve-grupo-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm, 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ve-grupo-nombre {
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  font-size: 1rem;
+}
+
+.ve-grupo-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  flex-shrink: 0;
+}
+
+.ve-grupo-equiv-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.ve-grupo-count {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6E7681);
+  white-space: nowrap;
+}
+
+.ve-grupo-chevron {
+  color: var(--text-muted, #6E7681);
+  transition: transform 0.2s;
+}
+
+.ve-grupo-card[open] .ve-grupo-chevron {
+  transform: rotate(180deg);
+}
+
+/* Tabla de alimentos dentro de cada grupo */
+.ve-grupo-body {
+  border-top: 1px solid var(--border-color, #30363D);
+}
+
+.ve-alimentos-table-wrapper {
+  overflow-x: auto;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.ve-alimentos-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.ve-alimentos-table thead th {
+  background: var(--surface-tertiary, #30363D);
+  color: var(--text-secondary, #8B949E);
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.ve-alimentos-table tbody tr {
+  transition: background 0.15s;
+}
+
+.ve-alimentos-table tbody tr:hover {
+  background: rgba(76, 175, 80, 0.04);
+}
+
+.ve-alimentos-table tbody tr:nth-child(even) {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.ve-alimentos-table tbody tr:nth-child(even):hover {
+  background: rgba(76, 175, 80, 0.06);
+}
+
+.ve-alimentos-table td {
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+}
+
+.ve-alimento-nombre {
+  color: var(--text-primary, #E6EDF3);
+  font-weight: 500;
+}
+
+.ve-alimento-porcion {
+  color: var(--color-nutricion, #4CAF50);
+  font-weight: 600;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* --- Alimentos Libres --- */
+.ve-libres-section {
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-libres-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-lg, 24px);
+}
+
+@media (max-width: 600px) {
+  .ve-libres-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.ve-libres-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.ve-libres-subtitle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs, 4px);
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0;
+}
+
+.ve-libres-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6E7681);
+  margin: 0;
+  font-style: italic;
+}
+
+.ve-libres-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs, 4px);
+}
+
+.ve-libre-tag {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.ve-libre-tag.moderado {
+  background: rgba(255, 193, 7, 0.12);
+  color: #FFC107;
+  border: 1px solid rgba(255, 193, 7, 0.25);
+}
+
+.ve-libre-tag.libre {
+  background: rgba(76, 175, 80, 0.12);
+  color: #4CAF50;
+  border: 1px solid rgba(76, 175, 80, 0.25);
+}
+
+/* --- Recomendaciones --- */
+.ve-recomendaciones-section {
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-lg, 16px);
+  padding: var(--spacing-lg, 24px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-recomendaciones-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+.ve-recomendaciones-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm, 8px);
+  padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  background: var(--surface-tertiary, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  color: var(--text-primary, #E6EDF3);
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.ve-rec-bullet {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(76, 175, 80, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-nutricion, #4CAF50);
+  margin-top: 2px;
+}
+
+/* --- Texto Original --- */
+.ve-texto-original {
+  margin-top: var(--spacing-md, 16px);
+}
+
+.ve-texto-original summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  cursor: pointer;
+  color: var(--text-muted, #6E7681);
+  font-size: 0.85rem;
+  padding: var(--spacing-sm, 8px);
+  min-height: var(--touch-target-min, 48px);
+}
+
+.ve-texto-pre {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: var(--radius-sm, 8px);
+  padding: var(--spacing-md, 16px);
+  color: var(--text-secondary, #8B949E);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 400px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+/* --- Compact Mode --- */
+.vista-equiv--compact .ve-paciente-header {
+  padding: var(--spacing-md, 16px);
+}
+
+.vista-equiv--compact .ve-cuadro-section,
+.vista-equiv--compact .ve-libres-section,
+.vista-equiv--compact .ve-recomendaciones-section {
+  padding: var(--spacing-md, 16px);
+}
+
+/* --- Cuadro Header con progreso --- */
+.ve-cuadro-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md, 16px);
+}
+
+.ve-cuadro-header .ve-section-title {
+  margin: 0;
+}
+
+.ve-progreso-badge {
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: var(--surface-tertiary, #30363D);
+  color: var(--text-secondary, #8B949E);
+}
+
+.ve-progreso-completo {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+}
+
+.ve-checklist-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6E7681);
+  margin: 0 0 var(--spacing-sm, 8px);
+  font-style: italic;
+}
+
+/* ===== ACCORDION CHECKLIST ===== */
+.ve-checklist-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm, 8px);
+}
+
+/* --- Accordion --- */
+.ve-accordion {
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #30363D);
+  overflow: hidden;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.ve-accordion-done {
+  border-color: var(--color-nutricion, #4CAF50);
+  box-shadow: 0 0 0 1px rgba(76, 175, 80, 0.12);
+}
+
+.ve-accordion-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+  width: 100%;
+  padding: var(--spacing-md, 16px);
+  background: transparent;
+  border: none;
+  border-left: 5px solid transparent;
+  cursor: pointer;
+  min-height: var(--touch-target-comfortable, 56px);
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.ve-accordion-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.ve-accordion-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+/* Summary dots when collapsed */
+.ve-accordion-summary {
+  display: flex;
+  gap: 5px;
+  flex: 1;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 0 var(--spacing-sm, 8px);
+}
+
+.ve-summary-dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  color: #fff;
+  transition: opacity 0.2s;
+}
+
+.ve-summary-dot-done {
+  opacity: 1;
+}
+
+.ve-accordion-check {
+  flex-shrink: 0;
+}
+
+.ve-accordion-chevron {
+  color: var(--text-muted, #6E7681);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* Accordion body */
+.ve-accordion-body {
+  padding: 0 var(--spacing-md, 16px) var(--spacing-md, 16px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md, 16px);
+  border-top: 1px solid var(--border-color, #30363D);
+  padding-top: var(--spacing-md, 16px);
+}
+
+/* --- Food Row (inside accordion) --- */
+.ve-food-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: var(--spacing-sm, 8px);
+}
+
+.ve-food-row:not(:last-child) {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  padding-bottom: var(--spacing-md, 16px);
+}
+
+.ve-food-row-done {
+  opacity: 0.65;
+}
+
+.ve-food-row-header {
+  display: flex;
+  align-items: center;
+}
+
+.ve-food-row-name {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+/* Circles + icon row */
+.ve-food-row-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm, 8px);
+}
+
+.ve-food-row-circles {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Individual equivalent circle */
+.ve-equiv-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2.5px solid;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  padding: 0;
+  font-size: 0;
+}
+
+.ve-equiv-circle:hover {
+  transform: scale(1.12);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.ve-equiv-circle:active {
+  transform: scale(0.88);
+}
+
+.ve-equiv-circle-done {
+  border-color: transparent !important;
+}
+
+.ve-equiv-half {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+  color: inherit;
+}
+
+/* Food group icon */
+.ve-food-row-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Progress bar */
+.ve-food-progress {
+  width: 100%;
+}
+
+.ve-food-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.ve-food-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.4s ease;
+}
+
+/* --- Daily Progress Gauge --- */
+.ve-daily-progress {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md, 16px);
+  padding: var(--spacing-lg, 24px);
+  background: var(--surface-secondary, #21262D);
+  border-radius: var(--radius-lg, 16px);
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.ve-daily-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.ve-daily-gauge {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm, 8px);
+}
+
+.ve-gauge-ring {
+  position: relative;
+  width: 56px;
+  height: 56px;
+}
+
+.ve-gauge-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.ve-gauge-bg {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.08);
+  stroke-width: 3;
+}
+
+.ve-gauge-fill {
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.6s ease;
+}
+
+.ve-gauge-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.ve-gauge-sublabel {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6E7681);
+  font-weight: 500;
+}
+
+/* ===== DARK THEME ===== */
+[data-theme="dark"] .ve-accordion {
+  background: var(--surface-secondary, #21262D);
+  border-color: var(--border-color, #30363D);
+}
+
+[data-theme="dark"] .ve-accordion-done {
+  border-color: var(--color-nutricion, #4CAF50);
+}
+
+[data-theme="dark"] .ve-accordion-header:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .ve-accordion-body {
+  border-top-color: var(--border-color, #30363D);
+}
+
+[data-theme="dark"] .ve-accordion-chevron {
+  color: var(--text-muted, #6E7681);
+}
+
+[data-theme="dark"] .ve-food-row:not(:last-child) {
+  border-bottom-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .ve-food-progress-track {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .ve-equiv-circle:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .ve-daily-progress {
+  background: var(--surface-secondary, #21262D);
+  border-color: var(--border-color, #30363D);
+}
+
+[data-theme="dark"] .ve-daily-label {
+  color: var(--text-primary, #E6EDF3);
+}
+
+[data-theme="dark"] .ve-gauge-bg {
+  stroke: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="dark"] .ve-gauge-text {
+  color: var(--text-primary, #E6EDF3);
+}
+
+[data-theme="dark"] .ve-gauge-sublabel {
+  color: var(--text-muted, #6E7681);
+}
+
+[data-theme="dark"] .ve-progreso-badge {
+  background: var(--surface-tertiary);
+}
+
+[data-theme="dark"] .ve-progreso-completo {
+  background: rgba(76, 175, 80, 0.2);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 480px) {
+  .ve-medidas {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .ve-medida-item {
+    min-width: 0;
+    padding: var(--spacing-xs, 4px) var(--spacing-sm, 8px);
+  }
+
+  .ve-medida-valor {
+    font-size: 0.95rem;
+  }
+
+  .ve-grupo-header {
+    flex-wrap: wrap;
+  }
+
+  .ve-grupo-meta {
+    width: 100%;
+    justify-content: flex-end;
+    margin-top: var(--spacing-xs, 4px);
+  }
+
+  .ve-cuadro-table {
+    font-size: 0.85rem;
+  }
+
+  .ve-cuadro-table th,
+  .ve-cuadro-table td {
+    padding: 6px 8px;
+  }
+
+  .ve-cuadro-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Checklist responsive */
+  .ve-accordion-header {
+    padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
+  }
+
+  .ve-accordion-title {
+    font-size: 1rem;
+  }
+
+  .ve-food-row-content {
+    flex-wrap: wrap;
+  }
+
+  .ve-food-row-circles {
+    gap: 6px;
+  }
+
+  .ve-equiv-circle {
+    width: 36px;
+    height: 36px;
+  }
+
+  .ve-food-row-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ve-daily-progress {
+    flex-direction: column;
+    gap: var(--spacing-sm, 8px);
+    padding: var(--spacing-md, 16px);
+  }
+
+  .ve-summary-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+  }
+}

@@ -21,12 +21,12 @@ html {
 }
 
 body {
-  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif);
+  font-family: var(--font-family, 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   line-height: var(--line-height, 1.6);
-  background-color: var(--background-primary, #0D1117);
-  color: var(--text-primary, #E6EDF3);
+  background-color: var(--background-primary, #F5F7F2);
+  color: var(--text-primary, #1A1A1A);
   min-height: 100vh;
   min-height: 100dvh; /* Dynamic viewport height para móviles */
   overflow-x: hidden;
@@ -58,42 +58,28 @@ button, a, input, select, textarea,
 
 /* Links accesibles */
 a {
-  color: var(--link-color, #58A6FF);
+  color: var(--link-color, #0097A7);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
 
 a:hover, a:focus {
-  color: var(--link-hover, #79C0FF);
+  color: var(--link-hover, #006064);
 }
 
 a:focus-visible {
-  outline: 3px solid var(--focus-ring, #58A6FF);
+  outline: 3px solid var(--focus-ring, #0097A7);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Botones base */
+/* Botones base - solo resets, NO estilos visuales */
 button {
   cursor: pointer;
   border: none;
-  border-radius: var(--radius-md, 12px);
-  padding: var(--spacing-md, 16px) var(--spacing-lg, 24px);
-  font-weight: 600;
   font-family: inherit;
-  transition: all 0.2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--spacing-sm, 8px);
-  background-color: var(--primary-color, #2196F3);
-  color: white;
-}
-
-button:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-  filter: brightness(1.1);
+  background: none;
+  color: inherit;
 }
 
 button:active:not(:disabled) {
@@ -106,7 +92,7 @@ button:disabled {
 }
 
 button:focus-visible {
-  outline: 3px solid var(--focus-ring, #58A6FF);
+  outline: 3px solid var(--focus-ring, #0097A7);
   outline-offset: 2px;
 }
 
@@ -114,23 +100,23 @@ button:focus-visible {
 input, select, textarea {
   width: 100%;
   padding: var(--spacing-md, 16px);
-  border: 2px solid var(--border-color, #30363D);
+  border: 2px solid var(--border-color, #E0E0E0);
   border-radius: var(--radius-md, 12px);
   font-size: var(--font-size-base, 18px);
   font-family: inherit;
-  background-color: var(--surface-secondary, #161B22);
-  color: var(--text-primary, #E6EDF3);
+  background-color: #FFFFFF;
+  color: var(--text-primary, #1A1A1A);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 input::placeholder, textarea::placeholder {
-  color: var(--text-muted, #8B949E);
+  color: var(--text-muted, #9E9E9E);
 }
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--primary-color, #2196F3);
-  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.25);
+  border-color: var(--primary-color, #0097A7);
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.2);
 }
 
 /* Checkbox y radio grandes */
@@ -138,7 +124,7 @@ input[type="checkbox"], input[type="radio"] {
   width: 24px;
   height: 24px;
   cursor: pointer;
-  accent-color: var(--primary-color, #2196F3);
+  accent-color: var(--primary-color, #0097A7);
 }
 
 /* ========================================
@@ -205,9 +191,10 @@ input[type="checkbox"], input[type="radio"] {
    ======================================== */
 
 h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-heading, 'Open Sans', sans-serif);
   font-weight: 700;
   line-height: 1.3;
-  color: var(--text-primary, #E6EDF3);
+  color: var(--inst-title, #0c71c3);
 }
 
 h1 { font-size: var(--font-size-3xl, 32px); }
@@ -236,8 +223,8 @@ h4 { font-size: var(--font-size-lg, 20px); }
 
 /* Cards */
 .card {
-  background-color: var(--surface-primary, #161B22);
-  border: 1px solid var(--border-color, #30363D);
+  background-color: var(--surface-primary, #FFFFFF);
+  border: 1px solid var(--border-color, #E0E0E0);
   border-radius: var(--radius-lg, 16px);
   padding: var(--spacing-lg, 24px);
 }
@@ -250,14 +237,14 @@ h4 { font-size: var(--font-size-lg, 20px); }
   border-radius: var(--radius-full, 50px);
   font-size: var(--font-size-sm, 14px);
   font-weight: 600;
-  background-color: var(--surface-secondary, #21262D);
-  color: var(--text-secondary, #8B949E);
+  background-color: var(--surface-secondary, #F0F2ED);
+  color: var(--text-secondary, #6B6B6B);
 }
 
 /* Dividers */
 .divider {
   height: 1px;
-  background-color: var(--border-color, #30363D);
+  background-color: var(--border-color, #E0E0E0);
   margin: var(--spacing-md, 16px) 0;
 }
 
@@ -281,16 +268,16 @@ h4 { font-size: var(--font-size-lg, 20px); }
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--surface-secondary, #161B22);
+  background: var(--surface-secondary, #F0F2ED);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-color, #30363D);
+  background: var(--border-color, #E0E0E0);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--text-muted, #8B949E);
+  background: var(--text-muted, #9E9E9E);
 }
 
 /* Pull to refresh indicator */
@@ -300,7 +287,7 @@ h4 { font-size: var(--font-size-lg, 20px); }
   left: 50%;
   transform: translateX(-50%);
   padding: var(--spacing-sm, 8px) var(--spacing-md, 16px);
-  background: var(--surface-primary, #161B22);
+  background: var(--surface-primary, #FFFFFF);
   border-radius: 0 0 var(--radius-md, 12px) var(--radius-md, 12px);
   opacity: 0;
   transition: opacity 0.2s;
@@ -363,9 +350,9 @@ h4 { font-size: var(--font-size-lg, 20px); }
 .skeleton {
   background: linear-gradient(
     90deg,
-    var(--surface-secondary, #161B22) 25%,
-    var(--surface-tertiary, #21262D) 50%,
-    var(--surface-secondary, #161B22) 75%
+    var(--surface-secondary, #F0F2ED) 25%,
+    var(--surface-tertiary, #E8E8E8) 50%,
+    var(--surface-secondary, #F0F2ED) 75%
   );
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
@@ -412,23 +399,99 @@ h4 { font-size: var(--font-size-lg, 20px); }
   }
 }
 
+/* ===== MODO OSCURO - index overrides ===== */
+[data-theme="dark"] body {
+  background-color: var(--background-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] select,
+[data-theme="dark"] textarea {
+  background-color: var(--surface-secondary, #21262D);
+  border-color: var(--border-color, #30363D);
+  color: var(--text-primary, #E6EDF3);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--text-muted, #6E7681);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] select:focus,
+[data-theme="dark"] textarea:focus {
+  border-color: var(--color-primary, #4DD0E1);
+  box-shadow: 0 0 0 3px rgba(63, 185, 80, 0.2);
+}
+
+/* Botones con clase .btn heredan estilos del design system, NO aplicar a button genérico */
+
+[data-theme="dark"] a {
+  color: var(--link-color, #58A6FF);
+}
+
+[data-theme="dark"] a:hover,
+[data-theme="dark"] a:focus {
+  color: var(--link-hover, #79C0FF);
+}
+
+[data-theme="dark"] a:focus-visible {
+  outline-color: var(--focus-ring, #58A6FF);
+}
+
+[data-theme="dark"] button:focus-visible {
+  outline-color: var(--focus-ring, #58A6FF);
+}
+
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6 {
+  color: var(--inst-title, #58A6FF);
+}
+
+[data-theme="dark"] .card {
+  background-color: var(--surface-primary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .badge {
+  background-color: var(--surface-secondary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .divider {
+  background-color: var(--border-color);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--surface-secondary, #21262D);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--surface-tertiary, #30363D);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted, #6E7681);
+}
+
+[data-theme="dark"] .pull-indicator {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .text-muted {
+  color: var(--text-muted, #6E7681);
+}
+
 /* Alto contraste (accesibilidad) */
 @media (prefers-contrast: high) {
   :root {
-    --border-color: #fff;
-    --text-primary: #fff;
-    --background-primary: #000;
-  }
-}
-
-/* Modo claro si el usuario lo prefiere */
-@media (prefers-color-scheme: light) {
-  body.auto-theme {
-    --background-primary: #ffffff;
-    --surface-primary: #f6f8fa;
-    --surface-secondary: #eaeef2;
-    --text-primary: #1f2328;
-    --text-secondary: #656d76;
-    --border-color: #d0d7de;
+    --border-color: #000;
+    --text-primary: #000;
+    --background-primary: #fff;
   }
 }

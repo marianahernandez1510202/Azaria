@@ -228,16 +228,20 @@ class AuthService
         )->fetch();
 
         if ($result) {
-            // Incrementar intentos
+            // Marcar como usado
             $db->query(
-                "UPDATE tokens_recuperacion SET intentos = intentos + 1 WHERE id = ?",
+                "UPDATE tokens_recuperacion SET usado = 1, intentos = intentos + 1 WHERE id = ?",
                 [$result['id']]
             );
 
-            // Generar token de reset
-            $resetToken = bin2hex(random_bytes(32));
+            // Generar token de reset firmado: base64(userId:randomBytes:hmac)
+            $random = bin2hex(random_bytes(16));
+            $payload = $user['id'] . ':' . $random;
+            $secret = getenv('APP_KEY') ?: 'azaria_secret_key_2026';
+            $hmac = hash_hmac('sha256', $payload, $secret);
+            $resetToken = base64_encode($payload . ':' . $hmac);
 
-            return ['valid' => true, 'reset_token' => $resetToken, 'token_id' => $result['id']];
+            return ['valid' => true, 'reset_token' => $resetToken];
         }
 
         return ['valid' => false];
@@ -245,10 +249,41 @@ class AuthService
 
     public function resetCredential($resetToken, $newCredential)
     {
-        // En una implementación completa, verificaríamos el resetToken
-        // Por ahora, simplificamos para desarrollo
+        try {
+            $decoded = base64_decode($resetToken);
+            $parts = explode(':', $decoded);
 
-        return true;
+            if (count($parts) !== 3) {
+                return false;
+            }
+
+            $userId = $parts[0];
+            $random = $parts[1];
+            $hmac = $parts[2];
+
+            // Verificar firma
+            $payload = $userId . ':' . $random;
+            $secret = getenv('APP_KEY') ?: 'azaria_secret_key_2026';
+            $expectedHmac = hash_hmac('sha256', $payload, $secret);
+
+            if (!hash_equals($expectedHmac, $hmac)) {
+                return false;
+            }
+
+            // Actualizar contraseña
+            $db = DatabaseService::getInstance();
+            $passwordHash = password_hash($newCredential, PASSWORD_DEFAULT);
+
+            $db->query(
+                "UPDATE usuarios SET password_hash = ?, updated_at = NOW() WHERE id = ?",
+                [$passwordHash, $userId]
+            );
+
+            return true;
+        } catch (\Exception $e) {
+            error_log('Error resetting credential: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public function markOnboardingComplete($userId)

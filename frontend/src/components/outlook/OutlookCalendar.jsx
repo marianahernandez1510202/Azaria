@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../services/api';
+import LucideIcon from '../LucideIcon';
 import './OutlookCalendar.css';
 
 const OutlookCalendar = ({ isConnected }) => {
@@ -36,7 +37,11 @@ const OutlookCalendar = ({ isConnected }) => {
       setEvents(response.data || []);
     } catch (err) {
       console.error('Error loading Outlook events:', err);
-      setError('Error al cargar eventos de Outlook');
+      if (err?.status === 403 || err?.message?.includes('conexión')) {
+        setError('Outlook no está conectado. Conecta tu cuenta para ver eventos.');
+      } else {
+        setError('Error al cargar eventos de Outlook');
+      }
     } finally {
       setLoading(false);
     }
@@ -116,7 +121,7 @@ const OutlookCalendar = ({ isConnected }) => {
         </div>
       ) : events.length === 0 ? (
         <div className="outlook-calendar-empty">
-          <span className="empty-icon">📅</span>
+          <span className="empty-icon"><LucideIcon name="calendar" size={32} /></span>
           <p>No hay eventos en esta semana</p>
         </div>
       ) : (
@@ -153,13 +158,13 @@ const OutlookCalendar = ({ isConnected }) => {
                         <h4 className="event-subject">{eventTitle}</h4>
                         {eventLocation && (
                           <p className="event-location">
-                            <span className="location-icon">📍</span>
+                            <span className="location-icon"><LucideIcon name="map-pin" size={16} /></span>
                             {eventLocation}
                           </p>
                         )}
                         {isOnline && (
                           <span className="online-meeting-badge">
-                            💻 Reunión en línea
+                            <LucideIcon name="monitor" size={16} /> Reunion en linea
                           </span>
                         )}
                       </div>

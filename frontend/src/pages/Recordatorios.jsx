@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Recordatorios.css';
 
 const Recordatorios = () => {
@@ -28,13 +29,13 @@ const Recordatorios = () => {
   });
 
   const tiposRecordatorio = [
-    { id: 'medicamento', nombre: 'Medicamento', icon: '💊', color: '#4CAF50' },
-    { id: 'ejercicio', nombre: 'Ejercicio', icon: '🏃', color: '#2196F3' },
-    { id: 'cita', nombre: 'Cita médica', icon: '📅', color: '#9C27B0' },
-    { id: 'medicion', nombre: 'Medición', icon: '📊', color: '#FF9800' },
-    { id: 'hidratacion', nombre: 'Hidratación', icon: '💧', color: '#00BCD4' },
-    { id: 'protesis', nombre: 'Cuidado prótesis', icon: '🦿', color: '#795548' },
-    { id: 'otro', nombre: 'Otro', icon: '🔔', color: '#607D8B' }
+    { id: 'medicamento', nombre: 'Medicamento', icon: 'pill', color: '#2E7D32' },
+    { id: 'ejercicio', nombre: 'Ejercicio', icon: 'dumbbell', color: '#1976D2' },
+    { id: 'cita', nombre: 'Cita médica', icon: 'calendar', color: '#6A1B9A' },
+    { id: 'medicion', nombre: 'Medición', icon: 'bar-chart', color: '#E65100' },
+    { id: 'hidratacion', nombre: 'Hidratación', icon: 'droplet', color: '#1565C0' },
+    { id: 'protesis', nombre: 'Cuidado prótesis', icon: 'accessibility', color: '#795548' },
+    { id: 'otro', nombre: 'Otro', icon: 'bell', color: '#455A64' }
   ];
 
   const diasSemana = [
@@ -76,9 +77,9 @@ const Recordatorios = () => {
 
     if (notificacionesMostradas.has(notificationKey)) return;
 
-    const notification = new Notification(`⏰ ${recordatorio.titulo}`, {
+    const notification = new Notification(`${recordatorio.titulo}`, {
       body: recordatorio.descripcion || `Es hora de: ${recordatorio.titulo}`,
-      icon: tipo.icon === '💊' ? '/pill-icon.png' : '/notification-icon.png',
+      icon: tipo.icon === 'pill' ? '/pill-icon.png' : '/notification-icon.png',
       tag: notificationKey,
       requireInteraction: true,
       vibrate: [200, 100, 200]
@@ -264,7 +265,7 @@ const Recordatorios = () => {
       return;
     }
 
-    new Notification('🔔 Prueba de notificación', {
+    new Notification('Prueba de notificacion', {
       body: 'Las notificaciones están funcionando correctamente',
       icon: '/notification-icon.png',
       tag: 'test-notification'
@@ -301,7 +302,7 @@ const Recordatorios = () => {
       <div className={`notificacion-status ${notificacionesPermitidas ? 'activas' : 'inactivas'}`}>
         {notificacionesPermitidas ? (
           <>
-            <span className="status-icon">🔔</span>
+            <span className="status-icon"><LucideIcon name="bell" size={18} /></span>
             <span>Notificaciones activas - Recibirás alertas a la hora programada</span>
             <button
               className="btn btn-sm btn-probar"
@@ -312,7 +313,7 @@ const Recordatorios = () => {
           </>
         ) : (
           <>
-            <span className="status-icon">🔕</span>
+            <span className="status-icon"><LucideIcon name="bell-off" size={18} /></span>
             <span>Notificaciones desactivadas</span>
             <button
               className="btn btn-sm btn-activar"
@@ -346,7 +347,7 @@ const Recordatorios = () => {
             onClick={() => setFiltroTipo(tipo.id)}
             style={{ '--filtro-color': tipo.color }}
           >
-            {tipo.icon} {tipo.nombre}
+            <LucideIcon name={tipo.icon} size={16} /> {tipo.nombre}
           </button>
         ))}
       </div>
@@ -366,13 +367,13 @@ const Recordatorios = () => {
                 className={`recordatorio-card ${!recordatorio.activo ? 'inactivo' : ''}`}
                 style={{ '--tipo-color': tipo.color }}
               >
-                <div className="recordatorio-icon">{tipo.icon}</div>
+                <div className="recordatorio-icon"><LucideIcon name={tipo.icon} size={20} /></div>
 
                 <div className="recordatorio-info">
                   <h3>{recordatorio.titulo}</h3>
                   <p className="recordatorio-desc">{recordatorio.descripcion}</p>
                   <div className="recordatorio-meta">
-                    <span className="recordatorio-hora">⏰ {recordatorio.hora}</span>
+                    <span className="recordatorio-hora"><LucideIcon name="alarm-clock" size={14} /> {recordatorio.hora}</span>
                     <span className="recordatorio-dias">{formatearDias(recordatorio.dias_semana)}</span>
                   </div>
                 </div>
@@ -391,14 +392,14 @@ const Recordatorios = () => {
                     onClick={() => eliminarRecordatorio(recordatorio.id)}
                     title="Eliminar"
                   >
-                    🗑️
+                    <LucideIcon name="trash" size={16} />
                   </button>
                 </div>
               </div>
             );
           }) : (
             <div className="empty-state">
-              <div className="empty-icon">🔔</div>
+              <div className="empty-icon"><LucideIcon name="bell" size={32} /></div>
               <p>No tienes recordatorios configurados</p>
               <p className="help-text">Crea recordatorios para no olvidar tu tratamiento</p>
               <button className="btn btn-primary" onClick={() => setShowModal(true)}>
@@ -426,7 +427,7 @@ const Recordatorios = () => {
                       onClick={() => setNuevoRecordatorio({...nuevoRecordatorio, tipo: tipo.id})}
                       style={{ '--tipo-color': tipo.color }}
                     >
-                      <span className="tipo-icon">{tipo.icon}</span>
+                      <span className="tipo-icon"><LucideIcon name={tipo.icon} size={20} /></span>
                       <span className="tipo-nombre">{tipo.nombre}</span>
                     </button>
                   ))}

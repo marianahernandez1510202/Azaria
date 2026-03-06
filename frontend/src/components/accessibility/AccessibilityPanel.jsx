@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice } from '../VoiceHelper';
+import LucideIcon from '../LucideIcon';
 import './AccessibilityPanel.css';
 
 const FONT_SCALES = [
@@ -13,10 +14,10 @@ const FONT_SCALES = [
 ];
 
 const AGE_PROFILES = [
-  { value: 'child', label: 'Niño/a (10-15)', icon: '👦', description: 'Colores vibrantes, interfaz amigable' },
-  { value: 'young-adult', label: 'Joven (16-40)', icon: '🧑', description: 'Diseño moderno estándar' },
-  { value: 'adult', label: 'Adulto (41-60)', icon: '👨', description: 'Texto ligeramente más grande' },
-  { value: 'senior', label: 'Adulto mayor (61+)', icon: '👴', description: 'Máxima legibilidad y contraste' },
+  { value: 'child', label: 'Niño/a (10-15)', icon: 'user', description: 'Colores vibrantes, interfaz amigable' },
+  { value: 'young-adult', label: 'Joven (16-40)', icon: 'user', description: 'Diseño moderno estándar' },
+  { value: 'adult', label: 'Adulto (41-60)', icon: 'user-round', description: 'Texto ligeramente más grande' },
+  { value: 'senior', label: 'Adulto mayor (61+)', icon: 'user-round', description: 'Máxima legibilidad y contraste' },
 ];
 
 const AccessibilityPanel = () => {
@@ -77,7 +78,7 @@ const AccessibilityPanel = () => {
           {/* Tamaño de Texto */}
           <section className="accessibility-section" aria-labelledby="font-size-heading">
             <h3 id="font-size-heading">
-              <span aria-hidden="true">🔤</span>
+              <span aria-hidden="true"><LucideIcon name="type" size={18} /></span>
               Tamaño de texto
             </h3>
             <div className="font-size-options">
@@ -106,32 +107,32 @@ const AccessibilityPanel = () => {
           {/* Tema y Contraste */}
           <section className="accessibility-section" aria-labelledby="theme-heading">
             <h3 id="theme-heading">
-              <span aria-hidden="true">🎨</span>
+              <span aria-hidden="true"><LucideIcon name="palette" size={18} /></span>
               Tema y contraste
             </h3>
 
-            <div className="theme-options">
+            <div className="acc-theme-options">
               <button
-                className={`theme-btn ${settings.theme === 'dark' ? 'active' : ''}`}
+                className={`acc-theme-btn ${settings.theme === 'dark' ? 'active' : ''}`}
                 onClick={() => {
                   updateSetting('theme', 'dark');
                   handleSpeak('Tema oscuro activado');
                 }}
                 aria-pressed={settings.theme === 'dark'}
               >
-                <span className="theme-icon">🌙</span>
+                <span className="acc-theme-icon"><LucideIcon name="moon" size={18} /></span>
                 <span>Oscuro</span>
               </button>
 
               <button
-                className={`theme-btn ${settings.theme === 'light' ? 'active' : ''}`}
+                className={`acc-theme-btn ${settings.theme === 'light' ? 'active' : ''}`}
                 onClick={() => {
                   updateSetting('theme', 'light');
                   handleSpeak('Tema claro activado');
                 }}
                 aria-pressed={settings.theme === 'light'}
               >
-                <span className="theme-icon">☀️</span>
+                <span className="acc-theme-icon"><LucideIcon name="sunrise" size={18} /></span>
                 <span>Claro</span>
               </button>
             </div>
@@ -154,7 +155,7 @@ const AccessibilityPanel = () => {
           {/* Asistencia Visual */}
           <section className="accessibility-section" aria-labelledby="visual-heading">
             <h3 id="visual-heading">
-              <span aria-hidden="true">👁️</span>
+              <span aria-hidden="true"><LucideIcon name="eye" size={18} /></span>
               Asistencia visual
             </h3>
 
@@ -202,7 +203,7 @@ const AccessibilityPanel = () => {
           {/* Asistencia de Voz */}
           <section className="accessibility-section" aria-labelledby="voice-heading">
             <h3 id="voice-heading">
-              <span aria-hidden="true">🔊</span>
+              <span aria-hidden="true"><LucideIcon name="volume" size={18} /></span>
               Asistencia de voz
             </h3>
 
@@ -262,12 +263,12 @@ const AccessibilityPanel = () => {
               onClick={() => speak('Esta es una prueba de voz. Así es como se escuchará la asistencia de voz en la aplicación.')}
               disabled={isSpeaking}
             >
-              {isSpeaking ? '🔊 Reproduciendo...' : '🎤 Probar voz'}
+              {isSpeaking ? <><LucideIcon name="volume" size={16} /> Reproduciendo...</> : <><LucideIcon name="volume" size={16} /> Probar voz</>}
             </button>
 
             {isSpeaking && (
               <button className="stop-voice-btn" onClick={stop}>
-                ⏹️ Detener
+                <LucideIcon name="stop" size={16} /> Detener
               </button>
             )}
           </section>
@@ -275,7 +276,7 @@ const AccessibilityPanel = () => {
           {/* Movimiento */}
           <section className="accessibility-section" aria-labelledby="motion-heading">
             <h3 id="motion-heading">
-              <span aria-hidden="true">🎬</span>
+              <span aria-hidden="true"><LucideIcon name="clapperboard" size={18} /></span>
               Movimiento
             </h3>
 
@@ -296,7 +297,7 @@ const AccessibilityPanel = () => {
           {/* Perfil por Edad */}
           <section className="accessibility-section" aria-labelledby="age-heading">
             <h3 id="age-heading">
-              <span aria-hidden="true">👥</span>
+              <span aria-hidden="true"><LucideIcon name="users" size={18} /></span>
               Perfil por edad
             </h3>
             <div className="age-profiles">
@@ -310,7 +311,7 @@ const AccessibilityPanel = () => {
                   }}
                   aria-pressed={settings.ageMode === profile.value}
                 >
-                  <span className="age-icon" aria-hidden="true">{profile.icon}</span>
+                  <span className="age-icon" aria-hidden="true"><LucideIcon name={profile.icon} size={20} /></span>
                   <span className="age-label">{profile.label}</span>
                   <span className="age-description">{profile.description}</span>
                 </button>
@@ -321,7 +322,7 @@ const AccessibilityPanel = () => {
           {/* Lector de Pantalla */}
           <section className="accessibility-section" aria-labelledby="screen-reader-heading">
             <h3 id="screen-reader-heading">
-              <span aria-hidden="true">📖</span>
+              <span aria-hidden="true"><LucideIcon name="book-open" size={18} /></span>
               Lector de pantalla
             </h3>
 
@@ -347,7 +348,7 @@ const AccessibilityPanel = () => {
           {/* Atajos de Teclado */}
           <section className="accessibility-section" aria-labelledby="shortcuts-heading">
             <h3 id="shortcuts-heading">
-              <span aria-hidden="true">⌨️</span>
+              <span aria-hidden="true"><LucideIcon name="keyboard" size={18} /></span>
               Atajos de teclado
             </h3>
             <div className="shortcuts-list">
@@ -383,7 +384,7 @@ const AccessibilityPanel = () => {
                 handleSpeak('Configuración restablecida a valores por defecto');
               }}
             >
-              🔄 Restablecer configuración
+              <LucideIcon name="refresh-cw" size={16} /> Restablecer configuración
             </button>
           </section>
         </div>

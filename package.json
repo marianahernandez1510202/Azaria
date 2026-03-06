@@ -1,0 +1,24 @@
+{
+  "name": "vitalia-v2",
+  "version": "2.0.0",
+  "description": "Sistema de Rehabilitación Vitalia - Versión 2.0",
+  "scripts": {
+    "frontend:install": "cd frontend && npm install",
+    "frontend:dev": "cd frontend && npm start",
+    "frontend:build": "cd frontend && npm run build",
+    "backend:install": "cd backend && composer install",
+    "backend:migrate": "cd backend && php database/migrate.php",
+    "backend:seed": "cd backend && php database/seed.php",
+    "backend:serve": "cd backend/public && php -S localhost:8000",
+    "dev": "concurrently \"npm run frontend:dev\" \"npm run backend:serve\"",
+    "setup": "npm run frontend:install && npm run backend:install",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && vendor/bin/phpunit"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "author": "UIOyP",
+  "license": "ISC"
+}

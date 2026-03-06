@@ -4,7 +4,12 @@ import { useAuth } from '../../context/AuthContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice, Speakable } from '../../components/VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../../components/accessibility/AccessibilityPanel';
+import InstitutionalHeader from '../../components/layouts/InstitutionalHeader';
+import InstitutionalFooter from '../../components/layouts/InstitutionalFooter';
+import LucideIcon from '../../components/LucideIcon';
+import AdmisionesTab from '../../components/admin/AdmisionesTab';
 import api from '../../services/api';
+import '../../components/layouts/institutional.css';
 import './AdminDashboard.css';
 
 /**
@@ -15,20 +20,21 @@ import './AdminDashboard.css';
 
 // Áreas médicas según la base de datos
 const AREAS_MEDICAS = [
-  { id: 'fisioterapia', nombre: 'Fisioterapia', icon: '🏃', color: '#FF9800' },
-  { id: 'nutricion', nombre: 'Nutrición', icon: '🥗', color: '#4CAF50' },
-  { id: 'medicina', nombre: 'Medicina', icon: '❤️', color: '#F44336' },
-  { id: 'neuropsicologia', nombre: 'Neuropsicología', icon: '🧠', color: '#9C27B0' },
-  { id: 'ortesis', nombre: 'Ortesis y Prótesis', icon: '🦿', color: '#00BCD4' },
+  { id: 'fisioterapia', nombre: 'Fisioterapia', icon: 'dumbbell', color: '#E65100' },
+  { id: 'nutricion', nombre: 'Nutrición', icon: 'salad', color: '#2E7D32' },
+  { id: 'medicina', nombre: 'Medicina', icon: 'heart', color: '#C62828' },
+  { id: 'neuropsicologia', nombre: 'Neuropsicología', icon: 'brain', color: '#6A1B9A' },
+  { id: 'ortesis', nombre: 'Ortesis y Prótesis', icon: 'accessibility', color: '#1565C0' },
 ];
 
 // Tabs del dashboard
 const TABS = [
-  { id: 'resumen', label: 'Resumen', icon: '📊' },
-  { id: 'usuarios', label: 'Usuarios', icon: '👥' },
-  { id: 'especialistas', label: 'Especialistas', icon: '👨‍⚕️' },
-  { id: 'comunidad', label: 'Comunidad', icon: '📝' },
-  { id: 'faqs', label: 'FAQs', icon: '❓' },
+  { id: 'resumen', label: 'Resumen', icon: 'bar-chart' },
+  { id: 'admisiones', label: 'Admisiones', icon: 'clipboard-list' },
+  { id: 'usuarios', label: 'Usuarios', icon: 'users' },
+  { id: 'especialistas', label: 'Especialistas', icon: 'stethoscope' },
+  { id: 'comunidad', label: 'Comunidad', icon: 'pen-line' },
+  { id: 'faqs', label: 'FAQs', icon: 'circle-help' },
 ];
 
 const AdminDashboard = () => {
@@ -342,6 +348,8 @@ const AdminDashboard = () => {
     switch (activeTab) {
       case 'resumen':
         return renderResumen();
+      case 'admisiones':
+        return <AdmisionesTab />;
       case 'usuarios':
         return renderUsuarios();
       case 'especialistas':
@@ -363,7 +371,7 @@ const AdminDashboard = () => {
         <h2 id="metrics-heading" className="section-title">Métricas del Sistema</h2>
         <div className="metrics-grid">
           <div className="metric-card users" role="article">
-            <div className="metric-icon" aria-hidden="true">👥</div>
+            <div className="metric-icon" aria-hidden="true"><LucideIcon name="users" size={24} /></div>
             <div className="metric-content">
               <span className="metric-value">{metrics.totalUsers.toLocaleString()}</span>
               <span className="metric-label">Usuarios totales</span>
@@ -372,7 +380,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="metric-card patients" role="article">
-            <div className="metric-icon" aria-hidden="true">🏥</div>
+            <div className="metric-icon" aria-hidden="true"><LucideIcon name="hospital" size={24} /></div>
             <div className="metric-content">
               <span className="metric-value">{metrics.activePatients.toLocaleString()}</span>
               <span className="metric-label">Pacientes activos</span>
@@ -380,7 +388,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="metric-card specialists" role="article">
-            <div className="metric-icon" aria-hidden="true">👨‍⚕️</div>
+            <div className="metric-icon" aria-hidden="true"><LucideIcon name="stethoscope" size={24} /></div>
             <div className="metric-content">
               <span className="metric-value">{metrics.specialists}</span>
               <span className="metric-label">Especialistas</span>
@@ -388,7 +396,7 @@ const AdminDashboard = () => {
           </div>
 
           <div className="metric-card appointments" role="article">
-            <div className="metric-icon" aria-hidden="true">📅</div>
+            <div className="metric-icon" aria-hidden="true"><LucideIcon name="calendar" size={24} /></div>
             <div className="metric-content">
               <span className="metric-value">{metrics.todayCitas}</span>
               <span className="metric-label">Citas hoy</span>
@@ -403,7 +411,7 @@ const AdminDashboard = () => {
         <div className="areas-grid">
           {AREAS_MEDICAS.map(area => (
             <div key={area.id} className="area-card" style={{ '--area-color': area.color }}>
-              <span className="area-icon" aria-hidden="true">{area.icon}</span>
+              <span className="area-icon" aria-hidden="true"><LucideIcon name={area.icon} size={20} /></span>
               <div className="area-info">
                 <span className="area-name">{area.nombre}</span>
                 <span className="area-count">{especialistasPorArea[area.id] || 0} especialistas</span>
@@ -424,17 +432,17 @@ const AdminDashboard = () => {
         <h2 id="community-heading" className="section-title">Métricas de Comunidad</h2>
         <div className="community-grid">
           <div className="community-card">
-            <span className="community-icon" aria-hidden="true">📝</span>
+            <span className="community-icon" aria-hidden="true"><LucideIcon name="pen-line" size={20} /></span>
             <span className="community-value">{metrics.blogPosts}</span>
             <span className="community-label">Posts publicados</span>
           </div>
           <div className="community-card">
-            <span className="community-icon" aria-hidden="true">👁️</span>
+            <span className="community-icon" aria-hidden="true"><LucideIcon name="eye" size={20} /></span>
             <span className="community-value">{metrics.blogViews.toLocaleString()}</span>
             <span className="community-label">Visitas totales</span>
           </div>
           <div className="community-card">
-            <span className="community-icon" aria-hidden="true">💬</span>
+            <span className="community-icon" aria-hidden="true"><LucideIcon name="message" size={20} /></span>
             <span className="community-value">{metrics.communityEngagement}%</span>
             <span className="community-label">Engagement</span>
           </div>
@@ -446,19 +454,19 @@ const AdminDashboard = () => {
         <h2 id="actions-heading" className="section-title">Acciones Rápidas</h2>
         <div className="quick-actions-grid">
           <button className="quick-action-card" onClick={() => handleOpenModal('user')}>
-            <span className="action-icon" aria-hidden="true">➕</span>
+            <span className="action-icon" aria-hidden="true"><LucideIcon name="plus" size={20} /></span>
             <span className="action-label">Nuevo Usuario</span>
           </button>
           <button className="quick-action-card" onClick={() => handleOpenModal('especialista')}>
-            <span className="action-icon" aria-hidden="true">👨‍⚕️</span>
+            <span className="action-icon" aria-hidden="true"><LucideIcon name="stethoscope" size={20} /></span>
             <span className="action-label">Nuevo Especialista</span>
           </button>
           <button className="quick-action-card" onClick={() => handleOpenModal('faq')}>
-            <span className="action-icon" aria-hidden="true">❓</span>
+            <span className="action-icon" aria-hidden="true"><LucideIcon name="circle-help" size={20} /></span>
             <span className="action-label">Nueva FAQ</span>
           </button>
           <button className="quick-action-card" onClick={() => setActiveTab('usuarios')}>
-            <span className="action-icon" aria-hidden="true">📋</span>
+            <span className="action-icon" aria-hidden="true"><LucideIcon name="clipboard" size={20} /></span>
             <span className="action-label">Gestionar Usuarios</span>
           </button>
         </div>
@@ -472,7 +480,7 @@ const AdminDashboard = () => {
       <div className="section-header">
         <h2 className="section-title">Gestión de Usuarios</h2>
         <button className="btn-primary" onClick={() => handleOpenModal('user')}>
-          <span aria-hidden="true">➕</span> Nuevo Usuario
+          <span aria-hidden="true"><LucideIcon name="plus" size={16} /></span> Nuevo Usuario
         </button>
       </div>
 
@@ -497,9 +505,9 @@ const AdminDashboard = () => {
                 <td>{usuario.email}</td>
                 <td>
                   <span className={`badge badge-${rolDisplay}`}>
-                    {rolDisplay === 'administrador' && '⚙️ '}
-                    {rolDisplay === 'especialista' && '👨‍⚕️ '}
-                    {rolDisplay === 'paciente' && '👤 '}
+                    {rolDisplay === 'administrador' && <><LucideIcon name="settings" size={14} />{' '}</>}
+                    {rolDisplay === 'especialista' && <><LucideIcon name="stethoscope" size={14} />{' '}</>}
+                    {rolDisplay === 'paciente' && <><LucideIcon name="user" size={14} />{' '}</>}
                     {rolDisplay.charAt(0).toUpperCase() + rolDisplay.slice(1)}
                   </span>
                 </td>
@@ -509,7 +517,7 @@ const AdminDashboard = () => {
                     onClick={() => handleToggleActive('user', usuario.id)}
                     aria-label={usuario.activo ? 'Desactivar usuario' : 'Activar usuario'}
                   >
-                    {usuario.activo ? '✅ Activo' : '❌ Inactivo'}
+                    {usuario.activo ? <><LucideIcon name="circle-check" size={16} /> Activo</> : <><LucideIcon name="circle-x" size={16} /> Inactivo</>}
                   </button>
                 </td>
                 <td>{usuario.fecha_registro}</td>
@@ -519,14 +527,14 @@ const AdminDashboard = () => {
                     onClick={() => handleOpenModal('user', usuario)}
                     aria-label={`Editar ${usuario.nombre}`}
                   >
-                    ✏️
+                    <LucideIcon name="pencil" size={16} />
                   </button>
                   <button
                     className="btn-icon btn-delete"
                     onClick={() => handleDelete('user', usuario.id)}
                     aria-label={`Eliminar ${usuario.nombre}`}
                   >
-                    🗑️
+                    <LucideIcon name="trash" size={16} />
                   </button>
                 </td>
               </tr>
@@ -544,7 +552,7 @@ const AdminDashboard = () => {
       <div className="section-header">
         <h2 className="section-title">Gestión de Especialistas</h2>
         <button className="btn-primary" onClick={() => handleOpenModal('especialista')}>
-          <span aria-hidden="true">➕</span> Nuevo Especialista
+          <span aria-hidden="true"><LucideIcon name="plus" size={16} /></span> Nuevo Especialista
         </button>
       </div>
 
@@ -555,7 +563,7 @@ const AdminDashboard = () => {
           <button className="filter-chip active">Todos</button>
           {AREAS_MEDICAS.map(area => (
             <button key={area.id} className="filter-chip" style={{ '--chip-color': area.color }}>
-              {area.icon} {area.nombre}
+              <LucideIcon name={area.icon} size={16} /> {area.nombre}
             </button>
           ))}
         </div>
@@ -571,9 +579,9 @@ const AdminDashboard = () => {
               </div>
               <div className="specialist-info">
                 <h3 className="specialist-name">{esp.nombre}</h3>
-                <p className="specialist-area">{area?.icon} {area?.nombre}</p>
+                <p className="specialist-area"><LucideIcon name={area?.icon} size={16} /> {area?.nombre}</p>
                 <p className="specialist-cedula">Cédula: {esp.cedula}</p>
-                <p className="specialist-patients">👥 {esp.pacientes} pacientes</p>
+                <p className="specialist-patients"><LucideIcon name="users" size={16} /> {esp.pacientes} pacientes</p>
               </div>
               <div className="specialist-status">
                 <span className={`status-badge ${esp.activo ? 'active' : 'inactive'}`}>
@@ -586,14 +594,14 @@ const AdminDashboard = () => {
                   onClick={() => handleOpenModal('especialista', esp)}
                   aria-label={`Editar ${esp.nombre}`}
                 >
-                  ✏️
+                  <LucideIcon name="pencil" size={16} />
                 </button>
                 <button
                   className="btn-icon btn-delete"
                   onClick={() => handleDelete('especialista', esp.id)}
                   aria-label={`Eliminar ${esp.nombre}`}
                 >
-                  🗑️
+                  <LucideIcon name="trash" size={16} />
                 </button>
               </div>
             </div>
@@ -613,21 +621,21 @@ const AdminDashboard = () => {
       {/* Métricas de engagement */}
       <div className="blog-metrics">
         <div className="blog-metric-card">
-          <div className="blog-metric-icon" aria-hidden="true">📈</div>
+          <div className="blog-metric-icon" aria-hidden="true"><LucideIcon name="trending-up" size={20} /></div>
           <div className="blog-metric-info">
             <span className="blog-metric-value">{metrics.blogViews.toLocaleString()}</span>
             <span className="blog-metric-label">Visitas totales</span>
           </div>
         </div>
         <div className="blog-metric-card">
-          <div className="blog-metric-icon" aria-hidden="true">📝</div>
+          <div className="blog-metric-icon" aria-hidden="true"><LucideIcon name="pen-line" size={20} /></div>
           <div className="blog-metric-info">
             <span className="blog-metric-value">{metrics.blogPosts}</span>
             <span className="blog-metric-label">Posts publicados</span>
           </div>
         </div>
         <div className="blog-metric-card">
-          <div className="blog-metric-icon" aria-hidden="true">💬</div>
+          <div className="blog-metric-icon" aria-hidden="true"><LucideIcon name="message" size={20} /></div>
           <div className="blog-metric-info">
             <span className="blog-metric-value">{metrics.communityEngagement}%</span>
             <span className="blog-metric-label">Tasa de engagement</span>
@@ -647,8 +655,8 @@ const AdminDashboard = () => {
                 <p className="blog-date">{blog.fecha}</p>
               </div>
               <div className="blog-stats">
-                <span className="blog-stat">👁️ {blog.vistas.toLocaleString()}</span>
-                <span className="blog-stat">❤️ {blog.likes}</span>
+                <span className="blog-stat"><LucideIcon name="eye" size={16} /> {blog.vistas.toLocaleString()}</span>
+                <span className="blog-stat"><LucideIcon name="heart" size={16} /> {blog.likes}</span>
               </div>
               <div className="blog-actions">
                 <button className="btn-small">Ver</button>
@@ -667,7 +675,7 @@ const AdminDashboard = () => {
       <div className="section-header">
         <h2 className="section-title">Gestión de Preguntas Frecuentes</h2>
         <button className="btn-primary" onClick={() => handleOpenModal('faq')}>
-          <span aria-hidden="true">➕</span> Nueva FAQ
+          <span aria-hidden="true"><LucideIcon name="plus" size={16} /></span> Nueva FAQ
         </button>
       </div>
 
@@ -683,19 +691,19 @@ const AdminDashboard = () => {
                   className={`status-toggle ${faq.activo ? 'active' : 'inactive'}`}
                   onClick={() => handleToggleActive('faq', faq.id)}
                 >
-                  {faq.activo ? '✅' : '❌'}
+                  {faq.activo ? <LucideIcon name="circle-check" size={16} /> : <LucideIcon name="circle-x" size={16} />}
                 </button>
                 <button
                   className="btn-icon btn-edit"
                   onClick={() => handleOpenModal('faq', faq)}
                 >
-                  ✏️
+                  <LucideIcon name="pencil" size={16} />
                 </button>
                 <button
                   className="btn-icon btn-delete"
                   onClick={() => handleDelete('faq', faq.id)}
                 >
-                  🗑️
+                  <LucideIcon name="trash" size={16} />
                 </button>
               </div>
             </div>
@@ -780,9 +788,9 @@ const AdminDashboard = () => {
                     required
                     className="form-input"
                   >
-                    <option value={3}>👤 Paciente</option>
-                    <option value={2}>👨‍⚕️ Especialista</option>
-                    <option value={1}>⚙️ Administrador</option>
+                    <option value={3}>Paciente</option>
+                    <option value={2}>Especialista</option>
+                    <option value={1}>Administrador</option>
                   </select>
                 </div>
 
@@ -801,7 +809,7 @@ const AdminDashboard = () => {
                       >
                         <option value="">Seleccionar área</option>
                         {AREAS_MEDICAS.map(area => (
-                          <option key={area.id} value={area.id}>{area.icon} {area.nombre}</option>
+                          <option key={area.id} value={area.id}>{area.nombre}</option>
                         ))}
                       </select>
                     </div>
@@ -926,27 +934,23 @@ const AdminDashboard = () => {
 
   return (
     <div className="admin-dashboard" data-age-mode={settings.ageMode}>
+      {/* Header institucional DGTIC */}
+      <InstitutionalHeader />
+
       {/* Skip Links */}
       <a href="#main-content" className="skip-link">
         Saltar al contenido principal
       </a>
 
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-left">
-          <div className="brand">
-            <span className="brand-icon" aria-hidden="true">⚙️</span>
-            <span className="brand-name">Azaria Admin</span>
-          </div>
-        </div>
-
+      {/* Barra de acciones */}
+      <div className="dashboard-actions-bar">
         <div className="header-right">
           <button
             className={`header-btn voice-btn ${isSpeaking ? 'speaking' : ''}`}
             onClick={() => isSpeaking ? stop() : speakModule('admin-dashboard')}
             aria-label={isSpeaking ? 'Detener audio' : 'Escuchar ayuda'}
           >
-            {isSpeaking ? '⏹️' : '🔊'}
+            <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
           </button>
 
           <button
@@ -972,12 +976,12 @@ const AdminDashboard = () => {
               aria-label="Cerrar sesión"
               title="Cerrar sesión"
             >
-              <span className="logout-icon" aria-hidden="true">🚪</span>
+              <span className="logout-icon" aria-hidden="true"><LucideIcon name="logout" size={18} /></span>
               <span className="logout-text">Salir</span>
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Welcome Section */}
       <Speakable text={`${getGreeting()}, ${user?.nombre || 'Administrador'}. Panel de administración de Azaria.`}>
@@ -987,7 +991,7 @@ const AdminDashboard = () => {
             <p className="user-name">{user?.nombre || 'Administrador'}</p>
             <p className="welcome-subtitle">Panel de Administración</p>
           </div>
-          <div className="welcome-illustration" aria-hidden="true">👨‍💼</div>
+          <div className="welcome-illustration" aria-hidden="true"><LucideIcon name="user-round" size={48} /></div>
         </section>
       </Speakable>
 
@@ -1004,7 +1008,7 @@ const AdminDashboard = () => {
             aria-selected={activeTab === tab.id}
             role="tab"
           >
-            <span className="tab-icon" aria-hidden="true">{tab.icon}</span>
+            <span className="tab-icon" aria-hidden="true"><LucideIcon name={tab.icon} size={18} /></span>
             <span className="tab-label">{tab.label}</span>
           </button>
         ))}
@@ -1017,6 +1021,9 @@ const AdminDashboard = () => {
 
       {/* Modal */}
       {renderModal()}
+
+      {/* Footer institucional DGTIC */}
+      <InstitutionalFooter />
 
       {/* Panel de Accesibilidad */}
       <AccessibilityPanel />

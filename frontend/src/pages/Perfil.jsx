@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { useAccessibility } from '../context/AccessibilityContext';
 import AccessibilityPanel, { AccessibilityFAB } from '../components/accessibility/AccessibilityPanel';
 import { perfilService } from '../services/perfilService';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Perfil.css';
 
 const Perfil = () => {
@@ -106,7 +107,7 @@ const Perfil = () => {
                   onChange={handleAvatarChange}
                   hidden
                 />
-                📷 Cambiar foto
+                <LucideIcon name="camera" size={16} /> Cambiar foto
               </label>
             )}
           </div>

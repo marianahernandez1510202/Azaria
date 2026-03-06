@@ -13,6 +13,11 @@
             "App\\": "src/"
         }
     },
+    "config": {
+        "audit": {
+            "ignore": ["PKSA-y2cr-5h3j-g3ys"]
+        }
+    },
     "scripts": {
         "post-install-cmd": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""

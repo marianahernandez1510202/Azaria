@@ -4,7 +4,11 @@ import { useAuth } from '../../context/AuthContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice, Speakable } from '../../components/VoiceHelper';
 import AccessibilityPanel, { AccessibilityFAB } from '../../components/accessibility/AccessibilityPanel';
+import InstitutionalHeader from '../../components/layouts/InstitutionalHeader';
+import InstitutionalFooter from '../../components/layouts/InstitutionalFooter';
+import LucideIcon from '../../components/LucideIcon';
 import api from '../../services/api';
+import '../../components/layouts/institutional.css';
 import './PacienteDashboard.css';
 
 /**
@@ -15,19 +19,21 @@ import './PacienteDashboard.css';
 
 // Categorías de especialidades (similar a la imagen de referencia)
 const CATEGORIAS = [
-  { id: 'nutricion', nombre: 'Nutrición', icon: '🥗', color: '#4CAF50', ruta: '/nutricion', desc: 'Alimentación saludable' },
-  { id: 'medicina', nombre: 'Medicina', icon: '❤️', color: '#F44336', ruta: '/medicina', desc: 'Control de salud' },
-  { id: 'fisioterapia', nombre: 'Fisioterapia', icon: '🏃', color: '#FF9800', ruta: '/fisioterapia', desc: 'Ejercicios' },
-  { id: 'neuropsicologia', nombre: 'Mente', icon: '🧠', color: '#9C27B0', ruta: '/neuropsicologia', desc: 'Bienestar mental' },
-  { id: 'ortesis', nombre: 'Prótesis', icon: '🦿', color: '#00BCD4', ruta: '/ortesis', desc: 'Dispositivos' },
+  { id: 'nutricion', nombre: 'Nutrición', icon: 'salad', color: '#66BB6A', ruta: '/nutricion', desc: 'Alimentación saludable' },
+  { id: 'medicina', nombre: 'Medicina', icon: 'heart', color: '#E57373', ruta: '/medicina', desc: 'Control de salud' },
+  { id: 'fisioterapia', nombre: 'Fisioterapia', icon: 'dumbbell', color: '#FFB74D', ruta: '/fisioterapia', desc: 'Ejercicios' },
+  { id: 'neuropsicologia', nombre: 'Mente', icon: 'brain', color: '#BA68C8', ruta: '/neuropsicologia', desc: 'Bienestar mental' },
+  { id: 'ortesis', nombre: 'Prótesis', icon: 'accessibility', color: '#64B5F6', ruta: '/ortesis', desc: 'Dispositivos' },
+  { id: 'fases', nombre: 'Mi Progreso', icon: 'trending-up', color: '#4DB6AC', ruta: '/fases', desc: 'Tu rehabilitación' },
 ];
 
 // Accesos rápidos principales
 const ACCESOS_RAPIDOS = [
-  { id: 'citas', nombre: 'Mis Citas', icon: '📅', color: '#009688', ruta: '/citas', desc: 'Ver y agendar citas' },
-  { id: 'recordatorios', nombre: 'Recordatorios', icon: '⏰', color: '#FFC107', ruta: '/recordatorios', desc: 'Tus alarmas' },
-  { id: 'chat', nombre: 'Mensajes', icon: '💬', color: '#00BCD4', ruta: '/chat', desc: 'Habla con tu equipo' },
-  { id: 'comunidad', nombre: 'Comunidad', icon: '👥', color: '#E91E63', ruta: '/comunidad', desc: 'Conecta con otros' },
+  { id: 'expediente', nombre: 'Mi Expediente', icon: 'clipboard', color: '#E57373', ruta: '/expediente', desc: 'Tu historial medico' },
+  { id: 'citas', nombre: 'Mis Citas', icon: 'calendar', color: '#66BB6A', ruta: '/citas', desc: 'Ver y agendar citas' },
+  { id: 'recordatorios', nombre: 'Recordatorios', icon: 'alarm-clock', color: '#FFD54F', ruta: '/recordatorios', desc: 'Tus alarmas' },
+  { id: 'chat', nombre: 'Mensajes', icon: 'message', color: '#4DD0E1', ruta: '/chat', desc: 'Habla con tu equipo' },
+  { id: 'comunidad', nombre: 'Comunidad', icon: 'users', color: '#F06292', ruta: '/comunidad', desc: 'Conecta con otros' },
 ];
 
 const PacienteDashboard = () => {
@@ -67,7 +73,12 @@ const PacienteDashboard = () => {
         mensajes_no_leidos: 1
       });
 
-      setFaseActual(faseRes.data || { fase: 2, progreso: 45 });
+      const fData = faseRes?.data || faseRes;
+      setFaseActual({
+        fase: fData?.numero || fData?.fase || 1,
+        nombre: fData?.nombre || null,
+        progreso: fData?.progreso_general ?? fData?.progreso ?? 0
+      });
 
       // Simular próxima cita
       setProximaCita({
@@ -120,20 +131,16 @@ const PacienteDashboard = () => {
 
   return (
     <div className="paciente-dashboard" data-age-mode={settings.ageMode}>
+      {/* Header institucional DGTIC */}
+      <InstitutionalHeader />
+
       {/* Skip Links */}
       <a href="#main-content" className="skip-link">
         Saltar al contenido principal
       </a>
 
-      {/* Header */}
-      <header className="dashboard-header">
-        <div className="header-left">
-          <div className="brand">
-            <span className="brand-icon" aria-hidden="true">💚</span>
-            <span className="brand-name">Azaria</span>
-          </div>
-        </div>
-
+      {/* Barra de acciones rapidas */}
+      <div className="dashboard-actions-bar">
         <div className="header-right">
           {/* Botón de voz */}
           <button
@@ -141,7 +148,7 @@ const PacienteDashboard = () => {
             onClick={() => isSpeaking ? stop() : speakModule('dashboard')}
             aria-label={isSpeaking ? 'Detener audio' : 'Escuchar ayuda'}
           >
-            {isSpeaking ? '⏹️' : '🔊'}
+            <LucideIcon name={isSpeaking ? 'stop' : 'volume'} size={20} />
           </button>
 
           {/* Botón de accesibilidad */}
@@ -164,7 +171,7 @@ const PacienteDashboard = () => {
             </div>
           </Link>
         </div>
-      </header>
+      </div>
 
       {/* Contenido Principal */}
       <main id="main-content" className="dashboard-content" tabIndex="-1">
@@ -176,7 +183,7 @@ const PacienteDashboard = () => {
             <p className="welcome-subtitle">¿Cómo te sientes hoy?</p>
           </div>
           <div className="welcome-illustration" aria-hidden="true">
-            👨‍⚕️
+            <LucideIcon name="stethoscope" size={32} />
           </div>
         </section>
 
@@ -188,7 +195,7 @@ const PacienteDashboard = () => {
             <section className="next-appointment" aria-labelledby="next-appointment-heading">
               <h2 id="next-appointment-heading" className="sr-only">Próxima cita</h2>
               <div className="appointment-card">
-                <div className="appointment-icon" aria-hidden="true">📅</div>
+                <div className="appointment-icon" aria-hidden="true"><LucideIcon name="calendar" size={20} /></div>
                 <div className="appointment-info">
                   <span className="appointment-label">Próxima cita</span>
                   <span className="appointment-doctor">{proximaCita.especialista}</span>
@@ -221,7 +228,7 @@ const PacienteDashboard = () => {
                 aria-label={`${categoria.nombre}: ${categoria.desc}`}
               >
                 <div className="category-icon-wrapper">
-                  <span className="category-icon" aria-hidden="true">{categoria.icon}</span>
+                  <span className="category-icon" aria-hidden="true"><LucideIcon name={categoria.icon} size={24} /></span>
                 </div>
                 <span className="category-name">{categoria.nombre}</span>
               </button>
@@ -234,25 +241,25 @@ const PacienteDashboard = () => {
           <h2 id="summary-heading" className="section-title">Tu Resumen</h2>
           <div className="summary-grid">
             <Link to="/citas" className="summary-card citas">
-              <span className="summary-icon" aria-hidden="true">📅</span>
+              <span className="summary-icon" aria-hidden="true"><LucideIcon name="calendar" size={20} /></span>
               <span className="summary-value">{resumen?.citas_proximas || 0}</span>
               <span className="summary-label">Citas</span>
             </Link>
 
             <Link to="/recordatorios" className="summary-card recordatorios">
-              <span className="summary-icon" aria-hidden="true">⏰</span>
+              <span className="summary-icon" aria-hidden="true"><LucideIcon name="alarm-clock" size={20} /></span>
               <span className="summary-value">{resumen?.recordatorios_hoy || 0}</span>
               <span className="summary-label">Recordatorios</span>
             </Link>
 
             <Link to="/fisioterapia" className="summary-card ejercicios">
-              <span className="summary-icon" aria-hidden="true">🏃</span>
+              <span className="summary-icon" aria-hidden="true"><LucideIcon name="dumbbell" size={20} /></span>
               <span className="summary-value">{resumen?.ejercicios_pendientes || 0}</span>
               <span className="summary-label">Ejercicios</span>
             </Link>
 
             <Link to="/chat" className="summary-card mensajes">
-              <span className="summary-icon" aria-hidden="true">💬</span>
+              <span className="summary-icon" aria-hidden="true"><LucideIcon name="message" size={20} /></span>
               <span className="summary-value">{resumen?.mensajes_no_leidos || 0}</span>
               <span className="summary-label">Mensajes</span>
             </Link>
@@ -263,9 +270,14 @@ const PacienteDashboard = () => {
         {faseActual && (
           <section className="progress-section" aria-labelledby="progress-heading">
             <h2 id="progress-heading" className="section-title">Mi Progreso</h2>
-            <div className="progress-card">
+            <Link to="/fases" className="progress-card" style={{ textDecoration: 'none', color: 'inherit' }}>
               <div className="progress-header">
-                <span className="progress-phase">{getFaseNombre(faseActual.fase)}</span>
+                <div className="progress-phase-info">
+                  <span className="progress-motivational-icon" aria-hidden="true">
+                    <LucideIcon name={faseActual.progreso >= 75 ? 'trophy' : faseActual.progreso >= 50 ? 'zap' : faseActual.progreso >= 25 ? 'sprout' : 'rocket'} size={24} />
+                  </span>
+                  <span className="progress-phase">{faseActual.nombre || getFaseNombre(faseActual.fase)}</span>
+                </div>
                 <span className="progress-percentage">{faseActual.progreso}%</span>
               </div>
               <div
@@ -282,11 +294,15 @@ const PacienteDashboard = () => {
                 ></div>
               </div>
               <p className="progress-message">
-                {faseActual.progreso < 50
+                {faseActual.progreso >= 75
+                  ? '¡Increíble! Estás muy cerca de tu meta.'
+                  : faseActual.progreso >= 50
+                  ? '¡Excelente progreso! Ya casi llegas.'
+                  : faseActual.progreso >= 25
                   ? '¡Sigue así! Vas por buen camino.'
-                  : '¡Excelente progreso! Ya casi llegas.'}
+                  : '¡Tu camino comienza aquí! Cada paso cuenta.'}
               </p>
-            </div>
+            </Link>
           </section>
         )}
 
@@ -302,7 +318,7 @@ const PacienteDashboard = () => {
                 style={{ '--access-color': acceso.color }}
                 onFocus={() => settings.autoSpeak && speak(`${acceso.nombre}. ${acceso.desc}`)}
               >
-                <span className="access-icon" aria-hidden="true">{acceso.icon}</span>
+                <span className="access-icon" aria-hidden="true"><LucideIcon name={acceso.icon} size={20} /></span>
                 <span className="access-name">{acceso.nombre}</span>
               </Link>
             ))}
@@ -313,7 +329,7 @@ const PacienteDashboard = () => {
         <section className="help-section" aria-labelledby="help-heading">
           <h2 id="help-heading" className="sr-only">Ayuda y soporte</h2>
           <div className="help-card">
-            <div className="help-icon" aria-hidden="true">❓</div>
+            <div className="help-icon" aria-hidden="true"><LucideIcon name="circle-help" size={24} /></div>
             <div className="help-content">
               <h3>¿Necesitas ayuda?</h3>
               <p>Estamos aquí para asistirte en todo momento.</p>
@@ -326,15 +342,15 @@ const PacienteDashboard = () => {
       {/* Navegación Inferior */}
       <nav className="bottom-navigation" role="navigation" aria-label="Navegación principal">
         <Link to="/" className="nav-item active" aria-current="page">
-          <span className="nav-icon" aria-hidden="true">🏠</span>
+          <span className="nav-icon" aria-hidden="true"><LucideIcon name="home" size={20} /></span>
           <span className="nav-label">Inicio</span>
         </Link>
         <Link to="/citas" className="nav-item">
-          <span className="nav-icon" aria-hidden="true">📅</span>
+          <span className="nav-icon" aria-hidden="true"><LucideIcon name="calendar" size={20} /></span>
           <span className="nav-label">Citas</span>
         </Link>
         <Link to="/chat" className="nav-item">
-          <span className="nav-icon" aria-hidden="true">💬</span>
+          <span className="nav-icon" aria-hidden="true"><LucideIcon name="message" size={20} /></span>
           <span className="nav-label">Mensajes</span>
           {resumen?.mensajes_no_leidos > 0 && (
             <span className="nav-badge" aria-label={`${resumen.mensajes_no_leidos} mensajes nuevos`}>
@@ -343,10 +359,13 @@ const PacienteDashboard = () => {
           )}
         </Link>
         <Link to="/perfil" className="nav-item">
-          <span className="nav-icon" aria-hidden="true">👤</span>
+          <span className="nav-icon" aria-hidden="true"><LucideIcon name="user" size={20} /></span>
           <span className="nav-label">Perfil</span>
         </Link>
       </nav>
+
+      {/* Footer institucional DGTIC */}
+      <InstitutionalFooter />
 
       {/* Panel de Accesibilidad */}
       <AccessibilityPanel />

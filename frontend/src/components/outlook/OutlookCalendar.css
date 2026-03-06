@@ -28,7 +28,7 @@
 }
 
 .outlook-calendar-header h3::before {
-  content: '📅';
+  content: '';
 }
 
 .calendar-navigation {
@@ -41,11 +41,16 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   transition: background 0.2s;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .calendar-navigation .nav-btn:hover {
@@ -62,11 +67,12 @@
   background: rgba(255, 255, 255, 0.2);
   border: none;
   color: white;
-  padding: 8px 16px;
-  border-radius: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 14px;
   transition: background 0.2s;
+  min-height: 44px;
 }
 
 .refresh-btn:hover:not(:disabled) {
@@ -237,12 +243,15 @@
   background: #0078d4;
   color: white;
   text-decoration: none;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 12px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
   transition: background 0.2s;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
 }
 
 .join-meeting-btn:hover {
@@ -320,4 +329,98 @@
   .join-meeting-btn {
     align-self: flex-start;
   }
+}
+
+@media (max-width: 480px) {
+  .outlook-calendar-header {
+    padding: 12px;
+  }
+
+  .outlook-calendar-header h3 {
+    font-size: 14px;
+  }
+
+  .calendar-navigation .current-week {
+    font-size: 13px;
+  }
+
+  .outlook-event-item {
+    padding: 10px;
+  }
+
+  .event-subject {
+    font-size: 14px;
+    white-space: normal;
+  }
+
+  .outlook-calendar-error {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  .outlook-calendar-error button {
+    padding: 10px 16px;
+    min-height: 44px;
+  }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .outlook-calendar {
+  background: var(--surface-secondary);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .outlook-calendar-error {
+  background: rgba(239, 68, 68, 0.15);
+  border-bottom-color: rgba(239, 68, 68, 0.3);
+}
+
+[data-theme="dark"] .outlook-calendar-loading {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .outlook-calendar-empty {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .events-day-group {
+  border-bottom-color: var(--border-color);
+}
+
+[data-theme="dark"] .events-day-header {
+  background: var(--background-primary);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .outlook-event-item {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .outlook-event-item:hover {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .event-time {
+  color: var(--text-muted);
+}
+
+[data-theme="dark"] .event-subject {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .event-location {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .online-meeting-badge {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+[data-theme="dark"] .outlook-events-list::-webkit-scrollbar-track {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .outlook-events-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
 }

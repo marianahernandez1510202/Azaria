@@ -1,0 +1,43 @@
+import React from 'react';
+
+/**
+ * InstitutionalHeader - Cabecera institucional DGTIC UNAM
+ * Color cabeza: #00589c | Color menu: #004179
+ * Logos: ENES VECTOR ORO (fondo oscuro) + LOGO CIRCULO
+ */
+const InstitutionalHeader = () => {
+  return (
+    <header className="institutional-header" role="banner">
+      {/* Barra superior institucional (Cabeza) */}
+      <div className="institutional-bar">
+        <div className="institutional-bar-content">
+          <div className="institutional-logos">
+            <img
+              src={`${process.env.PUBLIC_URL}/assets/images/ENES VECTOR ORO.png`}
+              alt="ENES Logo"
+              className="institutional-logo-enes"
+            />
+            <div className="institutional-divider" aria-hidden="true"></div>
+            <img
+              src={`${process.env.PUBLIC_URL}/assets/images/LOGO CIRCULO.png`}
+              alt="Azaria Logo"
+              className="institutional-logo-azaria"
+            />
+          </div>
+          <div className="institutional-title-group">
+            <span className="institutional-service-name">Azaria</span>
+            <span className="institutional-service-desc">Plataforma de Rehabilitacion</span>
+          </div>
+        </div>
+      </div>
+      {/* Barra de menu institucional */}
+      <div className="institutional-menu-bar">
+        <div className="institutional-menu-content">
+          <span className="institutional-menu-text">Sistema de Adherencia Terapeutica</span>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default InstitutionalHeader;

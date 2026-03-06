@@ -98,7 +98,8 @@
   align-items: center;
   gap: var(--spacing-sm);
   margin-bottom: var(--spacing-md);
-  color: var(--gray-700);
+  color: var(--inst-title, #0c71c3);
+  font-family: 'Open Sans', sans-serif;
 }
 
 .section-icon {
@@ -189,4 +190,119 @@
   display: flex;
   gap: var(--spacing-md);
   justify-content: center;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (min-width: 768px) {
+  .faqs-page {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .faqs-container {
+    padding: 0 var(--spacing-md);
+  }
+
+  .busqueda-container {
+    padding: 0 var(--spacing-md);
+  }
+
+  .areas-filter {
+    padding: 0 var(--spacing-md);
+  }
+
+  .contacto-section {
+    margin: var(--spacing-lg) var(--spacing-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .faq-pregunta {
+    padding: var(--spacing-md);
+    font-size: var(--font-size-sm, 16px);
+  }
+
+  .contacto-btns {
+    flex-direction: column;
+  }
+
+  .contacto-section {
+    padding: var(--spacing-lg);
+  }
+
+  .area-btn {
+    padding: 6px 12px;
+    font-size: var(--font-size-xs, 14px);
+  }
+}
+
+/* ===== MODO OSCURO ===== */
+[data-theme="dark"] .faqs-page {
+  background: var(--background-primary);
+}
+
+[data-theme="dark"] .busqueda-input {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .busqueda-clear {
+  background: var(--surface-tertiary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .area-btn {
+  background: var(--surface-primary);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .area-btn:hover {
+  border-color: var(--color-primary);
+}
+
+[data-theme="dark"] .area-btn.active {
+  color: white;
+}
+
+[data-theme="dark"] .faq-item {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .faq-pregunta {
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .faq-pregunta:hover {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .faq-item.expanded .faq-pregunta {
+  background: var(--surface-secondary);
+}
+
+[data-theme="dark"] .faq-respuesta {
+  color: var(--text-secondary);
+  border-top-color: var(--border-color);
+}
+
+[data-theme="dark"] .contacto-section {
+  background: var(--surface-primary);
+}
+
+[data-theme="dark"] .contacto-section h3 {
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .contacto-section p {
+  color: var(--text-secondary);
+}
+
+[data-theme="dark"] .section-title {
+  color: var(--text-primary);
 }

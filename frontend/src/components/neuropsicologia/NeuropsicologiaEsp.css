@@ -1,0 +1,720 @@
+/* ============================================
+   Neuropsicología - Specialist Components CSS
+   Shared by: EvaluacionesCognitivas, EstadoEmocionalPaciente,
+              ActividadACTPaciente, CuestionariosHistorial
+   ============================================ */
+
+.neuro-esp-module {
+  padding: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* --- Header --- */
+.neuro-esp-header {
+  margin-bottom: 20px;
+}
+
+.neuro-esp-header h2 {
+  font-size: 1.3rem;
+  color: var(--text-primary, #E6EDF3);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.neuro-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: 1px solid var(--border-color, #30363D);
+  color: var(--text-secondary, #8B949E);
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  min-height: 44px;
+  transition: all 0.2s;
+}
+
+.neuro-back-btn:hover {
+  background: var(--surface-secondary, #21262D);
+  color: var(--text-primary, #E6EDF3);
+}
+
+/* --- Actions --- */
+.neuro-esp-actions {
+  margin-bottom: 16px;
+}
+
+.neuro-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #9C27B0;
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  min-height: 48px;
+  transition: background 0.2s;
+}
+
+.neuro-btn-primary:hover { background: #7B1FA2; }
+.neuro-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.neuro-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-secondary, #21262D);
+  color: var(--text-primary, #E6EDF3);
+  border: 1px solid var(--border-color, #30363D);
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+  min-height: 48px;
+}
+
+.neuro-btn-secondary:hover { background: var(--surface-tertiary, #30363D); }
+
+/* --- Loading & Empty --- */
+.neuro-loading {
+  text-align: center;
+  padding: 40px 16px;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-loading .loading-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--border-color, #30363D);
+  border-top-color: #9C27B0;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 12px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.neuro-empty {
+  text-align: center;
+  padding: 48px 16px;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-empty p { margin: 8px 0; font-size: 1.05rem; }
+.neuro-empty-sub { font-size: 0.9rem !important; color: var(--text-muted, #6E7681) !important; }
+
+/* --- Resumen Cards --- */
+.neuro-resumen-cards {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.neuro-resumen-card {
+  flex: 1;
+  min-width: 100px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 12px;
+  padding: 16px;
+  text-align: center;
+}
+
+.neuro-resumen-card .resumen-num {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.neuro-resumen-card .resumen-label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #8B949E);
+  margin-top: 4px;
+}
+
+.neuro-resumen-card.verde { border-color: #4CAF50; }
+.neuro-resumen-card.verde .resumen-num { color: #4CAF50; }
+.neuro-resumen-card.naranja { border-color: #FF9800; }
+.neuro-resumen-card.naranja .resumen-num { color: #FF9800; }
+.neuro-resumen-card.rojo { border-color: #F44336; }
+.neuro-resumen-card.rojo .resumen-num { color: #F44336; }
+.neuro-resumen-card.morado { border-color: #9C27B0; }
+.neuro-resumen-card.morado .resumen-num { color: #9C27B0; }
+.neuro-resumen-card.azul { border-color: #2196F3; }
+.neuro-resumen-card.azul .resumen-num { color: #2196F3; }
+
+/* =============================================
+   EVALUACIONES COGNITIVAS
+   ============================================= */
+
+/* Evaluation list */
+.neuro-eval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.neuro-eval-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.2s;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.neuro-eval-card:hover { border-color: #9C27B0; }
+
+.neuro-eval-card-top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.neuro-eval-fecha {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.neuro-eval-evaluador {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-eval-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.neuro-badge {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.neuro-badge.verde { background: #4CAF5022; color: #4CAF50; }
+.neuro-badge.naranja { background: #FF980022; color: #FF9800; }
+.neuro-badge.rojo { background: #F4433622; color: #F44336; }
+
+.neuro-eval-arrow { color: var(--text-muted, #6E7681); }
+
+/* Evaluation form */
+.neuro-eval-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.neuro-form-field label {
+  display: block;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+
+.neuro-form-field input[type="date"],
+.neuro-form-field textarea {
+  width: 100%;
+  padding: 12px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 10px;
+  color: var(--text-primary, #E6EDF3);
+  font-size: 1rem;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+.neuro-form-field textarea { resize: vertical; }
+
+.neuro-semaforo-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 10px 14px;
+  background: var(--surface-primary, #161B22);
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #30363D);
+}
+
+.neuro-semaforo-legend .legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-semaforo-legend .dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dot.rojo { background: #F44336; }
+.dot.naranja { background: #FF9800; }
+.dot.verde { background: #4CAF50; }
+
+.neuro-form-grupo {
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.neuro-grupo-titulo {
+  font-size: 1.05rem;
+  color: #9C27B0;
+  margin: 0 0 12px;
+  font-weight: 600;
+}
+
+.neuro-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.neuro-form-campo label {
+  display: block;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #8B949E);
+  margin-bottom: 4px;
+}
+
+.neuro-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.neuro-input-wrapper input[type="number"] {
+  flex: 1;
+  padding: 10px;
+  background: var(--surface-secondary, #21262D);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 8px;
+  color: var(--text-primary, #E6EDF3);
+  font-size: 1rem;
+  min-height: 44px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.neuro-form-campo.nivel-bajo .neuro-input-wrapper input { border-color: #F44336; }
+.neuro-form-campo.nivel-medio .neuro-input-wrapper input { border-color: #FF9800; }
+.neuro-form-campo.nivel-alto .neuro-input-wrapper input { border-color: #4CAF50; }
+
+.neuro-nivel-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.neuro-form-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+/* Evaluation detail */
+.neuro-detalle-info {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  color: var(--text-secondary, #8B949E);
+  font-size: 0.95rem;
+}
+
+.neuro-detalle-info span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.neuro-detalle-notas {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 10px;
+  color: var(--text-secondary, #8B949E);
+  margin-bottom: 16px;
+  font-size: 0.95rem;
+}
+
+/* Barras horizontales */
+.neuro-barras-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.neuro-barra-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.neuro-barra-label {
+  min-width: 160px;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #8B949E);
+  text-align: right;
+}
+
+.neuro-barra-track {
+  flex: 1;
+  height: 14px;
+  background: var(--surface-secondary, #21262D);
+  border-radius: 7px;
+  overflow: hidden;
+}
+
+.neuro-barra-fill {
+  height: 100%;
+  border-radius: 7px;
+  transition: width 0.4s ease;
+}
+
+.neuro-barra-valor {
+  min-width: 30px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-align: right;
+}
+
+/* =============================================
+   ESTADO EMOCIONAL
+   ============================================= */
+
+.neuro-animo-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.neuro-animo-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 12px;
+}
+
+.neuro-animo-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.neuro-animo-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.neuro-animo-emocion {
+  display: block;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.neuro-animo-nivel {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary, #8B949E);
+  margin-top: 2px;
+}
+
+.neuro-animo-notas {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  color: var(--text-muted, #6E7681);
+  line-height: 1.4;
+}
+
+.neuro-animo-emociones-extra {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.neuro-emocion-chip {
+  padding: 2px 8px;
+  border: 1px solid;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-animo-fecha {
+  font-size: 0.82rem;
+  color: var(--text-muted, #6E7681);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   ACTIVIDAD ACT
+   ============================================= */
+
+.neuro-act-categorias {
+  margin-bottom: 20px;
+}
+
+.neuro-act-categorias h3,
+.neuro-sesiones-lista h3 {
+  font-size: 1.05rem;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0 0 12px;
+}
+
+.neuro-act-barras {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.neuro-act-barra-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.neuro-act-barra-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-act-count {
+  margin-left: auto;
+  font-weight: 600;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.neuro-sesiones-lista {
+  margin-top: 4px;
+}
+
+.neuro-sesion-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.neuro-sesion-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.neuro-sesion-info { flex: 1; min-width: 0; }
+
+.neuro-sesion-herramienta {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text-primary, #E6EDF3);
+}
+
+.neuro-sesion-categoria {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.neuro-sesion-notas {
+  margin: 4px 0 0;
+  font-size: 0.88rem;
+  color: var(--text-muted, #6E7681);
+}
+
+.neuro-sesion-fecha {
+  font-size: 0.82rem;
+  color: var(--text-muted, #6E7681);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   CUESTIONARIOS HISTORIAL
+   ============================================= */
+
+.neuro-cuestionario-grupo {
+  margin-bottom: 20px;
+}
+
+.neuro-cuestionario-grupo-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-left: 4px solid;
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.neuro-cuestionario-grupo-header h3 {
+  font-size: 1rem;
+  color: var(--text-primary, #E6EDF3);
+  margin: 0;
+}
+
+.neuro-cuestionario-completo {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted, #6E7681);
+}
+
+.neuro-cuestionario-count {
+  margin-left: auto;
+  background: var(--surface-tertiary, #30363D);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-secondary, #8B949E);
+}
+
+.neuro-cuestionario-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-left: 12px;
+}
+
+.neuro-cuestionario-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  background: var(--surface-primary, #161B22);
+  border: 1px solid var(--border-color, #30363D);
+  border-radius: 10px;
+}
+
+.neuro-cuestionario-score {
+  text-align: center;
+  min-width: 50px;
+}
+
+.neuro-cuestionario-score .score-num {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.neuro-cuestionario-score .score-label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted, #6E7681);
+}
+
+.neuro-cuestionario-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.neuro-nivel-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.neuro-cuestionario-fecha {
+  font-size: 0.82rem;
+  color: var(--text-muted, #6E7681);
+}
+
+/* =============================================
+   RESPONSIVE
+   ============================================= */
+
+@media (max-width: 600px) {
+  .neuro-barra-label {
+    min-width: 100px;
+    font-size: 0.78rem;
+  }
+
+  .neuro-form-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .neuro-resumen-cards {
+    gap: 8px;
+  }
+
+  .neuro-resumen-card {
+    min-width: 80px;
+    padding: 12px 8px;
+  }
+
+  .neuro-eval-card {
+    flex-wrap: wrap;
+  }
+
+  .neuro-form-actions {
+    flex-direction: column;
+  }
+}

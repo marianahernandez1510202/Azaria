@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import LucideIcon from '../components/LucideIcon';
 import '../styles/Blog.css';
 
 const Blog = () => {
@@ -12,12 +13,12 @@ const Blog = () => {
   const [nuevoComentario, setNuevoComentario] = useState('');
 
   const areas = [
-    { id: 'todas', nombre: 'Todos', icon: '📰' },
-    { id: 'fisioterapia', nombre: 'Fisioterapia', icon: '🏃' },
-    { id: 'nutricion', nombre: 'Nutrición', icon: '🥗' },
-    { id: 'medicina', nombre: 'Medicina', icon: '💊' },
-    { id: 'neuropsicologia', nombre: 'Neuropsicología', icon: '🧠' },
-    { id: 'ortesis', nombre: 'Órtesis', icon: '🦿' }
+    { id: 'todas', nombre: 'Todos', icon: 'clipboard' },
+    { id: 'fisioterapia', nombre: 'Fisioterapia', icon: 'dumbbell' },
+    { id: 'nutricion', nombre: 'Nutricion', icon: 'salad' },
+    { id: 'medicina', nombre: 'Medicina', icon: 'pill' },
+    { id: 'neuropsicologia', nombre: 'Neuropsicologia', icon: 'brain' },
+    { id: 'ortesis', nombre: 'Ortesis', icon: 'accessibility' }
   ];
 
   useEffect(() => {
@@ -237,7 +238,7 @@ Programa revisiones cada 6 meses o según indique tu especialista.`,
             className={`area-btn ${areaSeleccionada === area.id ? 'active' : ''}`}
             onClick={() => setAreaSeleccionada(area.id)}
           >
-            <span className="area-icon">{area.icon}</span>
+            <span className="area-icon"><LucideIcon name={area.icon} size={18} /></span>
             <span className="area-nombre">{area.nombre}</span>
           </button>
         ))}
@@ -265,7 +266,7 @@ Programa revisiones cada 6 meses o según indique tu especialista.`,
                 )}
                 <div className="articulo-content">
                   <span className="articulo-area">
-                    {area.icon} {area.nombre}
+                    <LucideIcon name={area.icon} size={16} /> {area.nombre}
                   </span>
                   <h2>{articulo.titulo}</h2>
                   <p className="articulo-extracto">{articulo.extracto}</p>
@@ -280,8 +281,8 @@ Programa revisiones cada 6 meses o según indique tu especialista.`,
                     </span>
                   </div>
                   <div className="articulo-stats">
-                    <span className="stat-likes">❤️ {articulo.likes}</span>
-                    <span className="stat-comments">💬 {articulo.comentarios?.length || 0}</span>
+                    <span className="stat-likes"><LucideIcon name="heart" size={16} /> {articulo.likes}</span>
+                    <span className="stat-comments"><LucideIcon name="message" size={16} /> {articulo.comentarios?.length || 0}</span>
                   </div>
                 </div>
               </article>
@@ -303,7 +304,7 @@ Programa revisiones cada 6 meses o según indique tu especialista.`,
             <article className="articulo-completo">
               <header className="articulo-header">
                 <span className="articulo-area">
-                  {getAreaInfo(articuloActivo.area).icon} {getAreaInfo(articuloActivo.area).nombre}
+                  <LucideIcon name={getAreaInfo(articuloActivo.area).icon} size={16} /> {getAreaInfo(articuloActivo.area).nombre}
                 </span>
                 <h1>{articuloActivo.titulo}</h1>
                 <div className="articulo-meta">
@@ -333,7 +334,7 @@ Programa revisiones cada 6 meses o según indique tu especialista.`,
                   className="btn btn-like"
                   onClick={() => handleLike(articuloActivo.id)}
                 >
-                  ❤️ Me gusta ({articuloActivo.likes})
+                  <LucideIcon name="heart" size={18} /> Me gusta ({articuloActivo.likes})
                 </button>
               </div>
 
