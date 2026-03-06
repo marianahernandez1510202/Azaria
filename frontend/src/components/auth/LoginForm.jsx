@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useAccessibility } from '../../context/AccessibilityContext';
 import { useVoice } from '../VoiceHelper';
@@ -275,35 +275,35 @@ const LoginForm = () => {
 
           {/* Forgot Password */}
           <div className="text-center mt-4">
-            <a
-              href="/recuperar-password"
+            <Link
+              to="/recuperar-password"
               className="link-secondary link-accessible"
               onFocus={() => handleFieldFocus('forgot', 'Enlace para recuperar contraseña o PIN')}
             >
               ¿Olvidaste tu contraseña o PIN?
-            </a>
+            </Link>
           </div>
 
           {/* Solicitud de Admisión */}
           <div className="login-solicitud-cta">
             <p className="solicitud-cta-text">¿Eres nuevo y necesitas atención?</p>
             <div className="solicitud-cta-buttons">
-              <a
-                href="/solicitud"
+              <Link
+                to="/solicitud"
                 className="btn-solicitud-admision"
                 onFocus={() => handleFieldFocus('solicitud', 'Enlace para solicitar admisión como paciente nuevo')}
               >
                 <LucideIcon name="clipboard-list" size={20} />
                 Solicitar Admisión
-              </a>
-              <a
-                href="/admisiones/estatus"
+              </Link>
+              <Link
+                to="/admisiones/estatus"
                 className="btn-consultar-estatus"
                 onFocus={() => handleFieldFocus('estatus', 'Enlace para consultar el estatus de tu solicitud')}
               >
                 <LucideIcon name="search" size={20} />
                 Consultar Estatus
-              </a>
+              </Link>
             </div>
           </div>
         </form>

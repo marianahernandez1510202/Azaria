@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import InstitutionalHeader from '../components/layouts/InstitutionalHeader';
 import InstitutionalFooter from '../components/layouts/InstitutionalFooter';
 import '../components/layouts/institutional.css';
@@ -149,12 +150,12 @@ const Solicitud = () => {
                 Puedes consultar el avance de tu solicitud en cualquier momento.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', marginTop: '20px' }}>
-                <a href="/admisiones/estatus" className="btn-volver">
+                <Link to="/admisiones/estatus" className="btn-volver">
                   Consultar Estatus
-                </a>
-                <button className="btn-volver" style={{ background: 'var(--surface-tertiary, #30363D)' }} onClick={() => window.location.href = '/'}>
+                </Link>
+                <Link to="/login" className="btn-volver" style={{ background: 'var(--surface-tertiary, #30363D)' }}>
                   Volver al Inicio
-                </button>
+                </Link>
               </div>
             </div>
           </div>
